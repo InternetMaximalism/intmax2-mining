@@ -1,0 +1,30 @@
+{
+  "name": "miner",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/minimist": "^1.2.5",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "envalid": "^8.0.0",
+    "ethers": "^6.13.1",
+    "fast-csv": "^5.0.1",
+    "minimist": "^1.2.8",
+    "poseidon-goldilocks": "^0.2.3",
+    "ts-command-line-args": "^2.5.1",
+    "ts-node": "^10.9.2"
+  },
+  "engines": {
+    "node": "20"
+  }
+}

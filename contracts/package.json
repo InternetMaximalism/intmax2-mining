@@ -1,0 +1,24 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.5"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "envalid": "^8.0.0",
+    "fast-csv": "^5.0.1",
+    "poseidon-goldilocks": "^0.2.3"
+  },
+  "scripts": {
+    "compile": "hardhat compile && npm run copy-types",
+    "copy-types": "rsync -avh typechain-types/ ../miner/typechain-types/",
+    "deposit": "hardhat run scripts/deposit.ts --network localhost",
+    "withdrawal": "hardhat run scripts/withdrawal.ts --network localhost",
+    "deploy": "hardhat ignition deploy ignition/modules/Int0.ts --network localhost",
+    "deploy-sepolia": "npx hardhat ignition deploy ignition/modules/Int0.ts --network sepolia",
+    "deploy-mainnet": "npx hardhat ignition deploy ignition/modules/Int0.ts --network mainnet"
+  }
+}
