@@ -1997,7 +1997,6 @@ dependencies = [
 [[package]]
 name = "intmax2-zkp"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/intmax2-zkp?branch=dev#57d8f6198a0bf572c0c19dcd8e5239dbda6c4d9f"
 dependencies = [
  "anyhow",
  "ark-bn254",

@@ -4,8 +4,8 @@ use crate::{
 };
 use anyhow::Result;
 use intmax2_zkp::{
-    circuits::mining::simple_withraw_circuit::{get_pubkey_salt_hash, SimpleWithdrawPublicInputs},
-    common::salt::Salt,
+    circuits::mining::simple_withraw_circuit::SimpleWithdrawPublicInputs,
+    common::{hash::get_pubkey_salt_hash, salt::Salt},
     ethereum_types::{address::Address, bytes32::Bytes32, u256::U256},
     utils::save::save_proof,
 };

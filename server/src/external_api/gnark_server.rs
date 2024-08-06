@@ -153,8 +153,8 @@ impl GnarkServer {
 #[cfg(test)]
 mod tests {
     use intmax2_zkp::{
-        circuits::mining::simple_withraw_circuit::get_pubkey_salt_hash,
         common::{
+            hash::get_pubkey_salt_hash,
             salt::Salt,
             trees::deposit_tree::{DepositLeaf, DepositTree},
         },
