@@ -1,4 +1,4 @@
-# Miner
+# Intmax2-mining
 
 ## Install dependency
 
@@ -14,14 +14,21 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## Run on localnet
 
-Edit the 4th line of `server/start.sh`, `ssh gserver -NL 8058:localhost:8058 &`, to match your ssh environment.
+### Run gnark server
+
+```bash
+cd gnark-server
+go run setup/main.go --circuit=withdraw_circuit_data
+go run main.go --circuit=withdraw_circuit_data
+```
+
+### Start server
 
 ```bash
 cd contracts
 cp .env.example .env
 npm i
 npm run compile
-
 cd ../server
 cp .env.example .env
 ./start.sh
@@ -93,7 +100,3 @@ npx ts-node src/scripts/accounts.ts
 rm -rf data/*
 npx ts-node src/main.ts --mnemonic="Your Mnemonic" --phase=1 --walletIndex=0
 ```
-
-## Rescue
-
-If you get stuck along the way, you can run `npx ts-node src/scripts/collectEth.ts` to gather the ETH in the wallets to the withdrawer. If you cannot withdraw the funds deposited in the contract, you can run `npx ts-node src/scripts/rescue.ts` to withdraw them.
