@@ -5,6 +5,7 @@ go 1.21.7
 require (
 	github.com/consensys/gnark v0.9.1
 	github.com/consensys/gnark-crypto v0.12.2-0.20231013160410-1f65e75b6dfb
+	github.com/consensys/gnark-ignition-verifier v0.0.0-20230527014722-10693546ab33
 	github.com/google/uuid v1.6.0
 	github.com/qope/gnark-plonky2-verifier v0.0.0-20240624042711-a9b246b33e24
 )

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	verifierCircuit "example.com/m/circuit"
+	"example.com/m/trusted_setup"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
 	"github.com/consensys/gnark/backend/plonk"
@@ -52,11 +53,22 @@ func main() {
 	var srs kzg.SRS = kzg.NewSRS(ecc.BN254)
 	{
 		fileName := "srs_setup"
+
+		if _, err := os.Stat(fileName); os.IsNotExist(err) {
+			trusted_setup.DownloadAndSaveAztecIgnitionSrs(174, fileName)
+		}
+
 		fSRS, err := os.Open(fileName)
+
 		if err != nil {
 			panic(err)
 		}
+
+
 		_, err = srs.ReadFrom(fSRS)
+
+		fSRS.Close()
+
 		if err != nil {
 			panic(err)
 		}
