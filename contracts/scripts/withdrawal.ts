@@ -6,7 +6,7 @@ import {
   writeCSV,
 } from "../utils/csv";
 import { WithdrawInput, requestProve } from "../api/prover";
-import { addHexPrefix, removeHexPrefix } from "../utils/conversion";
+import { addHexPrefix } from "../utils/conversion";
 import Int0Module from "../ignition/modules/Int0";
 import { ethers, ignition } from "hardhat";
 import { Int0 } from "../typechain-types";
@@ -24,9 +24,9 @@ async function main() {
   const request: WithdrawInput = {
     isMain,
     depositIndex: parseInt(row.leafIndex),
-    recipient: removeHexPrefix(to),
+    recipient: to,
     pubkey: row.pubkey,
-    salt: removeHexPrefix(row.salt),
+    salt: row.salt,
   };
   console.log("Withdrawal request: ", request);
   const res = await requestProve(request);

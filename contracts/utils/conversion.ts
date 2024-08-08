@@ -44,13 +44,6 @@ export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
     .join("");
 }
 
-export function removeHexPrefix(hexString: string): string {
-  if (hexString.startsWith("0x")) {
-    return hexString.slice(2);
-  }
-  return hexString;
-}
-
 export function addHexPrefix(hexString: string): string {
   if (!hexString.startsWith("0x")) {
     return "0x" + hexString;

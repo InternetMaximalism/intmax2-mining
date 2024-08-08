@@ -1,6 +1,6 @@
 import { appendCSV } from "../utils/csv";
 import { WithdrawInput, requestProve } from "../api/prover";
-import { addHexPrefix, removeHexPrefix } from "../utils/conversion";
+import { addHexPrefix } from "../utils/conversion";
 import { DepositCsvRow, WithdrawalCsvRow } from "../types/csv";
 import {
   ethHolderCsvPath,
@@ -27,9 +27,9 @@ export async function withdrawal(
   const request: WithdrawInput = {
     isMain,
     depositIndex: parseInt(depositRow.leafIndex),
-    recipient: removeHexPrefix(toWallet.address),
+    recipient: toWallet.address,
     pubkey: depositRow.pubkey,
-    salt: removeHexPrefix(depositRow.salt),
+    salt: depositRow.salt,
   };
   const res = await requestProve(request);
   console.log("Proof generated");
