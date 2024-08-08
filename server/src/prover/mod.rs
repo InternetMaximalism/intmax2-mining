@@ -1,18 +1,13 @@
 use crate::external_api::contract::contract::PublicInputs;
 use anyhow::Result;
 use intmax2_zkp::{
-    circuits::{
-        mining::simple_withraw_circuit::{
-            SimpleWithdrawCircuit, SimpleWithdrawPublicInputs, SimpleWithdrawValue,
-        },
-        utils::wrapper::WrapperCircuit,
-    },
-    common::{
-        salt::Salt,
-        trees::deposit_tree::{DepositLeaf, DepositMerkleProof},
-    },
+    common::{deposit::Deposit, salt::Salt, trees::deposit_tree::DepositMerkleProof},
     ethereum_types::{address::Address, bytes32::Bytes32, u256::U256, u32limb_trait::U32LimbTrait},
+    utils::wrapper::WrapperCircuit,
     wrapper_config::plonky2_config::PoseidonBN128GoldilocksConfig,
+};
+use mining_circuit::simple_withraw_circuit::{
+    SimpleWithdrawCircuit, SimpleWithdrawPublicInputs, SimpleWithdrawValue,
 };
 use plonky2::{
     field::goldilocks_field::GoldilocksField,
@@ -53,12 +48,12 @@ impl WithdrawProver {
 
     pub fn prove(
         &self,
-        deposit_root: Bytes32<u32>,
+        deposit_root: Bytes32,
         deposit_index: u32,
-        deposit_leaf: DepositLeaf,
+        deposit_leaf: Deposit,
         deposit_merkle_proof: DepositMerkleProof,
-        recipient: Address<u32>,
-        pubkey: U256<u32>,
+        recipient: Address,
+        pubkey: U256,
         salt: Salt,
     ) -> Result<WithdrawProofWithFullPublicInputs> {
         let value = SimpleWithdrawValue::new(

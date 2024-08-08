@@ -8,7 +8,7 @@ use crate::{
 use anyhow::{ensure, Result};
 use ethers::types::Address;
 use intmax2_zkp::{
-    common::trees::deposit_tree::{DepositLeaf, DepositTree},
+    common::{deposit::Deposit, trees::deposit_tree::DepositTree},
     constants::DEPOSIT_TREE_HEIGHT,
     ethereum_types::u32limb_trait::U32LimbTrait as _,
 };
@@ -61,7 +61,7 @@ impl DepositSyncronizer {
         for event in events {
             assert_eq!(self.leaf_index, event.leaf_index, "Leaf index mismatch");
             let event: DepositEventIntmax = event.into();
-            self.deposit_tree.push(DepositLeaf {
+            self.deposit_tree.push(Deposit {
                 pubkey_salt_hash: event.pubkey_salt_hash,
                 token_index: event.token_index,
                 amount: event.amount,

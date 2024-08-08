@@ -3,21 +3,21 @@ use intmax2_zkp::ethereum_types::{bytes32::Bytes32, u256::U256, u32limb_trait::U
 
 use super::event::DepositEvent;
 
-pub fn from_ether_h256_to_intmax_bytes32(h256: H256) -> Bytes32<u32> {
+pub fn from_ether_h256_to_intmax_bytes32(h256: H256) -> Bytes32 {
     Bytes32::from_bytes_be(&h256[..])
 }
 
-pub fn from_ether_u256_to_intmax_u256(u256: ethers::types::U256) -> U256<u32> {
+pub fn from_ether_u256_to_intmax_u256(u256: ethers::types::U256) -> U256 {
     let mut bytes = [0u8; 32];
     u256.to_big_endian(&mut bytes);
     U256::from_bytes_be(&bytes)
 }
 
-pub fn from_intmax_h256_to_ether_bytes32(h256: Bytes32<u32>) -> H256 {
+pub fn from_intmax_h256_to_ether_bytes32(h256: Bytes32) -> H256 {
     H256::from_slice(&h256.to_bytes_be())
 }
 
-pub fn from_intmax_u256_to_ether_u256(u256: U256<u32>) -> ethers::types::U256 {
+pub fn from_intmax_u256_to_ether_u256(u256: U256) -> ethers::types::U256 {
     ethers::types::U256::from_big_endian(&u256.to_bytes_be())
 }
 
@@ -25,10 +25,10 @@ pub fn from_intmax_u256_to_ether_u256(u256: U256<u32>) -> ethers::types::U256 {
 pub struct DepositEventIntmax {
     pub block_number: u64,
     pub leaf_index: u32,
-    pub leaf_hash: Bytes32<u32>,
-    pub pubkey_salt_hash: Bytes32<u32>,
+    pub leaf_hash: Bytes32,
+    pub pubkey_salt_hash: Bytes32,
     pub token_index: u32,
-    pub amount: U256<u32>,
+    pub amount: U256,
 }
 
 impl From<DepositEvent> for DepositEventIntmax {

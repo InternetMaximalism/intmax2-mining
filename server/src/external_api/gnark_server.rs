@@ -154,9 +154,9 @@ impl GnarkServer {
 mod tests {
     use intmax2_zkp::{
         common::{
-            hash::get_pubkey_salt_hash,
+            deposit::{get_pubkey_salt_hash, Deposit},
             salt::Salt,
-            trees::deposit_tree::{DepositLeaf, DepositTree},
+            trees::deposit_tree::DepositTree,
         },
         constants::DEPOSIT_TREE_HEIGHT,
         ethereum_types::{address::Address, u256::U256, u32limb_trait::U32LimbTrait as _},
@@ -180,14 +180,14 @@ mod tests {
 
         // add dummy deposits
         for _ in 0..100 {
-            let deposit_leaf = DepositLeaf::rand(&mut rng);
+            let deposit_leaf = Deposit::rand(&mut rng);
             deposit_tree.push(deposit_leaf);
         }
 
         let salt = Salt::rand(&mut rng);
         let pubkey = U256::rand(&mut rng);
         let pubkey_salt_hash = get_pubkey_salt_hash(pubkey, salt);
-        let deposit = DepositLeaf {
+        let deposit = Deposit {
             pubkey_salt_hash,
             token_index: rng.gen(),
             amount: U256::rand(&mut rng),
@@ -197,7 +197,7 @@ mod tests {
 
         // add dummy deposits
         for _ in 0..100 {
-            let deposit_leaf = DepositLeaf::rand(&mut rng);
+            let deposit_leaf = Deposit::rand(&mut rng);
             deposit_tree.push(deposit_leaf);
         }
 

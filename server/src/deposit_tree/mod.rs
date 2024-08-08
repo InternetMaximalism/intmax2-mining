@@ -1,5 +1,5 @@
 use intmax2_zkp::{
-    common::trees::deposit_tree::{DepositLeaf, DepositTree},
+    common::{deposit::Deposit, trees::deposit_tree::DepositTree},
     constants::DEPOSIT_TREE_HEIGHT,
     ethereum_types::bytes32::Bytes32,
 };
@@ -8,11 +8,11 @@ pub mod sync;
 
 use crate::external_api::contract::convert::DepositEventIntmax;
 
-pub fn get_deposit_root_from_all_events(events: &[DepositEventIntmax]) -> Bytes32<u32> {
+pub fn get_deposit_root_from_all_events(events: &[DepositEventIntmax]) -> Bytes32 {
     let mut tree = DepositTree::new(DEPOSIT_TREE_HEIGHT);
     for (i, event) in events.iter().enumerate() {
         assert_eq!(i as u32, event.leaf_index);
-        tree.push(DepositLeaf {
+        tree.push(Deposit {
             pubkey_salt_hash: event.pubkey_salt_hash,
             token_index: event.token_index,
             amount: event.amount,
@@ -26,7 +26,7 @@ mod tests {
     use crate::{
         env::load_env,
         external_api::contract::{
-            contract::{get_int0_contract, DepositLeaf as ContractDepositLeaf},
+            contract::{get_int0_contract, DepositLeaf as ContractDeposit},
             convert::{from_intmax_u256_to_ether_u256, DepositEventIntmax},
             event::get_deposit_events,
             utils::get_client,
@@ -35,7 +35,7 @@ mod tests {
     use anyhow::{ensure, Result};
     use ethers::types::Address;
     use intmax2_zkp::{
-        common::trees::deposit_tree::DepositLeaf, ethereum_types::u32limb_trait::U32LimbTrait,
+        common::deposit::Deposit, ethereum_types::u32limb_trait::U32LimbTrait,
         utils::leafable::Leafable,
     };
 
@@ -57,12 +57,12 @@ mod tests {
     #[tokio::test]
     async fn leaf_hash_equality() -> Result<()> {
         let rng = &mut rand::thread_rng();
-        let leaf = DepositLeaf::rand(rng);
+        let leaf = Deposit::rand(rng);
         let leaf_hash_intmax = leaf.hash();
 
         let contract = get_int0_contract(true).await?;
         let leaf_hash_contract: [u8; 32] = contract
-            .get_leaf_hash(ContractDepositLeaf {
+            .get_leaf_hash(ContractDeposit {
                 pubkey_salt_hash: leaf.pubkey_salt_hash.to_bytes_be().try_into().unwrap(),
                 token_index: leaf.token_index,
                 amount: from_intmax_u256_to_ether_u256(leaf.amount),

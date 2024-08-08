@@ -4,12 +4,11 @@ use crate::{
 };
 use anyhow::Result;
 use intmax2_zkp::{
-    circuits::mining::simple_withraw_circuit::SimpleWithdrawPublicInputs,
-    common::{hash::get_pubkey_salt_hash, salt::Salt},
+    common::{deposit::get_pubkey_salt_hash, salt::Salt},
     ethereum_types::{address::Address, bytes32::Bytes32, u256::U256},
-    utils::save::save_proof,
 };
 use log::{info, warn};
+use mining_circuit::{save::save_proof, simple_withraw_circuit::SimpleWithdrawPublicInputs};
 use rand::Rng as _;
 use serde::{ser::SerializeStruct as _, Deserialize, Serialize};
 
@@ -116,9 +115,9 @@ impl Processor {
 pub struct WithdrawInput {
     pub is_main: bool,
     pub deposit_index: u32,
-    pub recipient: Address<u32>,
+    pub recipient: Address,
     pub salt: Salt,
-    pub pubkey: U256<u32>,
+    pub pubkey: U256,
 }
 
 #[derive(Debug, Clone)]
