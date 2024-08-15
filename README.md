@@ -1,5 +1,7 @@
 # Intmax2-mining
 
+TOR site: http://bipyucbj462mqcntdcd7laz7bmcxhmznphqqdxmry7t464ny566kj5yd.onion/
+
 ## Install dependency
 
 ```bash
