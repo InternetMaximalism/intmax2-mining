@@ -468,7 +468,7 @@ checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 [[package]]
 name = "intmax2-zkp"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/intmax2-zkp?branch=dev#d16364ba29ea1ecbce5137b6d07db15392712c96"
+source = "git+https://github.com/InternetMaximalism/intmax2-zkp?branch=dev#41a080377ade9ead6ef70fa14f184ccae95b9906"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -534,9 +534,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "js-sys"
-version = "0.3.69"
+version = "0.3.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29c15563dc2726973df627357ce0c9ddddbea194836909d655df6a75d2cf296d"
+checksum = "1868808506b929d7b0cfa8f75951347aa71bb21144b7791bae35d9bccfcfe37a"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -559,9 +559,9 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "libc"
-version = "0.2.155"
+version = "0.2.158"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97b3888a4aecf77e811145cadf6eef5901f4782c53886191b2f693f24761847c"
+checksum = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439"
 
 [[package]]
 name = "log"
@@ -690,7 +690,7 @@ checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 [[package]]
 name = "plonky2"
 version = "0.2.2"
-source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#9bd35bd0310afb1d9d5190519f452446e2e8e19d"
+source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#8dbbe5142aea5a05bcbf948b63935f204e40f646"
 dependencies = [
  "ahash",
  "anyhow",
@@ -714,7 +714,7 @@ dependencies = [
 [[package]]
 name = "plonky2_bn254"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/plonky2_bn254#77a454f98d8831219d342616527c9b3751c44606"
+source = "git+https://github.com/InternetMaximalism/plonky2_bn254#5cec2397fbaeb5530516ab3eb62510fb98bd9755"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -737,7 +737,7 @@ dependencies = [
 [[package]]
 name = "plonky2_field"
 version = "0.2.2"
-source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#9bd35bd0310afb1d9d5190519f452446e2e8e19d"
+source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#8dbbe5142aea5a05bcbf948b63935f204e40f646"
 dependencies = [
  "anyhow",
  "itertools 0.11.0",
@@ -752,7 +752,7 @@ dependencies = [
 [[package]]
 name = "plonky2_keccak"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/plonky2_keccak#3c4d1336997f3f5e753ba73bd7aebbd59efadc39"
+source = "git+https://github.com/InternetMaximalism/plonky2_keccak#8bf18d3e66e5c2f2782e9f506e434417d8ebd332"
 dependencies = [
  "anyhow",
  "env_logger",
@@ -769,7 +769,7 @@ dependencies = [
 [[package]]
 name = "plonky2_maybe_rayon"
 version = "0.2.0"
-source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#9bd35bd0310afb1d9d5190519f452446e2e8e19d"
+source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#8dbbe5142aea5a05bcbf948b63935f204e40f646"
 dependencies = [
  "rayon",
 ]
@@ -777,7 +777,7 @@ dependencies = [
 [[package]]
 name = "plonky2_u32"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/plonky2-u32.git?branch=intmax2-dev#e61f7b3633e33e6864cf5bb73eead085c9af423f"
+source = "git+https://github.com/InternetMaximalism/plonky2-u32.git?branch=intmax2-dev#b03eb0237ef81c222b8784e81e0a02cdb10744fe"
 dependencies = [
  "anyhow",
  "itertools 0.10.5",
@@ -789,7 +789,7 @@ dependencies = [
 [[package]]
 name = "plonky2_util"
 version = "0.2.0"
-source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#9bd35bd0310afb1d9d5190519f452446e2e8e19d"
+source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#8dbbe5142aea5a05bcbf948b63935f204e40f646"
 
 [[package]]
 name = "ppv-lite86"
@@ -821,9 +821,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.36"
+version = "1.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fa76aaf39101c457836aec0ce2316dbdc3ab723cdda1c6bd4e6ad4208acaca7"
+checksum = "b5b9d34b8991d19d98081b46eacdd8eb58c6f2b201139f7c5f643cc155a633af"
 dependencies = [
  "proc-macro2",
 ]
@@ -936,29 +936,29 @@ checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "serde"
-version = "1.0.205"
+version = "1.0.209"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e33aedb1a7135da52b7c21791455563facbbcc43d0f0f66165b42c21b3dfb150"
+checksum = "99fce0ffe7310761ca6bf9faf5115afbc19688edd00171d81b1bb1b116c63e09"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.205"
+version = "1.0.209"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "692d6f5ac90220161d6774db30c662202721e64aed9058d2c394f451261420c1"
+checksum = "a5831b979fd7b5439637af1752d535ff49f4860c0f341d1baeb6faf0f4242170"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.76",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.122"
+version = "1.0.127"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784b6203951c57ff748476b126ccb5e8e2959a5c19e5c617ab1956be3dbc68da"
+checksum = "8043c06d9f82bd7271361ed64f415fe5e12a77fdb52e573e7f06a516dea329ad"
 dependencies = [
  "itoa",
  "memchr",
@@ -969,7 +969,7 @@ dependencies = [
 [[package]]
 name = "starky"
 version = "0.4.0"
-source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#9bd35bd0310afb1d9d5190519f452446e2e8e19d"
+source = "git+https://github.com/InternetMaximalism/polygon-plonky2.git?branch=intmax2-dev#8dbbe5142aea5a05bcbf948b63935f204e40f646"
 dependencies = [
  "ahash",
  "anyhow",
@@ -1007,9 +1007,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.72"
+version = "2.0.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc4b9b9bf2add8093d3f2c0204471e951b2285580335de42f9d2534f3ae7a8af"
+checksum = "578e081a14e0cefc3279b0472138c513f37b41a08d5a3cca9b6e4e8ceb6cd525"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1085,34 +1085,35 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.92"
+version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4be2531df63900aeb2bca0daaaddec08491ee64ceecbee5076636a3b026795a8"
+checksum = "a82edfc16a6c469f5f44dc7b571814045d60404b55a0ee849f9bcfa2e63dd9b5"
 dependencies = [
  "cfg-if",
+ "once_cell",
  "wasm-bindgen-macro",
 ]
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.92"
+version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "614d787b966d3989fa7bb98a654e369c762374fd3213d212cfc0251257e747da"
+checksum = "9de396da306523044d3302746f1208fa71d7532227f15e347e2d93e4145dd77b"
 dependencies = [
  "bumpalo",
  "log",
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.76",
  "wasm-bindgen-shared",
 ]
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.92"
+version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1f8823de937b71b9460c0c34e25f3da88250760bec0ebac694b49997550d726"
+checksum = "585c4c91a46b072c92e908d99cb1dcdf95c5218eeb6f3bf1efa991ee7a68cccf"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -1120,22 +1121,22 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.92"
+version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
+checksum = "afc340c74d9005395cf9dd098506f7f44e38f2b4a21c6aaacf9a105ea5e1e836"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.76",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.92"
+version = "0.2.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
+checksum = "c62a0a307cb4a311d3a07867860911ca130c3494e8c2719593806c08bc5d0484"
 
 [[package]]
 name = "web-time"
@@ -1247,7 +1248,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.76",
 ]
 
 [[package]]
@@ -1267,5 +1268,5 @@ checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.76",
 ]

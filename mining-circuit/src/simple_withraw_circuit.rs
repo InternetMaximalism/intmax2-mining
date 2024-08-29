@@ -28,7 +28,7 @@ use intmax2_zkp::{
         u256::{U256Target, U256},
         u32limb_trait::{U32LimbTargetTrait as _, U32LimbTrait as _},
     },
-    utils::recursivable::Recursivable,
+    utils::recursively_verifiable::RecursivelyVerifiable,
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -53,11 +53,11 @@ pub struct SimpleWithdrawPublicInputsTarget {
 impl SimpleWithdrawPublicInputs {
     pub fn to_u32_vec(&self) -> Vec<u32> {
         let vec = vec![
-            self.deposit_root.limbs(),
-            self.nullifier.limbs(),
-            self.recipient.limbs(),
+            self.deposit_root.to_u32_vec(),
+            self.nullifier.to_u32_vec(),
+            self.recipient.to_u32_vec(),
             vec![self.token_index],
-            self.amount.limbs(),
+            self.amount.to_u32_vec(),
         ]
         .concat();
         vec
@@ -65,18 +65,18 @@ impl SimpleWithdrawPublicInputs {
 
     pub fn hash(&self) -> Bytes32 {
         let vec = self.to_u32_vec();
-        Bytes32::from_limbs(&solidity_keccak256(&vec))
+        Bytes32::from_u32_slice(&solidity_keccak256(&vec))
     }
 }
 
 impl SimpleWithdrawPublicInputsTarget {
     pub fn to_vec(&self) -> Vec<Target> {
         let vec = vec![
-            self.deposit_root.limbs(),
-            self.nullifier.limbs(),
-            self.recipient.limbs(),
+            self.deposit_root.to_vec(),
+            self.nullifier.to_vec(),
+            self.recipient.to_vec(),
             vec![self.token_index],
-            self.amount.limbs(),
+            self.amount.to_vec(),
         ]
         .concat();
         vec
@@ -94,7 +94,7 @@ impl SimpleWithdrawPublicInputsTarget {
         <C as GenericConfig<D>>::Hasher: AlgebraicHasher<F>,
     {
         let inputs = self.to_vec();
-        Bytes32Target::from_limbs(&builder.keccak256::<C>(&inputs))
+        Bytes32Target::from_slice(&builder.keccak256::<C>(&inputs))
     }
 }
 
@@ -176,7 +176,7 @@ impl SimpleWithdrawTarget {
         let nullifier = get_pubkey_salt_hash_circuit(builder, pubkey, default_salt);
         let recipient = AddressTarget::new(builder, false);
         // add constraints to bind address.
-        for limb in recipient.limbs() {
+        for limb in recipient.to_vec() {
             let _ = builder.mul(limb, limb);
         }
         Self {
@@ -252,7 +252,7 @@ where
 }
 
 impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F> + 'static, const D: usize>
-    Recursivable<F, C, D> for SimpleWithdrawCircuit<F, C, D>
+    RecursivelyVerifiable<F, C, D> for SimpleWithdrawCircuit<F, C, D>
 where
     <C as GenericConfig<D>>::Hasher: AlgebraicHasher<F>,
 {
