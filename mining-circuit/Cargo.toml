@@ -9,11 +9,12 @@ edition = "2021"
 plonky2 = { git="https://github.com/InternetMaximalism/polygon-plonky2.git", branch="intmax2-dev"}
 plonky2_u32={git="https://github.com/InternetMaximalism/plonky2-u32.git", branch="intmax2-dev"}
 plonky2_keccak={ git="https://github.com/InternetMaximalism/plonky2_keccak"}
-intmax2-zkp = {git ="https://github.com/InternetMaximalism/intmax2-zkp", branch = "dev"}
+intmax2-zkp = {git ="https://github.com/InternetMaximalism/intmax2-zkp", rev = "805d6"}
 serde_json = "1.0.122"
 serde = "1.0.205"
 rand = "0.8.5"
 anyhow = "1.0.86"
+hashbrown = "0.14.5"
 
 [features]
 default = ["dummy_validity_proof", "skip_insufficient_check"]

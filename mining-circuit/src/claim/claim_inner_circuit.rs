@@ -11,7 +11,10 @@ use intmax2_zkp::{
         u256::{U256Target, U256},
         u32limb_trait::{U32LimbTargetTrait, U32LimbTrait},
     },
-    utils::poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
+    utils::{
+        poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
+        recursively_verifiable::RecursivelyVerifiable,
+    },
 };
 use plonky2::{
     field::extension::Extendable,
@@ -41,7 +44,7 @@ pub struct ClaimPublicInputs {
     pub deposit_tree_root: Bytes32,
     pub eligible_tree_root: PoseidonHashOut,
     pub prev_claim_hash: Bytes32,
-    pub next_claim_hash: Bytes32,
+    pub new_claim_hash: Bytes32,
 }
 
 impl ClaimPublicInputs {
@@ -50,11 +53,32 @@ impl ClaimPublicInputs {
             self.deposit_tree_root.to_u64_vec(),
             self.eligible_tree_root.to_u64_vec(),
             self.prev_claim_hash.to_u64_vec(),
-            self.next_claim_hash.to_u64_vec(),
+            self.new_claim_hash.to_u64_vec(),
         ]
         .concat();
         assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
         result
+    }
+
+    pub fn from_u64_slice(input: &[u64]) -> Self {
+        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32::from_u64_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOut::from_u64_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let prev_claim_hash = Bytes32::from_u64_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let new_claim_hash = Bytes32::from_u64_slice(
+            &input
+                [2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN..3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            prev_claim_hash,
+            new_claim_hash,
+        }
     }
 }
 
@@ -77,6 +101,27 @@ impl ClaimPublicInputsTarget {
         .concat();
         assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
         result
+    }
+
+    pub fn from_slice(input: &[Target]) -> Self {
+        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32Target::from_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOutTarget::from_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let prev_claim_hash = Bytes32Target::from_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let new_claim_hash = Bytes32Target::from_slice(
+            &input
+                [2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN..3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            prev_claim_hash,
+            new_claim_hash,
+        }
     }
 }
 
@@ -289,6 +334,16 @@ where
         let mut pw = PartialWitness::<F>::new();
         self.target.set_witness(&mut pw, value);
         self.data.prove(pw)
+    }
+}
+
+impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F> + 'static, const D: usize>
+    RecursivelyVerifiable<F, C, D> for ClaimInnerCircuit<F, C, D>
+where
+    <C as GenericConfig<D>>::Hasher: AlgebraicHasher<F>,
+{
+    fn circuit_data(&self) -> &CircuitData<F, C, D> {
+        &self.data
     }
 }
 
