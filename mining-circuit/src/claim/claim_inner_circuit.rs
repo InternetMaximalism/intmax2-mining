@@ -37,17 +37,17 @@ use crate::eligible_tree::{
 
 use super::mining_claim::{MiningClaim, MiningClaimTarget};
 
-pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
+pub const CLAIM_INNER_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
 
 #[derive(Debug, Clone)]
-pub struct ClaimPublicInputs {
+pub struct ClaimInnerPublicInputs {
     pub deposit_tree_root: Bytes32,
     pub eligible_tree_root: PoseidonHashOut,
     pub prev_claim_hash: Bytes32,
     pub new_claim_hash: Bytes32,
 }
 
-impl ClaimPublicInputs {
+impl ClaimInnerPublicInputs {
     pub fn to_u64_vec(&self) -> Vec<u64> {
         let result = vec![
             self.deposit_tree_root.to_u64_vec(),
@@ -56,12 +56,12 @@ impl ClaimPublicInputs {
             self.new_claim_hash.to_u64_vec(),
         ]
         .concat();
-        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(result.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         result
     }
 
     pub fn from_u64_slice(input: &[u64]) -> Self {
-        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(input.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         let deposit_tree_root = Bytes32::from_u64_slice(&input[0..BYTES32_LEN]);
         let eligible_tree_root = PoseidonHashOut::from_u64_slice(
             &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
@@ -83,14 +83,14 @@ impl ClaimPublicInputs {
 }
 
 #[derive(Debug, Clone)]
-pub struct ClaimPublicInputsTarget {
+pub struct ClaimInnerPublicInputsTarget {
     pub deposit_tree_root: Bytes32Target,
     pub eligible_tree_root: PoseidonHashOutTarget,
     pub prev_claim_hash: Bytes32Target,
     pub new_claim_hash: Bytes32Target,
 }
 
-impl ClaimPublicInputsTarget {
+impl ClaimInnerPublicInputsTarget {
     pub fn to_vec(&self) -> Vec<Target> {
         let result = vec![
             self.deposit_tree_root.to_vec(),
@@ -99,12 +99,12 @@ impl ClaimPublicInputsTarget {
             self.new_claim_hash.to_vec(),
         ]
         .concat();
-        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(result.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         result
     }
 
     pub fn from_slice(input: &[Target]) -> Self {
-        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(input.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         let deposit_tree_root = Bytes32Target::from_slice(&input[0..BYTES32_LEN]);
         let eligible_tree_root = PoseidonHashOutTarget::from_slice(
             &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
@@ -319,7 +319,7 @@ where
     pub fn new() -> Self {
         let mut builder = CircuitBuilder::<F, D>::new(CircuitConfig::default());
         let target = ClaimInnerTarget::new::<F, C, D>(&mut builder, true);
-        let pis = ClaimPublicInputsTarget {
+        let pis = ClaimInnerPublicInputsTarget {
             deposit_tree_root: target.deposit_tree_root,
             eligible_tree_root: target.eligible_tree_root,
             prev_claim_hash: target.prev_claim_hash,

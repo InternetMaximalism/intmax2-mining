@@ -1,11 +1,10 @@
 use anyhow::Result;
-use hashbrown::HashMap;
 use plonky2::{
     field::extension::Extendable,
     gates::noop::NoopGate,
     hash::hash_types::RichField,
     iop::{
-        target::BoolTarget,
+        target::{BoolTarget, Target},
         witness::{PartialWitness, WitnessWrite as _},
     },
     plonk::{
@@ -20,14 +19,93 @@ use plonky2::{
 use intmax2_zkp::{
     ethereum_types::{
         bytes32::{Bytes32, Bytes32Target, BYTES32_LEN},
-        u32limb_trait::U32LimbTargetTrait,
+        u32limb_trait::{U32LimbTargetTrait, U32LimbTrait as _},
     },
-    utils::{cyclic::vd_vec_len, recursively_verifiable::RecursivelyVerifiable as _},
+    utils::{
+        conversion::{ToField, ToU64},
+        cyclic::vd_vec_len,
+        poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
+        recursively_verifiable::RecursivelyVerifiable as _,
+    },
 };
 
-use crate::claim::claim_inner_circuit::ClaimPublicInputsTarget;
+use crate::claim::claim_inner_circuit::ClaimInnerPublicInputsTarget;
 
-use super::claim_inner_circuit::ClaimInnerCircuit;
+use super::claim_inner_circuit::{ClaimInnerCircuit, ClaimInnerPublicInputs};
+
+pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
+
+#[derive(Debug, Clone)]
+pub struct ClaimPublicInputs {
+    pub deposit_tree_root: Bytes32,
+    pub eligible_tree_root: PoseidonHashOut,
+    pub last_claim_hash: Bytes32,
+}
+
+impl ClaimPublicInputs {
+    pub fn to_u64_vec(&self) -> Vec<u64> {
+        let result = vec![
+            self.deposit_tree_root.to_u64_vec(),
+            self.eligible_tree_root.to_u64_vec(),
+            self.last_claim_hash.to_u64_vec(),
+        ]
+        .concat();
+        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        result
+    }
+
+    pub fn from_u64_slice(input: &[u64]) -> Self {
+        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32::from_u64_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOut::from_u64_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let last_claim_hash = Bytes32::from_u64_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            last_claim_hash,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ClaimPublicInputsTarget {
+    pub deposit_tree_root: Bytes32Target,
+    pub eligible_tree_root: PoseidonHashOutTarget,
+    pub last_claim_hash: Bytes32Target,
+}
+
+impl ClaimPublicInputsTarget {
+    pub fn to_vec(&self) -> Vec<Target> {
+        let result = vec![
+            self.deposit_tree_root.to_vec(),
+            self.eligible_tree_root.to_vec(),
+            self.last_claim_hash.to_vec(),
+        ]
+        .concat();
+        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        result
+    }
+
+    pub fn from_slice(input: &[Target]) -> Self {
+        assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32Target::from_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOutTarget::from_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let last_claim_hash = Bytes32Target::from_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            last_claim_hash,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct ClaimCircuit<F, C, const D: usize>
@@ -53,10 +131,13 @@ where
         let is_first_step = builder.add_virtual_bool_target_safe();
         let is_not_first_step = builder.not(is_first_step);
         let claim_inner_proof = claim_inner_circuit.add_proof_target_and_verify(&mut builder);
-        let pis = ClaimPublicInputsTarget::from_slice(&claim_inner_proof.public_inputs);
-        let prev_claim_hash = pis.prev_claim_hash;
-        let claim_hash = pis.new_claim_hash;
-        builder.register_public_inputs(&claim_hash.to_vec());
+        let inner_pis = ClaimInnerPublicInputsTarget::from_slice(&claim_inner_proof.public_inputs);
+        let claim_pis = ClaimPublicInputsTarget {
+            deposit_tree_root: inner_pis.deposit_tree_root,
+            eligible_tree_root: inner_pis.eligible_tree_root,
+            last_claim_hash: inner_pis.new_claim_hash,
+        };
+        builder.register_public_inputs(&claim_pis.to_vec());
 
         let common_data = common_data_for_claim_circuit::<F, C, D>();
         let verifier_data_target = builder.add_verifier_data_public_inputs();
@@ -69,13 +150,20 @@ where
                 &common_data,
             )
             .unwrap();
-        let prev_pis = ClaimPublicInputsTarget::from_slice(&prev_proof.public_inputs);
+        let prev_pis = ClaimPublicInputsTarget::from_slice(
+            &prev_proof.public_inputs[0..CLAIM_PUBLIC_INPUTS_LEN],
+        );
         prev_pis
-            .new_claim_hash
-            .connect(&mut builder, prev_claim_hash);
+            .deposit_tree_root
+            .connect(&mut builder, claim_pis.deposit_tree_root);
+        prev_pis
+            .eligible_tree_root
+            .connect(&mut builder, claim_pis.eligible_tree_root);
         // initial condition
         let zero = Bytes32Target::zero::<F, D, Bytes32>(&mut builder);
-        prev_claim_hash.conditional_assert_eq(&mut builder, zero, is_first_step);
+        prev_pis
+            .last_claim_hash
+            .conditional_assert_eq(&mut builder, zero, is_first_step);
 
         let (data, success) = builder.try_build_with_options::<C>(true);
         assert_eq!(data.common, common_data);
@@ -98,8 +186,24 @@ where
         pw.set_verifier_data_target(&self.verifier_data_target, &self.data.verifier_only);
         pw.set_proof_with_pis_target(&self.claim_inner_proof, claim_inner_proof);
         if prev_proof.is_none() {
-            let dummy_proof =
-                cyclic_base_proof(&self.data.common, &self.data.verifier_only, HashMap::new());
+            let inner_pis = ClaimInnerPublicInputs::from_u64_slice(
+                &claim_inner_proof.public_inputs.to_u64_vec(),
+            );
+            let initial_pis = ClaimPublicInputs {
+                deposit_tree_root: inner_pis.deposit_tree_root,
+                eligible_tree_root: inner_pis.eligible_tree_root,
+                last_claim_hash: Bytes32::zero(),
+            };
+            let dummy_proof = cyclic_base_proof(
+                &self.data.common,
+                &self.data.verifier_only,
+                initial_pis
+                    .to_u64_vec()
+                    .to_field_vec::<F>()
+                    .into_iter()
+                    .enumerate()
+                    .collect(),
+            );
             pw.set_bool_target(self.is_first_step, true);
             pw.set_proof_with_pis_target(&self.prev_proof, &dummy_proof);
         } else {
@@ -142,6 +246,6 @@ where
         builder.add_gate(NoopGate, vec![]);
     }
     let mut common = builder.build::<C>().common;
-    common.num_public_inputs = BYTES32_LEN + vd_vec_len(&common.config);
+    common.num_public_inputs = CLAIM_PUBLIC_INPUTS_LEN + vd_vec_len(&common.config);
     common
 }
