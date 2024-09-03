@@ -11,6 +11,8 @@ contract Minter is Ownable {
     using Byte32Lib for bytes32;
     IPlonkVerifier public verifier;
     IINTMAXToken public token;
+    bytes32 public eligibleTreeRoot;
+    bytes32 public depositTreeRoot;
 
     uint256 public amountMultiplier = 1e18;
 
@@ -93,5 +95,13 @@ contract Minter is Ownable {
 
     function setAmountMultiplier(uint256 amountMultiplier_) external onlyOwner {
         amountMultiplier = amountMultiplier_;
+    }
+
+    function setEligibleTreeRoot(bytes32 eligibleTreeRoot_) external onlyOwner {
+        eligibleTreeRoot = eligibleTreeRoot_;
+    }
+
+    function setDepositTreeRoot(bytes32 depositTreeRoot_) external onlyOwner {
+        depositTreeRoot = depositTreeRoot_;
     }
 }
