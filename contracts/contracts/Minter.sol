@@ -5,12 +5,14 @@ import {Byte32Lib} from "./Byte32Lib.sol";
 import {IPlonkVerifier} from "./IPlonkVerifier.sol";
 import {IINTMAXToken} from "./IINTMAXToken.sol";
 
-contract Minter {
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Minter is Ownable {
     using Byte32Lib for bytes32;
     IPlonkVerifier public verifier;
     IINTMAXToken public token;
 
-    uint256 amount_multiplier = 1e18;
+    uint256 public amountMultiplier = 1e18;
 
     mapping(bytes32 => bool) nullifiers;
 
@@ -24,6 +26,11 @@ contract Minter {
         bytes32 depositTreeRoot;
         bytes32 eligibleTreeRoot;
         bytes32 lastClaimHash;
+    }
+
+    constructor(address plonkVerifier_, address token_) Ownable(msg.sender) {
+        verifier = IPlonkVerifier(plonkVerifier_);
+        token = IINTMAXToken(token_);
     }
 
     function claimTokens(
@@ -77,10 +84,14 @@ contract Minter {
 
     function _claimTokens(MintClaim memory claim) internal {
         // claim tokens
-        token.transfer(claim.recipient, claim.amount * amount_multiplier);
+        token.transfer(claim.recipient, claim.amount * amountMultiplier);
     }
 
-    function mint() external {
+    function mint() external onlyOwner {
         token.mint(address(this));
+    }
+
+    function setAmountMultiplier(uint256 amountMultiplier_) external onlyOwner {
+        amountMultiplier = amountMultiplier_;
     }
 }
