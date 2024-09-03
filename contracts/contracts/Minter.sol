@@ -2,8 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {Byte32Lib} from "./Byte32Lib.sol";
-import {IPlonkVerifier} from "./IPlonkVerifier.sol";
-import {IINTMAXToken} from "./IINTMAXToken.sol";
+import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
+import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
