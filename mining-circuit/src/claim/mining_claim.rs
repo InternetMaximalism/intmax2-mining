@@ -1,5 +1,4 @@
 use intmax2_zkp::{
-    common::witness,
     ethereum_types::{
         address::{Address, AddressTarget, ADDRESS_LEN},
         bytes32::{Bytes32, Bytes32Target, BYTES32_LEN},

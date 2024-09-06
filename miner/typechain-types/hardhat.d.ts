@@ -14,28 +14,73 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
+      name: "IERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20__factory>;
+    getContractFactory(
       name: "Deposit",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Deposit__factory>;
     getContractFactory(
+      name: "IINTMAXToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IINTMAXToken__factory>;
+    getContractFactory(
       name: "Int0",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Int0__factory>;
+    getContractFactory(
+      name: "IPlonkVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IPlonkVerifier__factory>;
+    getContractFactory(
+      name: "Minter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Minter__factory>;
     getContractFactory(
       name: "PlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PlonkVerifier__factory>;
 
     getContractAt(
+      name: "Ownable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Ownable>;
+    getContractAt(
+      name: "IERC20",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20>;
+    getContractAt(
       name: "Deposit",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Deposit>;
     getContractAt(
+      name: "IINTMAXToken",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IINTMAXToken>;
+    getContractAt(
       name: "Int0",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Int0>;
+    getContractAt(
+      name: "IPlonkVerifier",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IPlonkVerifier>;
+    getContractAt(
+      name: "Minter",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Minter>;
     getContractAt(
       name: "PlonkVerifier",
       address: string | ethers.Addressable,
@@ -43,28 +88,73 @@ declare module "hardhat/types/runtime" {
     ): Promise<Contracts.PlonkVerifier>;
 
     deployContract(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "IERC20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC20>;
+    deployContract(
       name: "Deposit",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Deposit>;
     deployContract(
+      name: "IINTMAXToken",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IINTMAXToken>;
+    deployContract(
       name: "Int0",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Int0>;
+    deployContract(
+      name: "IPlonkVerifier",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IPlonkVerifier>;
+    deployContract(
+      name: "Minter",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Minter>;
     deployContract(
       name: "PlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.PlonkVerifier>;
 
     deployContract(
+      name: "Ownable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "IERC20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC20>;
+    deployContract(
       name: "Deposit",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Deposit>;
     deployContract(
+      name: "IINTMAXToken",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IINTMAXToken>;
+    deployContract(
       name: "Int0",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Int0>;
+    deployContract(
+      name: "IPlonkVerifier",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IPlonkVerifier>;
+    deployContract(
+      name: "Minter",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Minter>;
     deployContract(
       name: "PlonkVerifier",
       args: any[],

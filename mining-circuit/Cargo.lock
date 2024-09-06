@@ -468,7 +468,7 @@ checksum = "9a3a5bfb195931eeb336b2a7b4d761daec841b97f947d34394601737a7bba5e4"
 [[package]]
 name = "intmax2-zkp"
 version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/intmax2-zkp?branch=dev#41a080377ade9ead6ef70fa14f184ccae95b9906"
+source = "git+https://github.com/InternetMaximalism/intmax2-zkp?rev=805d6#805d6e40c84356ef4cec67a72e0e29031340ebb5"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -580,6 +580,7 @@ name = "mining_circuit"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "hashbrown 0.14.5",
  "intmax2-zkp",
  "plonky2",
  "plonky2_keccak",
@@ -915,9 +916,9 @@ checksum = "7a66a03ae7c801facd77a29370b4faec201768915ac14a721ba36f20bc9c209b"
 
 [[package]]
 name = "rustc_version"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
+checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
 dependencies = [
  "semver",
 ]

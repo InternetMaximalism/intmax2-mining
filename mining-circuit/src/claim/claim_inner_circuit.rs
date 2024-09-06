@@ -11,7 +11,10 @@ use intmax2_zkp::{
         u256::{U256Target, U256},
         u32limb_trait::{U32LimbTargetTrait, U32LimbTrait},
     },
-    utils::poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
+    utils::{
+        poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
+        recursively_verifiable::RecursivelyVerifiable,
+    },
 };
 use plonky2::{
     field::extension::Extendable,
@@ -34,39 +37,60 @@ use crate::eligible_tree::{
 
 use super::mining_claim::{MiningClaim, MiningClaimTarget};
 
-pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
+pub const CLAIM_INNER_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
 
 #[derive(Debug, Clone)]
-pub struct ClaimPublicInputs {
+pub struct ClaimInnerPublicInputs {
     pub deposit_tree_root: Bytes32,
     pub eligible_tree_root: PoseidonHashOut,
     pub prev_claim_hash: Bytes32,
-    pub next_claim_hash: Bytes32,
+    pub new_claim_hash: Bytes32,
 }
 
-impl ClaimPublicInputs {
+impl ClaimInnerPublicInputs {
     pub fn to_u64_vec(&self) -> Vec<u64> {
         let result = vec![
             self.deposit_tree_root.to_u64_vec(),
             self.eligible_tree_root.to_u64_vec(),
             self.prev_claim_hash.to_u64_vec(),
-            self.next_claim_hash.to_u64_vec(),
+            self.new_claim_hash.to_u64_vec(),
         ]
         .concat();
-        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(result.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         result
+    }
+
+    pub fn from_u64_slice(input: &[u64]) -> Self {
+        assert_eq!(input.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32::from_u64_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOut::from_u64_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let prev_claim_hash = Bytes32::from_u64_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let new_claim_hash = Bytes32::from_u64_slice(
+            &input
+                [2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN..3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            prev_claim_hash,
+            new_claim_hash,
+        }
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct ClaimPublicInputsTarget {
+pub struct ClaimInnerPublicInputsTarget {
     pub deposit_tree_root: Bytes32Target,
     pub eligible_tree_root: PoseidonHashOutTarget,
     pub prev_claim_hash: Bytes32Target,
     pub new_claim_hash: Bytes32Target,
 }
 
-impl ClaimPublicInputsTarget {
+impl ClaimInnerPublicInputsTarget {
     pub fn to_vec(&self) -> Vec<Target> {
         let result = vec![
             self.deposit_tree_root.to_vec(),
@@ -75,8 +99,29 @@ impl ClaimPublicInputsTarget {
             self.new_claim_hash.to_vec(),
         ]
         .concat();
-        assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
+        assert_eq!(result.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
         result
+    }
+
+    pub fn from_slice(input: &[Target]) -> Self {
+        assert_eq!(input.len(), CLAIM_INNER_PUBLIC_INPUTS_LEN);
+        let deposit_tree_root = Bytes32Target::from_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = PoseidonHashOutTarget::from_slice(
+            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let prev_claim_hash = Bytes32Target::from_slice(
+            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        let new_claim_hash = Bytes32Target::from_slice(
+            &input
+                [2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN..3 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
+        );
+        Self {
+            deposit_tree_root,
+            eligible_tree_root,
+            prev_claim_hash,
+            new_claim_hash,
+        }
     }
 }
 
@@ -274,7 +319,7 @@ where
     pub fn new() -> Self {
         let mut builder = CircuitBuilder::<F, D>::new(CircuitConfig::default());
         let target = ClaimInnerTarget::new::<F, C, D>(&mut builder, true);
-        let pis = ClaimPublicInputsTarget {
+        let pis = ClaimInnerPublicInputsTarget {
             deposit_tree_root: target.deposit_tree_root,
             eligible_tree_root: target.eligible_tree_root,
             prev_claim_hash: target.prev_claim_hash,
@@ -289,6 +334,16 @@ where
         let mut pw = PartialWitness::<F>::new();
         self.target.set_witness(&mut pw, value);
         self.data.prove(pw)
+    }
+}
+
+impl<F: RichField + Extendable<D>, C: GenericConfig<D, F = F> + 'static, const D: usize>
+    RecursivelyVerifiable<F, C, D> for ClaimInnerCircuit<F, C, D>
+where
+    <C as GenericConfig<D>>::Hasher: AlgebraicHasher<F>,
+{
+    fn circuit_data(&self) -> &CircuitData<F, C, D> {
+        &self.data
     }
 }
 
@@ -310,4 +365,99 @@ pub fn get_deposit_nullifier_circuit<F: RichField + Extendable<D>, const D: usiz
     let input_hash = PoseidonHashOutTarget::hash_inputs(builder, &input);
     let nullifier = Bytes32Target::from_hash_out(builder, input_hash);
     nullifier
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        claim::claim_inner_circuit::{ClaimInnerCircuit, ClaimInnerValue},
+        eligible_tree::{EligibleLeaf, EligibleTree, ELIGIBLE_TREE_HEIGHT},
+    };
+    use intmax2_zkp::{
+        common::{
+            deposit::{get_pubkey_salt_hash, Deposit},
+            salt::Salt,
+            trees::deposit_tree::DepositTree,
+        },
+        constants::DEPOSIT_TREE_HEIGHT,
+        ethereum_types::{
+            address::Address, bytes32::Bytes32, u256::U256, u32limb_trait::U32LimbTrait,
+        },
+    };
+    use plonky2::plonk::config::{GenericConfig, PoseidonGoldilocksConfig};
+    use rand::Rng;
+
+    #[test]
+    fn test_claim_inner_circuit() {
+        const D: usize = 2;
+        type C = PoseidonGoldilocksConfig;
+        type F = <C as GenericConfig<D>>::F;
+
+        let mut rng = rand::thread_rng();
+        let n = 10; // number of deposits
+
+        // construct the deposit tree
+        let mut deposit_tree = DepositTree::new(DEPOSIT_TREE_HEIGHT);
+
+        // deposits
+        let mut pubkeys_and_salts = vec![];
+        for _ in 0..n {
+            let pubkey = U256::rand(&mut rng);
+            let salt = Salt::rand(&mut rng);
+            let pubkey_salt_hash = get_pubkey_salt_hash(pubkey, salt);
+            let deposit = Deposit {
+                pubkey_salt_hash,
+                token_index: 0,
+                amount: U256::from(100),
+            };
+            deposit_tree.push(deposit);
+            pubkeys_and_salts.push((pubkey, salt));
+        }
+
+        // construct eligible tree
+        let mut eligible_tree = EligibleTree::new(ELIGIBLE_TREE_HEIGHT);
+        for deposit_index in 0..n {
+            let eligible_leaf = EligibleLeaf {
+                deposit_index,
+                amount: 1,
+            };
+            eligible_tree.push(eligible_leaf);
+        }
+
+        let deposit_tree_root = deposit_tree.get_root();
+        let eligible_tree_root = eligible_tree.get_root();
+
+        // select specified deposit index
+        let deposit_index = rng.gen_range(0..n);
+        let (pubkey, salt) = pubkeys_and_salts[deposit_index as usize];
+
+        let deposit_merkle_proof = deposit_tree.prove(deposit_index as usize);
+        let deposit = deposit_tree.get_leaf(deposit_index as usize);
+
+        let eligible_index = deposit_index; // for now
+        let eligible_merkle_proof = eligible_tree.prove(eligible_index as usize);
+        let eligible_leaf = eligible_tree.get_leaf(eligible_index as usize);
+        assert_eq!(eligible_leaf.deposit_index, deposit_index);
+
+        let recipient = Address::rand(&mut rng);
+        let prev_claim_hash = Bytes32::zero();
+
+        let claim_inner_value = ClaimInnerValue::new(
+            deposit_tree_root,
+            deposit_index,
+            deposit_merkle_proof,
+            deposit,
+            eligible_tree_root,
+            eligible_index,
+            eligible_merkle_proof,
+            eligible_leaf,
+            pubkey,
+            salt,
+            recipient,
+            prev_claim_hash,
+        );
+
+        let claim_inner_circuit = ClaimInnerCircuit::<F, C, D>::new();
+        let _proof = claim_inner_circuit.prove(&claim_inner_value).unwrap();
+    }
 }
