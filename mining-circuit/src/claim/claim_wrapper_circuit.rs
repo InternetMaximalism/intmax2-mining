@@ -16,7 +16,7 @@ use intmax2_zkp::{
     utils::recursively_verifiable::RecursivelyVerifiable,
 };
 
-use super::claim_circuit::{ClaimCircuit, ClaimPublicInputsTarget};
+use super::claim_circuit::{ClaimCircuit, ClaimPublicInputsTarget, CLAIM_PUBLIC_INPUTS_LEN};
 
 #[derive(Debug)]
 pub struct ClaimWrapperCircuit<F, C, const D: usize>
@@ -37,7 +37,9 @@ where
     pub fn new(claim_circuit: &ClaimCircuit<F, C, D>) -> Self {
         let mut builder = CircuitBuilder::<F, D>::new(CircuitConfig::default());
         let claim_proof = claim_circuit.add_proof_target_and_verify(&mut builder);
-        let claim_pis = ClaimPublicInputsTarget::from_slice(&claim_proof.public_inputs);
+        let claim_pis = ClaimPublicInputsTarget::from_slice(
+            &claim_proof.public_inputs[0..CLAIM_PUBLIC_INPUTS_LEN],
+        );
         let pis_hash = Bytes32Target::from_slice(&builder.keccak256::<C>(&claim_pis.to_vec()));
         builder.register_public_inputs(&pis_hash.to_vec());
         let data = builder.build();

@@ -24,7 +24,6 @@ use intmax2_zkp::{
     utils::{
         conversion::{ToField, ToU64},
         cyclic::{vd_from_pis_slice_target, vd_vec_len},
-        poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget, POSEIDON_HASH_OUT_LEN},
         recursively_verifiable::RecursivelyVerifiable as _,
     },
 };
@@ -33,48 +32,57 @@ use crate::claim::claim_inner_circuit::ClaimInnerPublicInputsTarget;
 
 use super::claim_inner_circuit::{ClaimInnerCircuit, ClaimInnerPublicInputs};
 
-pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN;
+pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN;
 
 #[derive(Debug, Clone)]
 pub struct ClaimPublicInputs {
     pub deposit_tree_root: Bytes32,
-    pub eligible_tree_root: PoseidonHashOut,
+    pub eligible_tree_root: Bytes32,
     pub last_claim_hash: Bytes32,
 }
 
 impl ClaimPublicInputs {
-    pub fn to_u64_vec(&self) -> Vec<u64> {
+    pub fn to_u32_vec(&self) -> Vec<u32> {
         let result = vec![
-            self.deposit_tree_root.to_u64_vec(),
-            self.eligible_tree_root.to_u64_vec(),
-            self.last_claim_hash.to_u64_vec(),
+            self.deposit_tree_root.to_u32_vec(),
+            self.eligible_tree_root.to_u32_vec(),
+            self.last_claim_hash.to_u32_vec(),
         ]
         .concat();
         assert_eq!(result.len(), CLAIM_PUBLIC_INPUTS_LEN);
         result
     }
 
-    pub fn from_u64_slice(input: &[u64]) -> Self {
+    pub fn from_u32_slice(input: &[u32]) -> Self {
         assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
-        let deposit_tree_root = Bytes32::from_u64_slice(&input[0..BYTES32_LEN]);
-        let eligible_tree_root = PoseidonHashOut::from_u64_slice(
-            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
-        );
-        let last_claim_hash = Bytes32::from_u64_slice(
-            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
-        );
+        let deposit_tree_root = Bytes32::from_u32_slice(&input[0..BYTES32_LEN]);
+        let eligible_tree_root = Bytes32::from_u32_slice(&input[BYTES32_LEN..2 * BYTES32_LEN]);
+        let last_claim_hash = Bytes32::from_u32_slice(&input[2 * BYTES32_LEN..3 * BYTES32_LEN]);
         Self {
             deposit_tree_root,
             eligible_tree_root,
             last_claim_hash,
         }
     }
+
+    pub fn from_u64_slice(input: &[u64]) -> Self {
+        Self::from_u32_slice(
+            input
+                .into_iter()
+                .map(|&x| {
+                    assert!(x < u32::MAX as u64);
+                    x as u32
+                })
+                .collect::<Vec<_>>()
+                .as_slice(),
+        )
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct ClaimPublicInputsTarget {
     pub deposit_tree_root: Bytes32Target,
-    pub eligible_tree_root: PoseidonHashOutTarget,
+    pub eligible_tree_root: Bytes32Target,
     pub last_claim_hash: Bytes32Target,
 }
 
@@ -93,12 +101,8 @@ impl ClaimPublicInputsTarget {
     pub fn from_slice(input: &[Target]) -> Self {
         assert_eq!(input.len(), CLAIM_PUBLIC_INPUTS_LEN);
         let deposit_tree_root = Bytes32Target::from_slice(&input[0..BYTES32_LEN]);
-        let eligible_tree_root = PoseidonHashOutTarget::from_slice(
-            &input[BYTES32_LEN..BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
-        );
-        let last_claim_hash = Bytes32Target::from_slice(
-            &input[BYTES32_LEN + POSEIDON_HASH_OUT_LEN..2 * BYTES32_LEN + POSEIDON_HASH_OUT_LEN],
-        );
+        let eligible_tree_root = Bytes32Target::from_slice(&input[BYTES32_LEN..2 * BYTES32_LEN]);
+        let last_claim_hash = Bytes32Target::from_slice(&input[2 * BYTES32_LEN..3 * BYTES32_LEN]);
         Self {
             deposit_tree_root,
             eligible_tree_root,
@@ -134,7 +138,10 @@ where
         let inner_pis = ClaimInnerPublicInputsTarget::from_slice(&claim_inner_proof.public_inputs);
         let claim_pis = ClaimPublicInputsTarget {
             deposit_tree_root: inner_pis.deposit_tree_root,
-            eligible_tree_root: inner_pis.eligible_tree_root,
+            eligible_tree_root: Bytes32Target::from_hash_out(
+                &mut builder,
+                inner_pis.eligible_tree_root,
+            ),
             last_claim_hash: inner_pis.new_claim_hash,
         };
         builder.register_public_inputs(&claim_pis.to_vec());
@@ -191,14 +198,17 @@ where
             );
             let initial_pis = ClaimPublicInputs {
                 deposit_tree_root: inner_pis.deposit_tree_root,
-                eligible_tree_root: inner_pis.eligible_tree_root,
+                eligible_tree_root: inner_pis.eligible_tree_root.into(),
                 last_claim_hash: Bytes32::zero(),
             };
             let dummy_proof = cyclic_base_proof(
                 &self.data.common,
                 &self.data.verifier_only,
                 initial_pis
-                    .to_u64_vec()
+                    .to_u32_vec()
+                    .into_iter()
+                    .map(|x| x as u64)
+                    .collect::<Vec<_>>()
                     .to_field_vec::<F>()
                     .into_iter()
                     .enumerate()
