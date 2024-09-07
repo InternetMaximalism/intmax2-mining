@@ -4,20 +4,14 @@ pragma solidity ^0.8.24;
 import {Byte32Lib} from "./Byte32Lib.sol";
 import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
+import {IInt0} from "./interfaces/IInt0.sol";
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Minter is Ownable {
+contract MinterV0 is Ownable {
     using Byte32Lib for bytes32;
-    IPlonkVerifier public verifier;
-    IINTMAXToken public token;
-    bytes32 public eligibleTreeRoot;
-    bytes32 public depositTreeRoot;
 
-    uint256 public amountMultiplier = 1e18;
-
-    mapping(bytes32 => bool) nullifiers;
-
+    // structs
     struct MintClaim {
         address recipient;
         bytes32 nullifier;
@@ -30,9 +24,24 @@ contract Minter is Ownable {
         bytes32 lastClaimHash;
     }
 
-    constructor(address plonkVerifier_, address token_) Ownable(msg.sender) {
+    // contracts
+    IPlonkVerifier public verifier;
+    IINTMAXToken public token;
+    IInt0 public int0;
+
+    // state
+    bytes32 public eligibleTreeRoot;
+    bytes32 public depositTreeRoot;
+    mapping(bytes32 => bool) nullifiers;
+
+    constructor(
+        address plonkVerifier_,
+        address token_,
+        address int0_
+    ) Ownable(msg.sender) {
         verifier = IPlonkVerifier(plonkVerifier_);
         token = IINTMAXToken(token_);
+        int0 = IInt0(int0_);
     }
 
     function claimTokens(
@@ -86,22 +95,18 @@ contract Minter is Ownable {
 
     function _claimTokens(MintClaim memory claim) internal {
         // claim tokens
-        token.transfer(claim.recipient, claim.amount * amountMultiplier);
+        token.transfer(claim.recipient, claim.amount);
     }
 
     function mint() external onlyOwner {
         token.mint(address(this));
     }
 
-    function setAmountMultiplier(uint256 amountMultiplier_) external onlyOwner {
-        amountMultiplier = amountMultiplier_;
-    }
-
     function setEligibleTreeRoot(bytes32 eligibleTreeRoot_) external onlyOwner {
         eligibleTreeRoot = eligibleTreeRoot_;
     }
 
-    function setDepositTreeRoot(bytes32 depositTreeRoot_) external onlyOwner {
-        depositTreeRoot = depositTreeRoot_;
+    function setDepositTreeRoot() external onlyOwner {
+        depositTreeRoot = int0.getDepositRoot();
     }
 }
