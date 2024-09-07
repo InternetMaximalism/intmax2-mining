@@ -419,7 +419,7 @@ mod tests {
         for deposit_index in 0..n {
             let eligible_leaf = EligibleLeaf {
                 deposit_index,
-                amount: 1,
+                amount: U256::from(1),
             };
             eligible_tree.push(eligible_leaf);
         }

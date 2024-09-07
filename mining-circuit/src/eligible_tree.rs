@@ -1,9 +1,15 @@
-use intmax2_zkp::utils::{
-    leafable::{Leafable, LeafableTarget},
-    leafable_hasher::PoseidonLeafableHasher,
-    poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget},
-    trees::incremental_merkle_tree::{
-        IncrementalMerkleProof, IncrementalMerkleProofTarget, IncrementalMerkleTree,
+use intmax2_zkp::{
+    ethereum_types::{
+        u256::{U256Target, U256, U256_LEN},
+        u32limb_trait::{U32LimbTargetTrait, U32LimbTrait},
+    },
+    utils::{
+        leafable::{Leafable, LeafableTarget},
+        leafable_hasher::PoseidonLeafableHasher,
+        poseidon_hash_out::{PoseidonHashOut, PoseidonHashOutTarget},
+        trees::incremental_merkle_tree::{
+            IncrementalMerkleProof, IncrementalMerkleProofTarget, IncrementalMerkleTree,
+        },
     },
 };
 use plonky2::{
@@ -16,18 +22,18 @@ use plonky2::{
     },
 };
 
-pub const ELIGIBLE_LEAF_LEN: usize = 2;
+pub const ELIGIBLE_LEAF_LEN: usize = 1 + U256_LEN;
 pub const ELIGIBLE_TREE_HEIGHT: usize = 32;
 
 #[derive(Default, Debug, Clone)]
 pub struct EligibleLeaf {
     pub deposit_index: u32, // eligible deposit index.
-    pub amount: u32,        // amount of mining reward for that index.
+    pub amount: U256,       // amount of mining reward for that index.
 }
 
 impl EligibleLeaf {
     pub fn to_u32_vec(&self) -> Vec<u32> {
-        let result = vec![self.deposit_index, self.amount];
+        let result = vec![vec![self.deposit_index], self.amount.to_u32_vec()].concat();
         assert_eq!(result.len(), ELIGIBLE_LEAF_LEN);
         result
     }
@@ -36,7 +42,7 @@ impl EligibleLeaf {
 #[derive(Debug, Clone)]
 pub struct EligibleLeafTarget {
     pub deposit_index: Target,
-    pub amount: Target,
+    pub amount: U256Target,
 }
 
 impl EligibleLeafTarget {
@@ -45,10 +51,9 @@ impl EligibleLeafTarget {
         is_checked: bool,
     ) -> Self {
         let deposit_index = builder.add_virtual_target();
-        let amount = builder.add_virtual_target();
+        let amount = U256Target::new(builder, is_checked);
         if is_checked {
             builder.range_check(deposit_index, 32);
-            builder.range_check(amount, 32);
         }
         Self {
             deposit_index,
@@ -57,7 +62,7 @@ impl EligibleLeafTarget {
     }
 
     pub fn to_vec(&self) -> Vec<Target> {
-        let result = vec![self.deposit_index, self.amount];
+        let result = vec![vec![self.deposit_index], self.amount.to_vec()].concat();
         assert_eq!(result.len(), ELIGIBLE_LEAF_LEN);
         result
     }
@@ -68,7 +73,7 @@ impl EligibleLeafTarget {
     ) -> Self {
         Self {
             deposit_index: builder.constant(F::from_canonical_u32(value.deposit_index)),
-            amount: builder.constant(F::from_canonical_u32(value.amount)),
+            amount: U256Target::constant(builder, value.amount),
         }
     }
 
@@ -81,7 +86,7 @@ impl EligibleLeafTarget {
             self.deposit_index,
             F::from_canonical_u32(value.deposit_index),
         );
-        witness.set_target(self.amount, F::from_canonical_u32(value.amount));
+        self.amount.set_witness(witness, value.amount);
     }
 }
 

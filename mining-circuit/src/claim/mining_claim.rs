@@ -2,6 +2,7 @@ use intmax2_zkp::{
     ethereum_types::{
         address::{Address, AddressTarget, ADDRESS_LEN},
         bytes32::{Bytes32, Bytes32Target, BYTES32_LEN},
+        u256::{U256Target, U256, U256_LEN},
         u32limb_trait::{U32LimbTargetTrait as _, U32LimbTrait},
     },
     utils::poseidon_hash_out::PoseidonHashOutTarget,
@@ -17,13 +18,13 @@ use plonky2::{
 };
 use plonky2_keccak::{builder::BuilderKeccak256 as _, utils::solidity_keccak256};
 
-pub const MINING_CLAIM_LEN: usize = ADDRESS_LEN + BYTES32_LEN + 1;
+pub const MINING_CLAIM_LEN: usize = ADDRESS_LEN + BYTES32_LEN + U256_LEN;
 
 #[derive(Clone, Debug)]
 pub struct MiningClaim {
     pub recipient: Address,
     pub nullifier: Bytes32,
-    pub amount: u32,
+    pub amount: U256,
 }
 
 impl MiningClaim {
@@ -31,7 +32,7 @@ impl MiningClaim {
         let result = vec![
             self.recipient.to_u32_vec(),
             self.nullifier.to_u32_vec(),
-            vec![self.amount],
+            self.amount.to_u32_vec(),
         ]
         .concat();
         assert_eq!(result.len(), MINING_CLAIM_LEN);
@@ -42,7 +43,7 @@ impl MiningClaim {
         assert_eq!(input.len(), MINING_CLAIM_LEN);
         let recipient = Address::from_u32_slice(&input[0..ADDRESS_LEN]);
         let nullifier = Bytes32::from_u32_slice(&input[ADDRESS_LEN..ADDRESS_LEN + BYTES32_LEN]);
-        let amount = input[ADDRESS_LEN + BYTES32_LEN];
+        let amount = U256::from_u32_slice(&input[ADDRESS_LEN + BYTES32_LEN..]);
         Self {
             recipient,
             nullifier,
@@ -60,7 +61,7 @@ impl MiningClaim {
 pub struct MiningClaimTarget {
     pub recipient: AddressTarget,
     pub nullifier: Bytes32Target,
-    pub amount: Target,
+    pub amount: U256Target,
 }
 
 impl MiningClaimTarget {
@@ -68,7 +69,7 @@ impl MiningClaimTarget {
         let result = vec![
             self.recipient.to_vec(),
             self.nullifier.to_vec(),
-            vec![self.amount],
+            self.amount.to_vec(),
         ]
         .concat();
         assert_eq!(result.len(), MINING_CLAIM_LEN);
@@ -79,7 +80,7 @@ impl MiningClaimTarget {
         assert_eq!(input.len(), MINING_CLAIM_LEN);
         let recipient = AddressTarget::from_slice(&input[0..ADDRESS_LEN]);
         let nullifier = Bytes32Target::from_slice(&input[ADDRESS_LEN..ADDRESS_LEN + BYTES32_LEN]);
-        let amount = input[ADDRESS_LEN + BYTES32_LEN];
+        let amount = U256Target::from_slice(&input[ADDRESS_LEN + BYTES32_LEN..]);
         Self {
             recipient,
             nullifier,
@@ -90,7 +91,7 @@ impl MiningClaimTarget {
     pub fn set_witness<F: Field, W: WitnessWrite<F>>(&self, witness: &mut W, value: &MiningClaim) {
         self.recipient.set_witness(witness, value.recipient);
         self.nullifier.set_witness(witness, value.nullifier);
-        witness.set_target(self.amount, F::from_canonical_u32(value.amount));
+        self.amount.set_witness(witness, value.amount);
     }
 
     pub fn commitment<F: RichField + Extendable<D>, const D: usize>(
