@@ -3,8 +3,10 @@
 /* eslint-disable */
 import type * as verifierSol from "./Verifier.sol";
 export type { verifierSol };
+import type * as interfaces from "./interfaces";
+export type { interfaces };
 export type { Deposit } from "./Deposit";
-export type { IINTMAXToken } from "./IINTMAXToken";
-export type { IPlonkVerifier } from "./IPlonkVerifier";
 export type { Int0 } from "./Int0";
+export type { MintVerifier } from "./MintVerifier";
 export type { Minter } from "./Minter";
+export type { MinterV0 } from "./MinterV0";

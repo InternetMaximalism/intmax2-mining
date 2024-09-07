@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../common";
 
-export declare namespace Minter {
+export declare namespace MinterV0 {
   export type MintClaimStruct = {
     recipient: AddressLike;
     nullifier: BytesLike;
@@ -53,17 +53,16 @@ export declare namespace Minter {
   };
 }
 
-export interface MinterInterface extends Interface {
+export interface MinterV0Interface extends Interface {
   getFunction(
     nameOrSignature:
-      | "amountMultiplier"
       | "claimTokens"
       | "depositTreeRoot"
       | "eligibleTreeRoot"
+      | "int0"
       | "mint"
       | "owner"
       | "renounceOwnership"
-      | "setAmountMultiplier"
       | "setDepositTreeRoot"
       | "setEligibleTreeRoot"
       | "token"
@@ -74,14 +73,10 @@ export interface MinterInterface extends Interface {
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "amountMultiplier",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "claimTokens",
     values: [
-      Minter.MintClaimStruct[],
-      Minter.ClaimPublicInputsStruct,
+      MinterV0.MintClaimStruct[],
+      MinterV0.ClaimPublicInputsStruct,
       BytesLike
     ]
   ): string;
@@ -93,6 +88,7 @@ export interface MinterInterface extends Interface {
     functionFragment: "eligibleTreeRoot",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "int0", values?: undefined): string;
   encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -100,12 +96,8 @@ export interface MinterInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setAmountMultiplier",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setDepositTreeRoot",
-    values: [BytesLike]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setEligibleTreeRoot",
@@ -119,10 +111,6 @@ export interface MinterInterface extends Interface {
   encodeFunctionData(functionFragment: "verifier", values?: undefined): string;
 
   decodeFunctionResult(
-    functionFragment: "amountMultiplier",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "claimTokens",
     data: BytesLike
   ): Result;
@@ -134,14 +122,11 @@ export interface MinterInterface extends Interface {
     functionFragment: "eligibleTreeRoot",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "int0", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setAmountMultiplier",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -173,11 +158,11 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface Minter extends BaseContract {
-  connect(runner?: ContractRunner | null): Minter;
+export interface MinterV0 extends BaseContract {
+  connect(runner?: ContractRunner | null): MinterV0;
   waitForDeployment(): Promise<this>;
 
-  interface: MinterInterface;
+  interface: MinterV0Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -216,12 +201,10 @@ export interface Minter extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  amountMultiplier: TypedContractMethod<[], [bigint], "view">;
-
   claimTokens: TypedContractMethod<
     [
-      claims: Minter.MintClaimStruct[],
-      publicInputs: Minter.ClaimPublicInputsStruct,
+      claims: MinterV0.MintClaimStruct[],
+      publicInputs: MinterV0.ClaimPublicInputsStruct,
       proof: BytesLike
     ],
     [void],
@@ -232,23 +215,15 @@ export interface Minter extends BaseContract {
 
   eligibleTreeRoot: TypedContractMethod<[], [string], "view">;
 
+  int0: TypedContractMethod<[], [string], "view">;
+
   mint: TypedContractMethod<[], [void], "nonpayable">;
 
   owner: TypedContractMethod<[], [string], "view">;
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-  setAmountMultiplier: TypedContractMethod<
-    [amountMultiplier_: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  setDepositTreeRoot: TypedContractMethod<
-    [depositTreeRoot_: BytesLike],
-    [void],
-    "nonpayable"
-  >;
+  setDepositTreeRoot: TypedContractMethod<[], [void], "nonpayable">;
 
   setEligibleTreeRoot: TypedContractMethod<
     [eligibleTreeRoot_: BytesLike],
@@ -271,14 +246,11 @@ export interface Minter extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "amountMultiplier"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "claimTokens"
   ): TypedContractMethod<
     [
-      claims: Minter.MintClaimStruct[],
-      publicInputs: Minter.ClaimPublicInputsStruct,
+      claims: MinterV0.MintClaimStruct[],
+      publicInputs: MinterV0.ClaimPublicInputsStruct,
       proof: BytesLike
     ],
     [void],
@@ -291,6 +263,9 @@ export interface Minter extends BaseContract {
     nameOrSignature: "eligibleTreeRoot"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "int0"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "mint"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
@@ -300,15 +275,8 @@ export interface Minter extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setAmountMultiplier"
-  ): TypedContractMethod<
-    [amountMultiplier_: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
     nameOrSignature: "setDepositTreeRoot"
-  ): TypedContractMethod<[depositTreeRoot_: BytesLike], [void], "nonpayable">;
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setEligibleTreeRoot"
   ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
