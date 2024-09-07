@@ -37,111 +37,68 @@ export declare namespace ICommon {
   ] & { recipient: string; nullifier: string; amount: bigint };
 }
 
-export declare namespace MintVerifier {
-  export type ClaimPublicInputsStruct = {
-    depositTreeRoot: BytesLike;
-    eligibleTreeRoot: BytesLike;
-    lastClaimHash: BytesLike;
-  };
-
-  export type ClaimPublicInputsStructOutput = [
-    depositTreeRoot: string,
-    eligibleTreeRoot: string,
-    lastClaimHash: string
-  ] & {
-    depositTreeRoot: string;
-    eligibleTreeRoot: string;
-    lastClaimHash: string;
-  };
-}
-
-export interface MintVerifierInterface extends Interface {
+export interface MinterV1Interface extends Interface {
   getFunction(
     nameOrSignature:
-      | "claimTokens"
-      | "depositTreeRoot"
-      | "eligibleTreeRoot"
-      | "minter"
+      | "l1ScrollMessenger"
+      | "mint"
+      | "mintVerifier"
       | "owner"
+      | "processClaims"
       | "renounceOwnership"
-      | "rollup"
-      | "setDepositTreeRoot"
-      | "setEligibleTreeRoot"
+      | "token"
       | "transferOwnership"
-      | "verifier"
   ): FunctionFragment;
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "claimTokens",
-    values: [
-      ICommon.MintClaimStruct[],
-      MintVerifier.ClaimPublicInputsStruct,
-      BytesLike
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "depositTreeRoot",
+    functionFragment: "l1ScrollMessenger",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "eligibleTreeRoot",
+    functionFragment: "mintVerifier",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "minter", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "processClaims",
+    values: [ICommon.MintClaimStruct[]]
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "rollup", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "setDepositTreeRoot",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setEligibleTreeRoot",
-    values: [BytesLike]
-  ): string;
+  encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "verifier", values?: undefined): string;
 
   decodeFunctionResult(
-    functionFragment: "claimTokens",
+    functionFragment: "l1ScrollMessenger",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "depositTreeRoot",
+    functionFragment: "mintVerifier",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "eligibleTreeRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "minter", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "processClaims",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "rollup", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setDepositTreeRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setEligibleTreeRoot",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "verifier", data: BytesLike): Result;
 }
 
 export namespace OwnershipTransferredEvent {
@@ -157,11 +114,11 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface MintVerifier extends BaseContract {
-  connect(runner?: ContractRunner | null): MintVerifier;
+export interface MinterV1 extends BaseContract {
+  connect(runner?: ContractRunner | null): MinterV1;
   waitForDeployment(): Promise<this>;
 
-  interface: MintVerifierInterface;
+  interface: MinterV1Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -200,35 +157,23 @@ export interface MintVerifier extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  claimTokens: TypedContractMethod<
-    [
-      claims: ICommon.MintClaimStruct[],
-      publicInputs: MintVerifier.ClaimPublicInputsStruct,
-      proof: BytesLike
-    ],
-    [void],
-    "nonpayable"
-  >;
+  l1ScrollMessenger: TypedContractMethod<[], [string], "view">;
 
-  depositTreeRoot: TypedContractMethod<[], [string], "view">;
+  mint: TypedContractMethod<[], [void], "nonpayable">;
 
-  eligibleTreeRoot: TypedContractMethod<[], [string], "view">;
-
-  minter: TypedContractMethod<[], [string], "view">;
+  mintVerifier: TypedContractMethod<[], [string], "view">;
 
   owner: TypedContractMethod<[], [string], "view">;
 
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
-
-  rollup: TypedContractMethod<[], [string], "view">;
-
-  setDepositTreeRoot: TypedContractMethod<[], [void], "nonpayable">;
-
-  setEligibleTreeRoot: TypedContractMethod<
-    [eligibleTreeRoot_: BytesLike],
+  processClaims: TypedContractMethod<
+    [claims: ICommon.MintClaimStruct[]],
     [void],
     "nonpayable"
   >;
+
+  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+
+  token: TypedContractMethod<[], [string], "view">;
 
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
@@ -236,53 +181,38 @@ export interface MintVerifier extends BaseContract {
     "nonpayable"
   >;
 
-  verifier: TypedContractMethod<[], [string], "view">;
-
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "claimTokens"
-  ): TypedContractMethod<
-    [
-      claims: ICommon.MintClaimStruct[],
-      publicInputs: MintVerifier.ClaimPublicInputsStruct,
-      proof: BytesLike
-    ],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "depositTreeRoot"
+    nameOrSignature: "l1ScrollMessenger"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "eligibleTreeRoot"
-  ): TypedContractMethod<[], [string], "view">;
+    nameOrSignature: "mint"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "minter"
+    nameOrSignature: "mintVerifier"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "processClaims"
+  ): TypedContractMethod<
+    [claims: ICommon.MintClaimStruct[]],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "rollup"
+    nameOrSignature: "token"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "setDepositTreeRoot"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setEligibleTreeRoot"
-  ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "verifier"
-  ): TypedContractMethod<[], [string], "view">;
 
   getEvent(
     key: "OwnershipTransferred"

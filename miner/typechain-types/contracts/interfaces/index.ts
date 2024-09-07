@@ -3,5 +3,6 @@
 /* eslint-disable */
 export type { IINTMAXToken } from "./IINTMAXToken";
 export type { IInt0 } from "./IInt0";
+export type { IMinterV1 } from "./IMinterV1";
 export type { IPlonkVerifier } from "./IPlonkVerifier";
 export type { IRollup } from "./IRollup";

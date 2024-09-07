@@ -22,6 +22,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
+      name: "IL1ScrollMessenger",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IL1ScrollMessenger__factory>;
+    getContractFactory(
       name: "IL2ScrollMessenger",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IL2ScrollMessenger__factory>;
@@ -46,6 +50,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IINTMAXToken__factory>;
     getContractFactory(
+      name: "IMinterV1",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IMinterV1__factory>;
+    getContractFactory(
       name: "IPlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPlonkVerifier__factory>;
@@ -54,13 +62,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IRollup__factory>;
     getContractFactory(
-      name: "Minter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Minter__factory>;
-    getContractFactory(
       name: "MinterV0",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MinterV0__factory>;
+    getContractFactory(
+      name: "MinterV1",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MinterV1__factory>;
     getContractFactory(
       name: "MintVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -81,6 +89,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
+      name: "IL1ScrollMessenger",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IL1ScrollMessenger>;
+    getContractAt(
       name: "IL2ScrollMessenger",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -111,6 +124,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IINTMAXToken>;
     getContractAt(
+      name: "IMinterV1",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IMinterV1>;
+    getContractAt(
       name: "IPlonkVerifier",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -121,15 +139,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IRollup>;
     getContractAt(
-      name: "Minter",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.Minter>;
-    getContractAt(
       name: "MinterV0",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.MinterV0>;
+    getContractAt(
+      name: "MinterV1",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MinterV1>;
     getContractAt(
       name: "MintVerifier",
       address: string | ethers.Addressable,
@@ -150,6 +168,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
+      name: "IL1ScrollMessenger",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IL1ScrollMessenger>;
+    deployContract(
       name: "IL2ScrollMessenger",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IL2ScrollMessenger>;
@@ -174,6 +196,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IINTMAXToken>;
     deployContract(
+      name: "IMinterV1",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IMinterV1>;
+    deployContract(
       name: "IPlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IPlonkVerifier>;
@@ -182,13 +208,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IRollup>;
     deployContract(
-      name: "Minter",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Minter>;
-    deployContract(
       name: "MinterV0",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MinterV0>;
+    deployContract(
+      name: "MinterV1",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MinterV1>;
     deployContract(
       name: "MintVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -209,6 +235,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
     deployContract(
+      name: "IL1ScrollMessenger",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IL1ScrollMessenger>;
+    deployContract(
       name: "IL2ScrollMessenger",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -239,6 +270,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IINTMAXToken>;
     deployContract(
+      name: "IMinterV1",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IMinterV1>;
+    deployContract(
       name: "IPlonkVerifier",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -249,15 +285,15 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IRollup>;
     deployContract(
-      name: "Minter",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.Minter>;
-    deployContract(
       name: "MinterV0",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MinterV0>;
+    deployContract(
+      name: "MinterV1",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MinterV1>;
     deployContract(
       name: "MintVerifier",
       args: any[],

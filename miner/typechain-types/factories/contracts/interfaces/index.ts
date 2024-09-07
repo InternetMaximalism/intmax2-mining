@@ -3,5 +3,6 @@
 /* eslint-disable */
 export { IINTMAXToken__factory } from "./IINTMAXToken__factory";
 export { IInt0__factory } from "./IInt0__factory";
+export { IMinterV1__factory } from "./IMinterV1__factory";
 export { IPlonkVerifier__factory } from "./IPlonkVerifier__factory";
 export { IRollup__factory } from "./IRollup__factory";
