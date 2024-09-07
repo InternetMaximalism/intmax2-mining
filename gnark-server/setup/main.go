@@ -106,17 +106,17 @@ func main() {
 		fSol.Close()
 	}
 	{
-		fVk, _ := os.Create("data/verifying.key")
+		fVk, _ := os.Create("data/"+*circuitName+"/verifying.key")
 		_, _ = vk.WriteTo(fVk)
 		fVk.Close()
 	}
 	{
-		fPk, _ := os.Create("data/proving.key")
+		fPk, _ := os.Create("data/"+*circuitName+"/proving.key")
 		_, _ = pk.WriteTo(fPk)
 		fPk.Close()
 	}
 	{
-		fCs, _ := os.Create("data/circuit.r1cs")
+		fCs, _ := os.Create("data/"+*circuitName+"/circuit.r1cs")
 		_, _ = r1cs.WriteTo(fCs)
 		fCs.Close()
 	}

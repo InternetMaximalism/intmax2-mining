@@ -19,7 +19,7 @@ type CircuitData struct {
 func InitCircuitData(circuitName string) CircuitData{
 	var ctx CircuitData
 	{
-		fVk, err := os.Open("data/verifying.key")
+		fVk, err := os.Open("data/"+circuitName+"/verifying.key")
 		if err != nil {
 			panic(err)
 		}
@@ -27,7 +27,7 @@ func InitCircuitData(circuitName string) CircuitData{
 		defer fVk.Close()
 	}
 	{
-		fPk, err := os.Open("data/proving.key")
+		fPk, err := os.Open("data/"+circuitName+"/proving.key")
 		if err != nil {
 			panic(err)
 		}
@@ -35,7 +35,7 @@ func InitCircuitData(circuitName string) CircuitData{
 		defer fPk.Close()
 	}
 	{
-		fCs, err := os.Open("data/circuit.r1cs")
+		fCs, err := os.Open("data/"+circuitName+"/circuit.r1cs")
 		if err != nil {
 			panic(err)
 		}
