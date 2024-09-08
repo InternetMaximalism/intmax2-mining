@@ -129,7 +129,8 @@ mod tests {
             salt,
             recipient,
             prev_claim_hash,
-        );
+        )
+        .unwrap();
 
         let processor = ClaimProcessor::new();
         let inner_proof = processor.prove(&claim_inner_value, &None).unwrap();

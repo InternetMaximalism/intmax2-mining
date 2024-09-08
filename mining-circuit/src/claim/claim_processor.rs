@@ -180,5 +180,6 @@ mod tests {
             recipient,
             prev_claim_hash,
         )
+        .unwrap()
     }
 }

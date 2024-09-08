@@ -27,6 +27,7 @@ use intmax2_zkp::{
         recursively_verifiable::RecursivelyVerifiable as _,
     },
 };
+use serde::{Deserialize, Serialize};
 
 use crate::claim::claim_inner_circuit::ClaimInnerPublicInputsTarget;
 
@@ -34,7 +35,8 @@ use super::claim_inner_circuit::{ClaimInnerCircuit, ClaimInnerPublicInputs};
 
 pub const CLAIM_PUBLIC_INPUTS_LEN: usize = 3 * BYTES32_LEN;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ClaimPublicInputs {
     pub deposit_tree_root: Bytes32,
     pub eligible_tree_root: Bytes32,

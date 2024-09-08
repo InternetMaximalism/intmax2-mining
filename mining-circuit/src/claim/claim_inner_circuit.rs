@@ -1,3 +1,4 @@
+use anyhow::ensure;
 use intmax2_zkp::{
     common::{
         deposit::{get_pubkey_salt_hash, get_pubkey_salt_hash_circuit, Deposit, DepositTarget},
@@ -122,6 +123,7 @@ impl ClaimInnerPublicInputsTarget {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct ClaimInnerValue {
     pub deposit_tree_root: Bytes32,
     pub deposit_index: u32,
@@ -152,23 +154,19 @@ impl ClaimInnerValue {
         salt: Salt,
         recipient: Address,
         prev_claim_hash: Bytes32,
-    ) -> Self {
+    ) -> anyhow::Result<Self> {
         // verify inclusion of deposit & eligible tree
-        deposit_merkle_proof
-            .verify(&deposit, deposit_index as usize, deposit_tree_root)
-            .unwrap();
+        deposit_merkle_proof.verify(&deposit, deposit_index as usize, deposit_tree_root)?;
         let eligible_tree_root_pos = eligible_tree_root.reduce_to_hash_out();
-        eligible_merkle_proof
-            .verify(
-                &eligible_leaf,
-                eligible_index as usize,
-                eligible_tree_root_pos,
-            )
-            .unwrap();
+        eligible_merkle_proof.verify(
+            &eligible_leaf,
+            eligible_index as usize,
+            eligible_tree_root_pos,
+        )?;
 
         // verify the knowledge of salt
         let pubkey_salt_hash = get_pubkey_salt_hash(pubkey, salt);
-        assert_eq!(pubkey_salt_hash, deposit.pubkey_salt_hash);
+        ensure!(pubkey_salt_hash == deposit.pubkey_salt_hash);
         let nullifier = get_deposit_nullifier(&deposit, salt);
         let claim = MiningClaim {
             recipient,
@@ -176,7 +174,7 @@ impl ClaimInnerValue {
             amount: eligible_leaf.amount,
         };
         let new_claim_hash = claim.hash_with_prev_hash(prev_claim_hash);
-        Self {
+        Ok(Self {
             deposit_tree_root,
             deposit_index,
             deposit_merkle_proof,
@@ -190,7 +188,7 @@ impl ClaimInnerValue {
             prev_claim_hash,
             new_claim_hash,
             claim,
-        }
+        })
     }
 }
 
@@ -459,7 +457,8 @@ mod tests {
             salt,
             recipient,
             prev_claim_hash,
-        );
+        )
+        .unwrap();
 
         let claim_inner_circuit = ClaimInnerCircuit::<F, C, D>::new();
         let _proof = claim_inner_circuit.prove(&claim_inner_value).unwrap();
