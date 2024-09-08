@@ -105,11 +105,8 @@ contract MintVerifier is Ownable {
         );
     }
 
-    function setEligibleTreeRoot(bytes32 eligibleTreeRoot_) external onlyOwner {
+    function setTreeRoots(bytes32 eligibleTreeRoot_) external onlyOwner {
         eligibleTreeRoot = eligibleTreeRoot_;
-    }
-
-    function setDepositTreeRoot() external onlyOwner {
         depositTreeRoot = rollup.depositTreeRoot();
     }
 }
