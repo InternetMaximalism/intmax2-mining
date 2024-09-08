@@ -317,7 +317,8 @@ where
     C::Hasher: AlgebraicHasher<F>,
 {
     pub fn new() -> Self {
-        let mut builder = CircuitBuilder::<F, D>::new(CircuitConfig::default());
+        let mut builder =
+            CircuitBuilder::<F, D>::new(CircuitConfig::standard_recursion_zk_config());
         let target = ClaimInnerTarget::new::<F, C, D>(&mut builder, true);
         let pis = ClaimInnerPublicInputsTarget {
             deposit_tree_root: target.deposit_tree_root,
@@ -419,7 +420,7 @@ mod tests {
         for deposit_index in 0..n {
             let eligible_leaf = EligibleLeaf {
                 deposit_index,
-                amount: 1,
+                amount: U256::from(1),
             };
             eligible_tree.push(eligible_leaf);
         }

@@ -58,10 +58,14 @@ export interface MinterInterface extends Interface {
     nameOrSignature:
       | "amountMultiplier"
       | "claimTokens"
+      | "depositTreeRoot"
+      | "eligibleTreeRoot"
       | "mint"
       | "owner"
       | "renounceOwnership"
       | "setAmountMultiplier"
+      | "setDepositTreeRoot"
+      | "setEligibleTreeRoot"
       | "token"
       | "transferOwnership"
       | "verifier"
@@ -81,6 +85,14 @@ export interface MinterInterface extends Interface {
       BytesLike
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "depositTreeRoot",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eligibleTreeRoot",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -90,6 +102,14 @@ export interface MinterInterface extends Interface {
   encodeFunctionData(
     functionFragment: "setAmountMultiplier",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setDepositTreeRoot",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setEligibleTreeRoot",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
@@ -106,6 +126,14 @@ export interface MinterInterface extends Interface {
     functionFragment: "claimTokens",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositTreeRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "eligibleTreeRoot",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
@@ -114,6 +142,14 @@ export interface MinterInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setAmountMultiplier",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setDepositTreeRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setEligibleTreeRoot",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
@@ -192,6 +228,10 @@ export interface Minter extends BaseContract {
     "nonpayable"
   >;
 
+  depositTreeRoot: TypedContractMethod<[], [string], "view">;
+
+  eligibleTreeRoot: TypedContractMethod<[], [string], "view">;
+
   mint: TypedContractMethod<[], [void], "nonpayable">;
 
   owner: TypedContractMethod<[], [string], "view">;
@@ -200,6 +240,18 @@ export interface Minter extends BaseContract {
 
   setAmountMultiplier: TypedContractMethod<
     [amountMultiplier_: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setDepositTreeRoot: TypedContractMethod<
+    [depositTreeRoot_: BytesLike],
+    [void],
+    "nonpayable"
+  >;
+
+  setEligibleTreeRoot: TypedContractMethod<
+    [eligibleTreeRoot_: BytesLike],
     [void],
     "nonpayable"
   >;
@@ -233,6 +285,12 @@ export interface Minter extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "depositTreeRoot"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "eligibleTreeRoot"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "mint"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
@@ -248,6 +306,12 @@ export interface Minter extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "setDepositTreeRoot"
+  ): TypedContractMethod<[depositTreeRoot_: BytesLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setEligibleTreeRoot"
+  ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "token"
   ): TypedContractMethod<[], [string], "view">;

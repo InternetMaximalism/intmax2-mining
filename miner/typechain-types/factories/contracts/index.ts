@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as verifierSol from "./Verifier.sol";
+export * as interfaces from "./interfaces";
 export { Deposit__factory } from "./Deposit__factory";
-export { IINTMAXToken__factory } from "./IINTMAXToken__factory";
-export { IPlonkVerifier__factory } from "./IPlonkVerifier__factory";
 export { Int0__factory } from "./Int0__factory";
-export { Minter__factory } from "./Minter__factory";
+export { MintVerifier__factory } from "./MintVerifier__factory";
+export { MinterV0__factory } from "./MinterV0__factory";
+export { MinterV1__factory } from "./MinterV1__factory";
