@@ -138,10 +138,11 @@ mod tests {
         let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
         save_circuit_data(
-            "./claim_circuit_data/",
+            "../gnark-server/data/claim_circuit_data/",
             &wrapper_processor.wrapper_circuit1.data,
         )
         .expect("save failed");
-        save_proof("./claim_circuit_data/", &wrapper_proof).expect("save failed");
+        save_proof("../gnark-server/data/claim_circuit_data/", &wrapper_proof)
+            .expect("save failed");
     }
 }

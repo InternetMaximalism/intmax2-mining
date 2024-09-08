@@ -158,9 +158,20 @@ mod tests {
             trees::deposit_tree::DepositTree,
         },
         constants::DEPOSIT_TREE_HEIGHT,
-        ethereum_types::{address::Address, u256::U256, u32limb_trait::U32LimbTrait as _},
+        ethereum_types::{
+            address::Address, bytes32::Bytes32, u256::U256, u32limb_trait::U32LimbTrait as _,
+        },
+    };
+    use mining_circuit::{
+        claim::{
+            claim_inner_circuit::ClaimInnerValue, claim_processor::ClaimProcessor,
+            claim_wrapper_processor::ClaimWrapperProcessor,
+        },
+        eligible_tree::{EligibleLeaf, EligibleTree, ELIGIBLE_TREE_HEIGHT},
     };
     use rand::Rng;
+
+    use crate::log::init_logger;
 
     use super::*;
 
@@ -168,67 +179,79 @@ mod tests {
     async fn test_gnark_server() {
         init_logger();
 
-        let prover = WithdrawProver::new();
-
+        let n = 10;
         let mut rng = rand::thread_rng();
         let mut deposit_tree = DepositTree::new(DEPOSIT_TREE_HEIGHT);
 
-        // add dummy deposits
-        for _ in 0..100 {
-            let deposit_leaf = Deposit::rand(&mut rng);
-            deposit_tree.push(deposit_leaf);
+        // deposits
+        let mut pubkeys_and_salts = vec![];
+        for _ in 0..n {
+            let pubkey = U256::rand(&mut rng);
+            let salt = Salt::rand(&mut rng);
+            let pubkey_salt_hash = get_pubkey_salt_hash(pubkey, salt);
+            let deposit = Deposit {
+                pubkey_salt_hash,
+                token_index: 0,
+                amount: U256::from(100),
+            };
+            deposit_tree.push(deposit);
+            pubkeys_and_salts.push((pubkey, salt));
         }
 
-        let salt = Salt::rand(&mut rng);
-        let pubkey = U256::rand(&mut rng);
-        let pubkey_salt_hash = get_pubkey_salt_hash(pubkey, salt);
-        let deposit = Deposit {
-            pubkey_salt_hash,
-            token_index: rng.gen(),
-            amount: U256::rand(&mut rng),
-        };
-        let deposit_index = deposit_tree.len();
-        deposit_tree.push(deposit.clone());
-
-        // add dummy deposits
-        for _ in 0..100 {
-            let deposit_leaf = Deposit::rand(&mut rng);
-            deposit_tree.push(deposit_leaf);
+        // construct eligible tree
+        let mut eligible_tree = EligibleTree::new(ELIGIBLE_TREE_HEIGHT);
+        for deposit_index in 0..n {
+            let eligible_leaf = EligibleLeaf {
+                deposit_index,
+                amount: U256::from(1),
+            };
+            eligible_tree.push(eligible_leaf);
         }
 
-        let deposit_merkle_proof = deposit_tree.prove(deposit_index);
+        let deposit_tree_root = deposit_tree.get_root();
+        let eligible_tree_root = eligible_tree.get_root();
+
+        // select specified deposit index
+        let deposit_index = rng.gen_range(0..n);
+        let (pubkey, salt) = pubkeys_and_salts[deposit_index as usize];
+
+        let deposit_merkle_proof = deposit_tree.prove(deposit_index as usize);
+        let deposit = deposit_tree.get_leaf(deposit_index as usize);
+
+        let eligible_index = deposit_index; // for now
+        let eligible_merkle_proof = eligible_tree.prove(eligible_index as usize);
+        let eligible_leaf = eligible_tree.get_leaf(eligible_index as usize);
+        assert_eq!(eligible_leaf.deposit_index, deposit_index);
 
         let recipient = Address::rand(&mut rng);
-        let wrap_proof_with_pis = prover
-            .prove(
-                deposit_tree.get_root(),
-                deposit_index as u32,
-                deposit.clone(),
-                deposit_merkle_proof.clone(),
-                recipient,
-                pubkey,
-                salt,
-            )
-            .expect("Failed to prove");
+        let prev_claim_hash = Bytes32::zero();
+
+        let claim_inner_value = ClaimInnerValue::new(
+            deposit_tree_root,
+            deposit_index,
+            deposit_merkle_proof,
+            deposit,
+            eligible_tree_root,
+            eligible_index,
+            eligible_merkle_proof,
+            eligible_leaf,
+            pubkey,
+            salt,
+            recipient,
+            prev_claim_hash,
+        );
+
+        let processor = ClaimProcessor::new();
+        let inner_proof = processor.prove(&claim_inner_value, &None).unwrap();
+        let wrapper_processor = ClaimWrapperProcessor::new(&processor.claim_circuit);
+        let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
         let mut gnark_server = GnarkServer::new();
 
         let gnark_proof = gnark_server
-            .prove(&wrap_proof_with_pis.proof)
+            .prove(&wrapper_proof)
             .await
             .expect("Failed to prove");
         info!("Gnark proof: {:?}", gnark_proof);
-
-        // verify proof on contract
-        let contract = get_int0_contract(true).await.unwrap();
-        let verified = contract
-            .verify_proof(
-                wrap_proof_with_pis.public_inputs.into(),
-                gnark_proof.proof.into(),
-            )
-            .call()
-            .await
-            .unwrap();
-        info!("Proof verified: {}", verified);
     }
 }
