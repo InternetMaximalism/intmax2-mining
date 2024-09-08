@@ -99,7 +99,7 @@ mod tests {
         }
 
         let deposit_tree_root = deposit_tree.get_root();
-        let eligible_tree_root = eligible_tree.get_root();
+        let eligible_tree_root: Bytes32 = eligible_tree.get_root().into();
 
         // select specified deposit index
         let deposit_index = rng.gen_range(0..n);

@@ -138,10 +138,7 @@ where
         let inner_pis = ClaimInnerPublicInputsTarget::from_slice(&claim_inner_proof.public_inputs);
         let claim_pis = ClaimPublicInputsTarget {
             deposit_tree_root: inner_pis.deposit_tree_root,
-            eligible_tree_root: Bytes32Target::from_hash_out(
-                &mut builder,
-                inner_pis.eligible_tree_root,
-            ),
+            eligible_tree_root: inner_pis.eligible_tree_root,
             last_claim_hash: inner_pis.new_claim_hash,
         };
         builder.register_public_inputs(&claim_pis.to_vec());
