@@ -21,11 +21,12 @@ use plonky2::{
         config::{AlgebraicHasher, GenericConfig},
     },
 };
+use serde::{Deserialize, Serialize};
 
 pub const ELIGIBLE_LEAF_LEN: usize = 1 + U256_LEN;
 pub const ELIGIBLE_TREE_HEIGHT: usize = 32;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct EligibleLeaf {
     pub deposit_index: u32, // eligible deposit index.
     pub amount: U256,       // amount of mining reward for that index.
