@@ -1,13 +1,13 @@
 {
-  "depositTreeRoot": "0xefa540321513b916cd6773a6c6b8a498231ae53e71a05c1011880b9f96e7a601",
+  "depositTreeRoot": "0xee0b5f89a63c65df283097fda1a1fa77f5338a54fcc29edd8568de12ef93cdf8",
   "eligibleTreeRoot": "0x0679c7269e5886d7a78d56f0db386958a6c185e5beb1ade02e5eb9c0e7a3b84f",
   "claims": [
     {
       "depositIndex": 0,
       "depositMerkleProof": [
-        "0xe603d5227427ccfbf15e8086a0814afd976443c1a45c71e76d840a4e62a9b671",
-        "0x98634e811327e923b0033752dcd3b4ab96b685c48dfa611ba2d331e9a50fb6ff",
-        "0x9a882555c21d7e78e64b26e8c376092008ea459325f7dffd79fa2e35e1de7504",
+        "0x981edd5e6140ad95c4024285eb53ff138fdd5d3e87e0b7a07ecf0cc0825c83b2",
+        "0x947ffa4ef41261e4b096a6fc5497c5a89ff6d4f8a6217ce93c81a93c81dffc8b",
+        "0x7af861a17b0a17817639a2bfa306fe12012e3211aa2efca85fe54293aceb2cc9",
         "0x9750746a8e9d6a5fc698654c2995017bf91eaea53bd549410b5628a0d6daeb3b",
         "0x00807c01bb79a7c5fb14e7a93061f7583407d9b9695d83dbc651dfb376a36ca7",
         "0x4901f9a9f98cc709bf34888c3de54c758dbad8440e2f4304f7b178afdbad4709",
@@ -39,7 +39,7 @@
         "0x13104ce103f13a080ab57fc6a21b180b1c128c0ddbc9282f1d708058c9d3f819"
       ],
       "deposit": {
-        "pubkeySaltHash": "0x5e5d3734febee031385fb8ac2a0c87477f8892ff147db73457ff5a5c09cb8d07",
+        "pubkeySaltHash": "0x327c56208f4c8b5fcf6dc0d31ad9ef4aa39806ed630c83c368dcc37465858e82",
         "tokenIndex": 0,
         "amount": "100"
       },
@@ -79,19 +79,19 @@
         "0xbd1f8f38437b6c1ede1d39374f42499e9bc83811bbc9e934b2daabe8b56490fc"
       ],
       "eligibleLeaf": {
-        "deposit_index": 0,
+        "depositIndex": 0,
         "amount": "1"
       },
-      "pubkey": "62392853940713075086547336510606600292833372560854141831457477058533142112739",
-      "salt": "0xb5bf9c6ba2abd974e08fc96ce929dfd599510637985afac3e563aecb54825b32",
-      "recipient": "0xa9613f7e3b3a871a72d819439287fe0c09cb155d"
+      "pubkey": "71193980280300574425863449324841800921455661552111752941216530875875061742365",
+      "salt": "0x3d97cdeeae7e53b2976dd60dc0c4df7584c58f28fa0a104a80cc7674f58b7bc3",
+      "recipient": "0x7234d9dc004202778526495fc992b73a8cc4328a"
     },
     {
       "depositIndex": 1,
       "depositMerkleProof": [
-        "0x6fcb3eea370de0e55b230154816ed34d71859ee495a39e6eae3a58b092c8418d",
-        "0x98634e811327e923b0033752dcd3b4ab96b685c48dfa611ba2d331e9a50fb6ff",
-        "0x9a882555c21d7e78e64b26e8c376092008ea459325f7dffd79fa2e35e1de7504",
+        "0x6482464d9a79e0f96364ba68599dbf01bf4c3a1bc54e01d2e8aed4ab2e323210",
+        "0x947ffa4ef41261e4b096a6fc5497c5a89ff6d4f8a6217ce93c81a93c81dffc8b",
+        "0x7af861a17b0a17817639a2bfa306fe12012e3211aa2efca85fe54293aceb2cc9",
         "0x9750746a8e9d6a5fc698654c2995017bf91eaea53bd549410b5628a0d6daeb3b",
         "0x00807c01bb79a7c5fb14e7a93061f7583407d9b9695d83dbc651dfb376a36ca7",
         "0x4901f9a9f98cc709bf34888c3de54c758dbad8440e2f4304f7b178afdbad4709",
@@ -123,7 +123,7 @@
         "0x13104ce103f13a080ab57fc6a21b180b1c128c0ddbc9282f1d708058c9d3f819"
       ],
       "deposit": {
-        "pubkeySaltHash": "0xf5ff822f0fb2fbf847af78ab426bfee1efcd8280789e5cf60a00195b8d59f04d",
+        "pubkeySaltHash": "0xe85079cf03256573e4d8c0d48dcf40107638b8633850c24d1f1ee8a474d21d4c",
         "tokenIndex": 0,
         "amount": "100"
       },
@@ -163,12 +163,12 @@
         "0xbd1f8f38437b6c1ede1d39374f42499e9bc83811bbc9e934b2daabe8b56490fc"
       ],
       "eligibleLeaf": {
-        "deposit_index": 1,
+        "depositIndex": 1,
         "amount": "1"
       },
-      "pubkey": "84847758922581704726326670186059400919562650975175594608292644131102352733148",
-      "salt": "0x4091b5a4b23430a62403fdf2be534913c5c6f3d80883717207a7fa23c2dffe67",
-      "recipient": "0xdbdb65d9d5b98fca6df11ccb334f0d68ba7400a6"
+      "pubkey": "60781860620031761840798283840304940062684015795698472835097737841158906773551",
+      "salt": "0x3d43bd35bec284559c179a3ec117ca33e2529ca29a225e9eca4c33beb379c5a6",
+      "recipient": "0xdba642b456826491624c0ebd213eae048ab39ed3"
     }
   ]
 }
