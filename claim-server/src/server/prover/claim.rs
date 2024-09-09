@@ -110,10 +110,12 @@ async fn generate_proof(
         .query_async::<_, Option<String>>(&mut redis_conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
-    if old_result_str.is_some() {
+    let old_result: Option<ClaimOutput> =
+        old_result_str.map(|r| serde_json::from_str(&r).expect("Failed to deserialize result"));
+    if old_result.is_some() {
         let response = ProofResponse {
             success: true,
-            result: None,
+            result: old_result,
         };
         return Ok(HttpResponse::Ok().json(response));
     }
