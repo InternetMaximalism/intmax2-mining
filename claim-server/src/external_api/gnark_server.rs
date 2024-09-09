@@ -1,6 +1,5 @@
 use std::str::FromStr as _;
 
-use crate::env::load_env;
 use anyhow::Result;
 use core::fmt::{Debug, Display};
 use intmax2_zkp::wrapper_config::plonky2_config::PoseidonBN128GoldilocksConfig;
@@ -12,7 +11,9 @@ type F = GoldilocksField;
 const D: usize = 2;
 type C = PoseidonBN128GoldilocksConfig;
 
-pub struct GnarkServer;
+pub struct GnarkServer {
+    gnark_server_base_url: String,
+}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -58,13 +59,14 @@ impl Debug for GnarkProof {
 }
 
 impl GnarkServer {
-    pub fn new() -> Self {
-        Self
+    pub fn new(gnark_server_base_url: String) -> Self {
+        Self {
+            gnark_server_base_url,
+        }
     }
 
     pub async fn health_check(&self) -> Result<()> {
-        let gnark_server_base_url = load_env().gnark_server_url;
-        let health_check_url = format!("{}/health", gnark_server_base_url);
+        let health_check_url = format!("{}/health", self.gnark_server_base_url);
         let client = reqwest::Client::new();
         let res = client.get(health_check_url).send().await?;
         if res.status().is_success() {
@@ -78,8 +80,7 @@ impl GnarkServer {
 
     async fn start_proof(&self, proof: &ProofWithPublicInputs<F, C, D>) -> Result<String> {
         info!("starting gnark proof");
-        let gnark_server_base_url = load_env().gnark_server_url;
-        let start_proof_url = format!("{}/start-proof", gnark_server_base_url);
+        let start_proof_url = format!("{}/start-proof", self.gnark_server_base_url);
         let client = reqwest::Client::new();
         let res = client.post(start_proof_url).json(&proof).send().await?;
         let parsed_res: StartProofResponse = res.json::<StartProofResponse>().await?;
@@ -89,8 +90,8 @@ impl GnarkServer {
     }
 
     async fn get_proof(&self, job_id: &str) -> Result<Option<GnarkProof>> {
-        let gnark_server_base_url = load_env().gnark_server_url;
-        let get_proof_result_url = format!("{}/get-proof?jobId={}", gnark_server_base_url, job_id);
+        let get_proof_result_url =
+            format!("{}/get-proof?jobId={}", self.gnark_server_base_url, job_id);
         let client = reqwest::Client::new();
         let res = client.get(get_proof_result_url).send().await?;
         let parsed_res = res.json::<GetProofResponse>().await?;
@@ -132,6 +133,8 @@ impl GnarkServer {
 
 #[cfg(test)]
 mod tests {
+    use std::{env, sync::Once};
+
     use intmax2_zkp::{
         common::{
             deposit::{get_pubkey_salt_hash, Deposit},
@@ -152,7 +155,13 @@ mod tests {
     };
     use rand::Rng;
 
-    use crate::log::init_logger;
+    static INIT: Once = Once::new();
+
+    pub fn init_logger() {
+        INIT.call_once(|| {
+            env_logger::init();
+        });
+    }
 
     use super::*;
 
@@ -228,7 +237,9 @@ mod tests {
         let wrapper_processor = ClaimWrapperProcessor::new(&processor.claim_circuit);
         let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
-        let gnark_server = GnarkServer::new();
+        let gnark_server_base_url =
+            env::var("GNARK_SERVER_URL").expect("GNARK_SERVER_URL must be set");
+        let gnark_server = GnarkServer::new(gnark_server_base_url);
 
         let gnark_proof = gnark_server
             .prove(&wrapper_proof)

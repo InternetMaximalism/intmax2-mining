@@ -22,10 +22,10 @@ pub struct Processor {
 }
 
 impl Processor {
-    pub fn new() -> Self {
+    pub fn new(gnark_server_base_url: String) -> Self {
         let claim_processor = ClaimProcessor::new();
         let wrapper_processor = ClaimWrapperProcessor::new(&claim_processor.claim_circuit);
-        let gnark_server = GnarkServer::new();
+        let gnark_server = GnarkServer::new(gnark_server_base_url);
         Self {
             claim_processor,
             wrapper_processor,
