@@ -23,13 +23,13 @@ curl $CLAIM_PROVER_URL/health | jq
 
 ```sh
 # generate proof
-curl -X POST -d '{ "challenger":"0x9Fa732B331a5455125c57f9db2E54E03c1CbbA5E", "validityProof":"'$(base64 --input data/validity_proof_2.bin)'" }' -H "Content-Type: application/json" $CLAIM_PROVER_URL/proof/claim | jq
+curl -X POST -H "Content-Type: application/json" -d @data/claim_request.json $CLAIM_PROVER_URL/proof/claim | jq
 
 # get proof
-curl $CLAIM_PROVER_URL/proof/claim/0x6c2ff605ed2adab635279915e3a420e0df65c73df30c5902644758ebde74f2e6 | jq
+curl $CLAIM_PROVER_URL/proof/claim/0x840a9930fd8d9641675e8d9bf7e7cf475b3821dc35f56f64a75d633ec91a56dc | jq
 
 # get proofs
-curl "$CLAIM_PROVER_URL/proofs/claim?ids[]=0x6c2ff605ed2adab635279915e3a420e0df65c73df30c5902644758ebde74f2e6" | jq
+curl "$CLAIM_PROVER_URL/proofs/claim?ids[]=0x840a9930fd8d9641675e8d9bf7e7cf475b3821dc35f56f64a75d633ec91a56dc" | jq
 ```
 
 ## Docker
