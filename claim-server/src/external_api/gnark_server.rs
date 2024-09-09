@@ -168,6 +168,7 @@ mod tests {
     #[tokio::test]
     async fn test_gnark_server() {
         init_logger();
+        dotenv::dotenv().ok();
 
         let n = 10;
         let mut rng = rand::thread_rng();
