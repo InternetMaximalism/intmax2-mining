@@ -63,8 +63,7 @@ export interface MinterV0Interface extends Interface {
       | "mint"
       | "owner"
       | "renounceOwnership"
-      | "setDepositTreeRoot"
-      | "setEligibleTreeRoot"
+      | "setTreeRoots"
       | "token"
       | "transferOwnership"
       | "verifier"
@@ -96,11 +95,7 @@ export interface MinterV0Interface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setDepositTreeRoot",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setEligibleTreeRoot",
+    functionFragment: "setTreeRoots",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "token", values?: undefined): string;
@@ -130,11 +125,7 @@ export interface MinterV0Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setDepositTreeRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setEligibleTreeRoot",
+    functionFragment: "setTreeRoots",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
@@ -223,9 +214,7 @@ export interface MinterV0 extends BaseContract {
 
   renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-  setDepositTreeRoot: TypedContractMethod<[], [void], "nonpayable">;
-
-  setEligibleTreeRoot: TypedContractMethod<
+  setTreeRoots: TypedContractMethod<
     [eligibleTreeRoot_: BytesLike],
     [void],
     "nonpayable"
@@ -275,10 +264,7 @@ export interface MinterV0 extends BaseContract {
     nameOrSignature: "renounceOwnership"
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "setDepositTreeRoot"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setEligibleTreeRoot"
+    nameOrSignature: "setTreeRoots"
   ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "token"

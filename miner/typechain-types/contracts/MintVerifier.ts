@@ -65,8 +65,7 @@ export interface MintVerifierInterface extends Interface {
       | "owner"
       | "renounceOwnership"
       | "rollup"
-      | "setDepositTreeRoot"
-      | "setEligibleTreeRoot"
+      | "setTreeRoots"
       | "transferOwnership"
       | "verifier"
   ): FunctionFragment;
@@ -97,11 +96,7 @@ export interface MintVerifierInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "rollup", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "setDepositTreeRoot",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setEligibleTreeRoot",
+    functionFragment: "setTreeRoots",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -130,11 +125,7 @@ export interface MintVerifierInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "rollup", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setDepositTreeRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setEligibleTreeRoot",
+    functionFragment: "setTreeRoots",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -222,9 +213,7 @@ export interface MintVerifier extends BaseContract {
 
   rollup: TypedContractMethod<[], [string], "view">;
 
-  setDepositTreeRoot: TypedContractMethod<[], [void], "nonpayable">;
-
-  setEligibleTreeRoot: TypedContractMethod<
+  setTreeRoots: TypedContractMethod<
     [eligibleTreeRoot_: BytesLike],
     [void],
     "nonpayable"
@@ -272,10 +261,7 @@ export interface MintVerifier extends BaseContract {
     nameOrSignature: "rollup"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "setDepositTreeRoot"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setEligibleTreeRoot"
+    nameOrSignature: "setTreeRoots"
   ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "transferOwnership"

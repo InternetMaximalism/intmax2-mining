@@ -165,7 +165,7 @@ mod tests {
         assert_eq!(eligible_leaf.deposit_index, deposit_index);
 
         let deposit_tree_root = deposit_tree.get_root();
-        let eligible_tree_root = eligible_tree.get_root();
+        let eligible_tree_root: Bytes32 = eligible_tree.get_root().into();
         ClaimInnerValue::new(
             deposit_tree_root,
             deposit_index,
@@ -180,5 +180,6 @@ mod tests {
             recipient,
             prev_claim_hash,
         )
+        .unwrap()
     }
 }

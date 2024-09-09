@@ -2023,34 +2023,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "intmax2-zkp"
-version = "0.1.0"
-source = "git+https://github.com/InternetMaximalism/intmax2-zkp?rev=805d6#805d6e40c84356ef4cec67a72e0e29031340ebb5"
-dependencies = [
- "anyhow",
- "ark-bn254",
- "ark-ec",
- "ark-ff",
- "ark-std",
- "ff 0.13.0",
- "hashbrown 0.14.5",
- "hex",
- "itertools 0.12.1",
- "lazy_static",
- "log",
- "num",
- "num-bigint 0.4.6",
- "num-traits",
- "plonky2",
- "plonky2_bn254",
- "plonky2_keccak",
- "plonky2_u32",
- "rand",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2224,7 +2196,7 @@ dependencies = [
  "env_logger",
  "ethers",
  "hex",
- "intmax2-zkp 0.1.0 (git+https://github.com/InternetMaximalism/intmax2-zkp?branch=dev)",
+ "intmax2-zkp",
  "lazy_static",
  "log",
  "mining_circuit",
@@ -2243,7 +2215,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "hashbrown 0.14.5",
- "intmax2-zkp 0.1.0 (git+https://github.com/InternetMaximalism/intmax2-zkp?rev=805d6)",
+ "intmax2-zkp",
  "plonky2",
  "plonky2_keccak",
  "plonky2_u32",

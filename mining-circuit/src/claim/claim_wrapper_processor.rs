@@ -99,7 +99,7 @@ mod tests {
         }
 
         let deposit_tree_root = deposit_tree.get_root();
-        let eligible_tree_root = eligible_tree.get_root();
+        let eligible_tree_root: Bytes32 = eligible_tree.get_root().into();
 
         // select specified deposit index
         let deposit_index = rng.gen_range(0..n);
@@ -129,7 +129,8 @@ mod tests {
             salt,
             recipient,
             prev_claim_hash,
-        );
+        )
+        .unwrap();
 
         let processor = ClaimProcessor::new();
         let inner_proof = processor.prove(&claim_inner_value, &None).unwrap();
@@ -138,10 +139,11 @@ mod tests {
         let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
         save_circuit_data(
-            "./claim_circuit_data/",
+            "../gnark-server/data/claim_circuit_data/",
             &wrapper_processor.wrapper_circuit1.data,
         )
         .expect("save failed");
-        save_proof("./claim_circuit_data/", &wrapper_proof).expect("save failed");
+        save_proof("../gnark-server/data/claim_circuit_data/", &wrapper_proof)
+            .expect("save failed");
     }
 }

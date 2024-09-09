@@ -17,10 +17,12 @@ use plonky2::{
     },
 };
 use plonky2_keccak::{builder::BuilderKeccak256 as _, utils::solidity_keccak256};
+use serde::{Deserialize, Serialize};
 
 pub const MINING_CLAIM_LEN: usize = ADDRESS_LEN + BYTES32_LEN + U256_LEN;
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MiningClaim {
     pub recipient: Address,
     pub nullifier: Bytes32,
