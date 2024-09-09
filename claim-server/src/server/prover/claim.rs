@@ -9,7 +9,6 @@ use crate::{
     proof::generate_claim_proof_job,
 };
 use actix_web::{error, get, post, web, HttpRequest, HttpResponse, Responder, Result};
-use redis::AsyncCommands;
 
 #[get("/proof/claim/{id}")]
 async fn get_proof(
@@ -21,14 +20,12 @@ async fn get_proof(
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
     let request_id = get_claim_request_id(&id);
-    let result_str: String = conn
-        .get(&request_id)
+    let result_str = redis::Cmd::get(&request_id)
+        .query_async::<_, Option<String>>(&mut conn)
         .await
         .map_err(error::ErrorInternalServerError)?;
-    let result: Option<ClaimOutput> = serde_json::from_str(&result_str).map_err(|e| {
-        log::warn!("Failed to deserialize proof: {:?}", e);
-        error::ErrorInternalServerError("Failed to deserialize result")
-    })?;
+    let result: Option<ClaimOutput> =
+        result_str.map(|r| serde_json::from_str(&r).expect("Failed to deserialize result"));
     let response = ProofResponse {
         success: true,
         result,
@@ -60,17 +57,13 @@ async fn get_proofs(req: HttpRequest, redis: web::Data<redis::Client>) -> Result
     let mut results: Vec<SingleResult> = Vec::new();
     for id in &ids {
         let request_id = get_claim_request_id(&id);
-        let result_str: String = conn
-            .get(&request_id)
+        let result_str = redis::Cmd::get(&request_id)
+            .query_async::<_, Option<String>>(&mut conn)
             .await
-            .map_err(actix_web::error::ErrorInternalServerError)?;
-        let optional_result: Option<ClaimOutput> =
-            serde_json::from_str(&result_str).map_err(|e| {
-                log::warn!("Failed to deserialize proof: {:?}", e);
-                error::ErrorInternalServerError("Failed to deserialize result")
-            })?;
-
-        if let Some(result) = optional_result {
+            .map_err(error::ErrorInternalServerError)?;
+        let result: Option<ClaimOutput> =
+            result_str.map(|r| serde_json::from_str(&r).expect("Failed to deserialize result"));
+        if let Some(result) = result {
             results.push(SingleResult {
                 id: id.clone(),
                 result,
@@ -113,11 +106,11 @@ async fn generate_proof(
 
     let request_id = get_claim_request_id(&last_claim_hash.to_string());
 
-    let old_proof = redis::Cmd::get(&request_id)
+    let old_result_str = redis::Cmd::get(&request_id)
         .query_async::<_, Option<String>>(&mut redis_conn)
         .await
         .map_err(actix_web::error::ErrorInternalServerError)?;
-    if old_proof.is_some() {
+    if old_result_str.is_some() {
         let response = ProofResponse {
             success: true,
             result: None,
