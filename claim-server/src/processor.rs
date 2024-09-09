@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use anyhow::{ensure, Result};
 use intmax2_zkp::ethereum_types::bytes32::Bytes32;
 use mining_circuit::claim::{
@@ -9,8 +7,8 @@ use mining_circuit::claim::{
 use plonky2::{field::goldilocks_field::GoldilocksField, plonk::config::PoseidonGoldilocksConfig};
 
 use crate::{
+    app::interface::{ClaimOutput, ClaimRequest},
     external_api::gnark_server::GnarkServer,
-    io::{ClaimInput, ClaimOutput},
 };
 
 type F = GoldilocksField;
@@ -21,7 +19,6 @@ pub struct Processor {
     claim_processor: ClaimProcessor<F, C, D>,
     wrapper_processor: ClaimWrapperProcessor,
     gnark_server: GnarkServer,
-    results: HashMap<Bytes32, ClaimOutput>,
 }
 
 impl Processor {
@@ -33,14 +30,17 @@ impl Processor {
             claim_processor,
             wrapper_processor,
             gnark_server,
-            results: HashMap::new(),
         }
     }
 
-    fn validate_and_create_witnesses(
+    pub fn validate_and_create_witnesses(
         &self,
-        claim_input: &ClaimInput,
+        claim_input: &ClaimRequest,
     ) -> Result<(Vec<ClaimInnerValue>, Bytes32)> {
+        ensure!(
+            !claim_input.claims.is_empty(),
+            "Claim request must contain at least one claim"
+        );
         let mut values = Vec::new();
         let mut prev_hash = Bytes32::default();
         let deposit_tree_root = claim_input.deposit_tree_root;
@@ -69,7 +69,7 @@ impl Processor {
 
     // Generate a gnark proof for claims.
     // Receives an array of ClaimInnerValues that have already been validated.
-    pub async fn process_prove(&mut self, values: &[ClaimInnerValue]) -> Result<()> {
+    pub async fn process_prove(&self, values: &[ClaimInnerValue]) -> Result<ClaimOutput> {
         assert!(!values.is_empty());
         let mut claims = Vec::new();
         let mut prev_proof = None;
@@ -92,29 +92,17 @@ impl Processor {
             .map_err(|e| anyhow::anyhow!("Failed gnark prove: {}", e))?;
 
         // convert public inputs
-        let mut pis_vec = Vec::new();
-        for x in gnark_proof.public_inputs.iter() {
-            let d = x.to_u32_digits();
-            ensure!(d.len() <= 1, "Gnark public input is out of range");
-            if d.is_empty() {
-                pis_vec.push(0);
-            } else {
-                pis_vec.push(d[0]);
-            }
-        }
+
         let last_claim_hash = values.last().unwrap().new_claim_hash;
         let pis = ClaimPublicInputs {
             deposit_tree_root: values[0].deposit_tree_root,
             eligible_tree_root: values[0].deposit_tree_root,
             last_claim_hash,
         };
-        let output = ClaimOutput {
+        Ok(ClaimOutput {
             claim_chain: claims,
             pis,
-            pis_vec,
-            proof: gnark_proof.proof,
-        };
-        self.results.insert(last_claim_hash, output);
-        Ok(())
+            proof: "0x".to_string() + &hex::encode(gnark_proof.proof),
+        })
     }
 }

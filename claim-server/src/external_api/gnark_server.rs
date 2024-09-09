@@ -1,4 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
+use std::str::FromStr as _;
 
 use crate::env::load_env;
 use anyhow::Result;
@@ -12,9 +12,7 @@ type F = GoldilocksField;
 const D: usize = 2;
 type C = PoseidonBN128GoldilocksConfig;
 
-pub struct GnarkServer {
-    job_ids: HashMap<Vec<F>, String>,
-}
+pub struct GnarkServer;
 
 #[derive(serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -61,9 +59,7 @@ impl Debug for GnarkProof {
 
 impl GnarkServer {
     pub fn new() -> Self {
-        Self {
-            job_ids: HashMap::new(),
-        }
+        Self
     }
 
     pub async fn health_check(&self) -> Result<()> {
@@ -80,38 +76,24 @@ impl GnarkServer {
         }
     }
 
-    async fn start_proof(&mut self, proof: &ProofWithPublicInputs<F, C, D>) -> Result<()> {
-        info!("starting proof");
-        if self.job_ids.contains_key(&proof.public_inputs) {
-            warn!("Proof already started");
-            return Ok(());
-        }
+    async fn start_proof(&self, proof: &ProofWithPublicInputs<F, C, D>) -> Result<String> {
+        info!("starting gnark proof");
         let gnark_server_base_url = load_env().gnark_server_url;
         let start_proof_url = format!("{}/start-proof", gnark_server_base_url);
         let client = reqwest::Client::new();
         let res = client.post(start_proof_url).json(&proof).send().await?;
         let parsed_res: StartProofResponse = res.json::<StartProofResponse>().await?;
         let job_id = parsed_res.job_id;
-        self.job_ids.insert(proof.public_inputs.clone(), job_id);
-        info!(
-            "Proof started, job_id: {}",
-            self.job_ids.get(&proof.public_inputs).unwrap()
-        );
-        Ok(())
+        info!("Proof started, job_id: {}", job_id);
+        Ok(job_id)
     }
 
-    async fn get_proof(&mut self, public_inputs: &[F]) -> Result<Option<GnarkProof>> {
-        if self.job_ids.get(public_inputs).is_none() {
-            warn!("Proof not started");
-            return Err(anyhow::anyhow!("Proof not started"));
-        }
+    async fn get_proof(&self, job_id: &str) -> Result<Option<GnarkProof>> {
         let gnark_server_base_url = load_env().gnark_server_url;
-        let job_id = self.job_ids.get(public_inputs).unwrap();
         let get_proof_result_url = format!("{}/get-proof?jobId={}", gnark_server_base_url, job_id);
         let client = reqwest::Client::new();
         let res = client.get(get_proof_result_url).send().await?;
         let parsed_res = res.json::<GetProofResponse>().await?;
-
         if parsed_res.status == "in progress" {
             info!("Proof in progress...");
             return Ok(None);
@@ -131,17 +113,16 @@ impl GnarkServer {
             };
             return Ok(Some(result));
         } else {
-            self.job_ids.remove(public_inputs); // clear public inputs
             return Err(anyhow::anyhow!("Proof failed"));
         }
     }
 
-    pub async fn prove(&mut self, proof: &ProofWithPublicInputs<F, C, D>) -> Result<GnarkProof> {
-        self.start_proof(proof).await?;
+    pub async fn prove(&self, proof: &ProofWithPublicInputs<F, C, D>) -> Result<GnarkProof> {
+        let job_id = self.start_proof(proof).await?;
 
         tokio::time::sleep(tokio::time::Duration::from_secs(10)).await;
         loop {
-            match self.get_proof(&proof.public_inputs).await? {
+            match self.get_proof(&job_id).await? {
                 Some(proof) => return Ok(proof),
                 None => tokio::time::sleep(tokio::time::Duration::from_secs(10)).await,
             };
@@ -247,7 +228,7 @@ mod tests {
         let wrapper_processor = ClaimWrapperProcessor::new(&processor.claim_circuit);
         let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
-        let mut gnark_server = GnarkServer::new();
+        let gnark_server = GnarkServer::new();
 
         let gnark_proof = gnark_server
             .prove(&wrapper_proof)
