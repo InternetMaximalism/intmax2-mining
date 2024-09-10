@@ -5,6 +5,8 @@ import type * as verifierSol from "./Verifier.sol";
 export type { verifierSol };
 import type * as interfaces from "./interfaces";
 export type { interfaces };
+import type * as verifiers from "./verifiers";
+export type { verifiers };
 export type { Deposit } from "./Deposit";
 export type { Int0 } from "./Int0";
 export type { MintVerifier } from "./MintVerifier";

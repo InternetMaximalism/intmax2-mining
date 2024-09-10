@@ -40,3 +40,7 @@ export type { MintVerifier } from "./contracts/MintVerifier";
 export { MintVerifier__factory } from "./factories/contracts/MintVerifier__factory";
 export type { PlonkVerifier } from "./contracts/Verifier.sol/PlonkVerifier";
 export { PlonkVerifier__factory } from "./factories/contracts/Verifier.sol/PlonkVerifier__factory";
+export type { ClaimPlonkVerifier } from "./contracts/verifiers/ClaimPlonkVerifier";
+export { ClaimPlonkVerifier__factory } from "./factories/contracts/verifiers/ClaimPlonkVerifier__factory";
+export type { WithdrawalPlonkVerifier } from "./contracts/verifiers/WithdrawalPlonkVerifier";
+export { WithdrawalPlonkVerifier__factory } from "./factories/contracts/verifiers/WithdrawalPlonkVerifier__factory";

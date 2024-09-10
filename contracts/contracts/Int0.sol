@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Deposit} from "./Deposit.sol";
-import {PlonkVerifier} from "./Verifier.sol";
+import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 
 contract Int0 is Deposit {
     struct DepositLeaf {
@@ -96,7 +96,10 @@ contract Int0 is Deposit {
     ) public view returns (bool) {
         bytes32 pisHash = getPublicInputsHash(pis);
         return
-            PlonkVerifier(verifierAddress).Verify(proof, splitBytes32(pisHash));
+            IPlonkVerifier(verifierAddress).Verify(
+                proof,
+                splitBytes32(pisHash)
+            );
     }
 
     function getLeafHash(

@@ -3,6 +3,7 @@
 /* eslint-disable */
 export * as verifierSol from "./Verifier.sol";
 export * as interfaces from "./interfaces";
+export * as verifiers from "./verifiers";
 export { Deposit__factory } from "./Deposit__factory";
 export { Int0__factory } from "./Int0__factory";
 export { MintVerifier__factory } from "./MintVerifier__factory";

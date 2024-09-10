@@ -77,6 +77,14 @@ declare module "hardhat/types/runtime" {
       name: "PlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PlonkVerifier__factory>;
+    getContractFactory(
+      name: "ClaimPlonkVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ClaimPlonkVerifier__factory>;
+    getContractFactory(
+      name: "WithdrawalPlonkVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WithdrawalPlonkVerifier__factory>;
 
     getContractAt(
       name: "Ownable",
@@ -158,6 +166,16 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.PlonkVerifier>;
+    getContractAt(
+      name: "ClaimPlonkVerifier",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ClaimPlonkVerifier>;
+    getContractAt(
+      name: "WithdrawalPlonkVerifier",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WithdrawalPlonkVerifier>;
 
     deployContract(
       name: "Ownable",
@@ -223,6 +241,14 @@ declare module "hardhat/types/runtime" {
       name: "PlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.PlonkVerifier>;
+    deployContract(
+      name: "ClaimPlonkVerifier",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ClaimPlonkVerifier>;
+    deployContract(
+      name: "WithdrawalPlonkVerifier",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WithdrawalPlonkVerifier>;
 
     deployContract(
       name: "Ownable",
@@ -304,6 +330,16 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.PlonkVerifier>;
+    deployContract(
+      name: "ClaimPlonkVerifier",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ClaimPlonkVerifier>;
+    deployContract(
+      name: "WithdrawalPlonkVerifier",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WithdrawalPlonkVerifier>;
 
     // default types
     getContractFactory(
