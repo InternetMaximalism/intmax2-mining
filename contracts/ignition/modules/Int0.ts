@@ -7,7 +7,7 @@ const Int0Module = buildModule("Int0", (m) => {
   const env = cleanEnv(process.env, {
     OWNER_ADDRESS: str(),
   });
-  const verifier = m.contract("PlonkVerifier");
+  const verifier = m.contract("WithdrawalPlonkVerifier");
   const int0_main = m.contract("Int0", [verifier, env.OWNER_ADDRESS], {
     id: "main",
   });

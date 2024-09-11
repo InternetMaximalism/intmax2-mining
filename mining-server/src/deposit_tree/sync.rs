@@ -75,7 +75,6 @@ impl DepositSyncronizer {
 
     pub async fn assert_synced(&self) -> Result<()> {
         let contract = get_int0_contract(self.is_main).await?;
-        // this two calls are assumed to be atomic
         let contract_leaf_index: u32 = contract.leaf_index().call().await?;
         let latest_root: [u8; 32] = contract.get_deposit_root().call().await?;
         ensure!(

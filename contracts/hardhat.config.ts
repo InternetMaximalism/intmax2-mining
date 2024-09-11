@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@openzeppelin/hardhat-upgrades";
 import { cleanEnv, str, url } from "envalid";
 import dotenv from "dotenv";
 dotenv.config();
@@ -7,6 +8,7 @@ dotenv.config();
 const env = cleanEnv(process.env, {
   DEPLOYER_PRIVATE_KEY: str(),
   DEPLOYER_ADDRESS: str(),
+  ANALYZER_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
 });
