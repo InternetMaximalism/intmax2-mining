@@ -27,8 +27,31 @@ interface IInt1 {
         uint256 depositedAt
     );
 
+    event DepositsAnalyzedAndProcessed(
+        uint256 indexed upToDepositId,
+        uint256[] rejectedIndices
+    );
+
     event DepositLeafInserted(
         uint32 indexed depositIndex,
         bytes32 indexed depositHash
     );
+
+    function depositNativeToken(bytes32 recipientSaltHash) external payable;
+
+    function analyzeAndProcessDeposits(
+        uint256 upToDepositId,
+        uint256[] memory rejectDepositIds
+    ) external;
+
+    function withdraw(
+        WithdrawalPublicInputs memory publicInputs,
+        bytes calldata proof
+    ) external payable;
+
+    function getDepositRoot() external view returns (bytes32);
+
+    function getLastProcessedDepositId() external view returns (uint256);
+
+    function getLastDepositId() external view returns (uint256);
 }

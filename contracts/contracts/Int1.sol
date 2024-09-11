@@ -65,7 +65,7 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     function analyzeAndProcessDeposits(
         uint256 upToDepositId,
         uint256[] memory rejectDepositIds
-    ) external payable onlyRole(ANALYZER) {
+    ) external onlyRole(ANALYZER) {
         bytes32[] memory depositHashes = depositQueue.analyze(
             upToDepositId,
             rejectDepositIds
@@ -77,6 +77,8 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         }
         bytes32 root = depositTree.getRoot();
         depositRoots[root] = block.timestamp;
+
+        emit DepositsAnalyzedAndProcessed(upToDepositId, rejectDepositIds);
     }
 
     function withdraw(
@@ -101,8 +103,12 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         return depositTree.getRoot();
     }
 
-    function rescue() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        payable(_msgSender()).transfer(address(this).balance);
+    function getLastProcessedDepositId() external view returns (uint256) {
+        return depositQueue.front - 1;
+    }
+
+    function getLastDepositId() external view returns (uint256) {
+        return depositQueue.rear - 1;
     }
 
     //=========================utils===========================
