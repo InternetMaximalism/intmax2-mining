@@ -31,6 +31,7 @@ export interface IINTMAXTokenInterface extends Interface {
       | "balanceOf"
       | "burn"
       | "mint"
+      | "totalMintableAmount"
       | "totalSupply"
       | "transfer"
       | "transferFrom"
@@ -53,6 +54,10 @@ export interface IINTMAXTokenInterface extends Interface {
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "mint", values: [AddressLike]): string;
   encodeFunctionData(
+    functionFragment: "totalMintableAmount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
   ): string;
@@ -70,6 +75,10 @@ export interface IINTMAXTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalMintableAmount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -178,6 +187,8 @@ export interface IINTMAXToken extends BaseContract {
 
   mint: TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
 
+  totalMintableAmount: TypedContractMethod<[], [bigint], "view">;
+
   totalSupply: TypedContractMethod<[], [bigint], "view">;
 
   transfer: TypedContractMethod<
@@ -219,6 +230,9 @@ export interface IINTMAXToken extends BaseContract {
   getFunction(
     nameOrSignature: "mint"
   ): TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "totalMintableAmount"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "totalSupply"
   ): TypedContractMethod<[], [bigint], "view">;
