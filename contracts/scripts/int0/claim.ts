@@ -1,6 +1,6 @@
 import { cleanEnv, str } from "envalid";
 import { ethers } from "hardhat";
-import { IINTMAXToken__factory } from "../typechain-types/factories/contracts/interfaces/IINTMAXToken__factory";
+import { IINTMAXToken__factory } from "../../typechain-types/factories/contracts/interfaces/IINTMAXToken__factory";
 
 const env = cleanEnv(process.env, {
   INT0_MAIN_CONTRACT_ADDRESS: str(),

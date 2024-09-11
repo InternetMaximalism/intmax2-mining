@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { getNthWallet } from "../utils/hdWallet";
+import { getNthWallet } from "../../utils/hdWallet";
 
 async function main() {
   const wallet = ethers.Wallet.createRandom();

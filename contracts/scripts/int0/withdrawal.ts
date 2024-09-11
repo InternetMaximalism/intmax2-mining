@@ -4,13 +4,13 @@ import {
   readCSV,
   withdrawalsCsvFilePath,
   writeCSV,
-} from "../utils/csv";
-import { WithdrawInput, requestProve } from "../api/prover";
-import { addHexPrefix } from "../utils/conversion";
-import Int0Module from "../ignition/modules/Int0";
+} from "../../utils/csv";
+import { WithdrawInput, requestProve } from "../../api/prover";
+import { addHexPrefix } from "../../utils/conversion";
+import Int0Module from "../../ignition/modules/Int0";
 import { ethers, ignition } from "hardhat";
-import { Int0 } from "../typechain-types";
-import { DepositCsvRow, WithdrawalCsvRow } from "../types/csv";
+import { Int0 } from "../../typechain-types";
+import { DepositCsvRow, WithdrawalCsvRow } from "../../types/csv";
 
 async function main() {
   const isMain = false;
