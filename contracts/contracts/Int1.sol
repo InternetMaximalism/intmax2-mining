@@ -81,6 +81,25 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         emit DepositsAnalyzedAndProcessed(upToDepositId, rejectDepositIds);
     }
 
+    function cancelDeposit(
+        uint256 depositId,
+        DepositLib.Deposit calldata deposit
+    ) external {
+        DepositQueueLib.DepositData memory depositData = depositQueue
+            .deleteDeposit(depositId);
+        if (depositData.sender != _msgSender()) {
+            revert OnlySenderCanCancelDeposit();
+        }
+        if (depositData.depositHash != deposit.getHash()) {
+            revert InvalidDepositHash(
+                depositData.depositHash,
+                deposit.getHash()
+            );
+        }
+        payable(depositData.sender).transfer(deposit.amount);
+        emit DepositCanceled(depositId);
+    }
+
     function withdraw(
         WithdrawalPublicInputs memory publicInputs,
         bytes calldata proof

@@ -25,6 +25,18 @@ async function main() {
   );
 
   console.log(`Int1 deployed at: ${await int1.getAddress()}`);
+
+  // fund analyzer
+  const analyzerBalance = await ethers.provider.getBalance(
+    env.ANALYZER_ADDRESS
+  );
+  if (analyzerBalance === 0n) {
+    const signer = (await ethers.getSigners())[0];
+    await signer.sendTransaction({
+      to: env.ANALYZER_ADDRESS,
+      value: ethers.parseEther("0.01"),
+    });
+  }
 }
 main()
   .then(() => process.exit(0))

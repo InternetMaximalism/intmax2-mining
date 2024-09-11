@@ -3,6 +3,18 @@ pragma solidity ^0.8.24;
 
 interface IInt1 {
     error TriedToDepositZero();
+    error OnlySenderCanCancelDeposit();
+    error InvalidDepositHash(bytes32 depositDataHash, bytes32 calculatedHash);
+
+    event DepositCanceled(uint256 indexed depositId);
+    event DepositsAnalyzedAndProcessed(
+        uint256 indexed upToDepositId,
+        uint256[] rejectedIndices
+    );
+    event DepositLeafInserted(
+        uint32 indexed depositIndex,
+        bytes32 indexed depositHash
+    );
 
     struct DepositLeaf {
         bytes32 pubkeySaltHash;
@@ -25,16 +37,6 @@ interface IInt1 {
         uint32 tokenIndex,
         uint256 amount,
         uint256 depositedAt
-    );
-
-    event DepositsAnalyzedAndProcessed(
-        uint256 indexed upToDepositId,
-        uint256[] rejectedIndices
-    );
-
-    event DepositLeafInserted(
-        uint32 indexed depositIndex,
-        bytes32 indexed depositHash
     );
 
     function depositNativeToken(bytes32 recipientSaltHash) external payable;
