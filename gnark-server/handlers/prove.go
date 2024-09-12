@@ -90,6 +90,7 @@ func (s *State) getStatus(ctx context.Context, jobId string) (Status, error) {
 }
 
 func (s *State) StartProof(w http.ResponseWriter, r *http.Request) {
+	log.Println("StartProof")
 	ctx := r.Context()
 	_jobId, err := uuid.NewRandom()
 	if err != nil {
@@ -105,9 +106,11 @@ func (s *State) StartProof(w http.ResponseWriter, r *http.Request) {
 	s.setStatus(ctx, jobId, Status{Status: "in progress"})
 	go s.prove(ctx, jobId, input)
 	json.NewEncoder(w).Encode(map[string]string{"jobId": jobId})
+	log.Println("StartProof done. jobId", jobId)
 }
 
 func (s *State) GetProof(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetProof")
 	ctx := r.Context()
 	jobId := r.URL.Query().Get("jobId")
 	_, err := uuid.Parse(jobId)
@@ -124,4 +127,5 @@ func (s *State) GetProof(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(status)
+	log.Println("GetProof done. jobId", jobId)
 }
