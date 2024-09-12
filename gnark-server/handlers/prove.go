@@ -1,19 +1,19 @@
 package handlers
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
-	"math/big"
+	"log"
 	"net/http"
-	"sync"
 
 	verifierCircuit "example.com/m/circuit"
-	"example.com/m/context"
+	"example.com/m/state"
+	"example.com/m/utils"
 	"github.com/consensys/gnark-crypto/ecc"
 	plonk_bn254 "github.com/consensys/gnark/backend/plonk/bn254"
-	"github.com/consensys/gnark/backend/witness"
 	"github.com/consensys/gnark/frontend"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/qope/gnark-plonky2-verifier/types"
 	"github.com/qope/gnark-plonky2-verifier/variables"
@@ -21,85 +21,76 @@ import (
 
 type ProveResult struct {
 	PublicInputs []string `json:"publicInputs"`
-	Proof string `json:"proof"`
+	Proof        string   `json:"proof"`
 }
 
 type Status struct {
-	Status string `json:"status"`
-	Result ProveResult `json:"result"`
+	Status string      `json:"status"`
+	Result ProveResult `json:"result,omitempty"`
 }
 
-var (
-    status = make(map[string]Status)
-    mu      sync.Mutex
-)
-
-type CircuitData context.CircuitData
-
-
-func extractPublicInputs(witness witness.Witness) ([]*big.Int, error) {
-	public, err := witness.Public()
-	if err != nil {
-		return nil, err
-	}
-	_publicBytes, _ := public.MarshalBinary()
-	publicBytes := _publicBytes[12:] 
-	const chunkSize = 32 
-	bigInts := make([]*big.Int, len(publicBytes)/chunkSize)
-	for i := 0; i < len(publicBytes)/chunkSize; i += 1 {
-		chunk := publicBytes[i*chunkSize : (i+1)*chunkSize]
-		bigInt := new(big.Int).SetBytes(chunk)
-		bigInts[i] = bigInt
-	}
-	return bigInts, nil
+type State struct {
+	CircuitData state.CircuitData
+	RedisClient *redis.Client
 }
 
 
-func (ctx *CircuitData) prove(jobId string, proofRaw types.ProofWithPublicInputsRaw) error{
+func (s *State) prove(ctx context.Context, jobId string, proofRaw types.ProofWithPublicInputsRaw) error {
 	proofWithPis := variables.DeserializeProofWithPublicInputs(proofRaw)
 	assignment := verifierCircuit.VerifierCircuit{
 		Proof:                   proofWithPis.Proof,
 		PublicInputs:            proofWithPis.PublicInputs,
-		VerifierOnlyCircuitData: ctx.VerifierOnlyCircuitData,
+		VerifierOnlyCircuitData: s.CircuitData.VerifierOnlyCircuitData,
 	}
 	witness, err := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
 	if err != nil {
-		mu.Lock()
-		status[jobId] = Status{ Status:"error", Result:ProveResult{}}
-		mu.Unlock()
+		s.setStatus(ctx, jobId, Status{Status: "error"})
 		return err
 	}
-	proof, err := plonk_bn254.Prove(&ctx.Ccs, &ctx.Pk, witness)
+	proof, err := plonk_bn254.Prove(&s.CircuitData.Ccs, &s.CircuitData.Pk, witness)
 	if err != nil {
-		mu.Lock()
-		status[jobId] = Status{ Status:"error", Result:ProveResult{}}
-		mu.Unlock()
+		s.setStatus(ctx, jobId, Status{Status: "error"})
 		return err
 	}
 	proofHex := hex.EncodeToString(proof.MarshalSolidity())
-	publicInputs, err := extractPublicInputs(witness)
+	publicInputs, err := utils.ExtractPublicInputs(witness)
 	if err != nil {
-		mu.Lock()
-		status[jobId] = Status{ Status:"error", Result:ProveResult{}}
-		mu.Unlock()
+		s.setStatus(ctx, jobId, Status{Status: "error"})
 		return err
 	}
 	publicInputsStr := make([]string, len(publicInputs))
 	for i, bi := range publicInputs {
 		publicInputsStr[i] = bi.String()
 	}
-	response := ProveResult{
+	result := ProveResult{
 		PublicInputs: publicInputsStr,
-		Proof: proofHex,
+		Proof:        proofHex,
 	}
-	mu.Lock()
-	status[jobId] = Status{Result:response, Status:"done"}
-	mu.Unlock()
-	fmt.Println("Prove done. jobId", jobId)
+	s.setStatus(ctx, jobId, Status{Status: "done", Result: result})
+	log.Println("Prove done. jobId", jobId)
 	return nil
 }
 
-func (ctx *CircuitData) StartProof(w http.ResponseWriter, r *http.Request) {
+func (s *State) setStatus(ctx context.Context, jobId string, status Status) error {
+	statusJSON, err := json.Marshal(status)
+	if err != nil {
+		return err
+	}
+	return s.RedisClient.Set(ctx, jobId, statusJSON, 0).Err()
+}
+
+func (s *State) getStatus(ctx context.Context, jobId string) (Status, error) {
+	var status Status
+	statusJSON, err := s.RedisClient.Get(ctx, jobId).Result()
+	if err != nil {
+		return status, err
+	}
+	err = json.Unmarshal([]byte(statusJSON), &status)
+	return status, err
+}
+
+func (s *State) StartProof(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	_jobId, err := uuid.NewRandom()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -111,26 +102,26 @@ func (ctx *CircuitData) StartProof(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	mu.Lock()
-	status[jobId] = Status{Status:"in progress"}
-	mu.Unlock()
-	go ctx.prove(jobId, input)
+	s.setStatus(ctx, jobId, Status{Status: "in progress"})
+	go s.prove(ctx, jobId, input)
 	json.NewEncoder(w).Encode(map[string]string{"jobId": jobId})
 }
 
-func (ctx *CircuitData) GetProof(w http.ResponseWriter, r *http.Request) {
+func (s *State) GetProof(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	jobId := r.URL.Query().Get("jobId")
 	_, err := uuid.Parse(jobId)
-    if err != nil {
-        http.Error(w, "Invalid JobId", http.StatusBadRequest)
-        return
-    }
-	mu.Lock()
-	defer mu.Unlock()
-	s, ok := status[jobId]
-	if !ok {
-		http.Error(w, "job not found", http.StatusNotFound)
+	if err != nil {
+		http.Error(w, "Invalid JobId", http.StatusBadRequest)
 		return
 	}
-	json.NewEncoder(w).Encode(s)
+	status, err := s.getStatus(ctx, jobId)
+	if err == redis.Nil {
+		http.Error(w, "job not found", http.StatusNotFound)
+		return
+	} else if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(status)
 }
