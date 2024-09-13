@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Byte32Lib} from "./Byte32Lib.sol";
+import {Byte32Lib} from "./lib/Byte32Lib.sol";
 import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
 import {IInt0} from "./interfaces/IInt0.sol";
@@ -36,12 +36,12 @@ contract MinterV0 is AccessControl {
     constructor(
         address plonkVerifier_,
         address token_,
-        address int1_,
+        address int0_,
         address admin_
     ) {
         verifier = IPlonkVerifier(plonkVerifier_);
         token = IINTMAXToken(token_);
-        int0 = IInt0(int1_);
+        int0 = IInt0(int0_);
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
