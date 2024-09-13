@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	verifierCircuit "example.com/m/circuit"
 	"example.com/m/circuitData"
@@ -67,20 +68,17 @@ func (s *State) prove(jobId string, proofRaw types.ProofWithPublicInputsRaw) err
 		PublicInputs: publicInputsStr,
 		Proof:        proofHex,
 	}
-	log.Println("before setStatus")
 	s.setStatus(ctx, jobId, Status{Status: "done", Result: result})
-	log.Println("after setStatus")
 	log.Println("Prove done. jobId", jobId)
 	return nil
 }
 
 func (s *State) setStatus(ctx context.Context, jobId string, status Status) error {
-	log.Println("setStatus", jobId, status)
 	statusJSON, err := json.Marshal(status)
 	if err != nil {
 		return err
 	}
-	return s.RedisClient.Set(ctx, jobId, statusJSON, 0).Err()
+	return s.RedisClient.Set(ctx, jobId, statusJSON, 24*time.Hour).Err()
 }
 
 func (s *State) getStatus(ctx context.Context, jobId string) (Status, error) {
