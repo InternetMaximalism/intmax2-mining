@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"example.com/m/circuitData"
 	"example.com/m/handlers"
-	"example.com/m/state"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -47,11 +47,13 @@ func main() {
         log.Fatal("Redis connection error:", err)
         return
     }
-	data := state.InitCircuitData(*circuitName)
+
+	data := circuitData.InitCircuitData(*circuitName)
 	state := & handlers.State{
 		CircuitData: data,
 		RedisClient: rdb,
 	}
+	
 	http.HandleFunc("/health", handlers.HealthHandler)
 	http.HandleFunc("/start-proof", state.StartProof)
 	http.HandleFunc("/get-proof", state.GetProof)

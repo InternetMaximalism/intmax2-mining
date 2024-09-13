@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	verifierCircuit "example.com/m/circuit"
-	"example.com/m/state"
+	"example.com/m/circuitData"
 	"example.com/m/utils"
 	"github.com/consensys/gnark-crypto/ecc"
 	plonk_bn254 "github.com/consensys/gnark/backend/plonk/bn254"
@@ -30,12 +30,12 @@ type Status struct {
 }
 
 type State struct {
-	CircuitData state.CircuitData
+	CircuitData circuitData.CircuitData
 	RedisClient *redis.Client
 }
 
 
-func (s *State) prove(ctx context.Context, jobId string, proofRaw types.ProofWithPublicInputsRaw) error {
+func (s *State) prove(jobId string, proofRaw types.ProofWithPublicInputsRaw) error {
 	proofWithPis := variables.DeserializeProofWithPublicInputs(proofRaw)
 	assignment := verifierCircuit.VerifierCircuit{
 		Proof:                   proofWithPis.Proof,
@@ -43,6 +43,7 @@ func (s *State) prove(ctx context.Context, jobId string, proofRaw types.ProofWit
 		VerifierOnlyCircuitData: s.CircuitData.VerifierOnlyCircuitData,
 	}
 	witness, err := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
+	ctx := context.Background()
 	if err != nil {
 		s.setStatus(ctx, jobId, Status{Status: "error"})
 		return err
@@ -66,12 +67,15 @@ func (s *State) prove(ctx context.Context, jobId string, proofRaw types.ProofWit
 		PublicInputs: publicInputsStr,
 		Proof:        proofHex,
 	}
+	log.Println("before setStatus")
 	s.setStatus(ctx, jobId, Status{Status: "done", Result: result})
+	log.Println("after setStatus")
 	log.Println("Prove done. jobId", jobId)
 	return nil
 }
 
 func (s *State) setStatus(ctx context.Context, jobId string, status Status) error {
+	log.Println("setStatus", jobId, status)
 	statusJSON, err := json.Marshal(status)
 	if err != nil {
 		return err
@@ -90,7 +94,6 @@ func (s *State) getStatus(ctx context.Context, jobId string) (Status, error) {
 }
 
 func (s *State) StartProof(w http.ResponseWriter, r *http.Request) {
-	log.Println("StartProof")
 	ctx := r.Context()
 	_jobId, err := uuid.NewRandom()
 	if err != nil {
@@ -104,15 +107,15 @@ func (s *State) StartProof(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.setStatus(ctx, jobId, Status{Status: "in progress"})
-	go s.prove(ctx, jobId, input)
+	go s.prove(jobId, input)
 	json.NewEncoder(w).Encode(map[string]string{"jobId": jobId})
-	log.Println("StartProof done. jobId", jobId)
+	log.Println("StartProof", jobId)
 }
 
 func (s *State) GetProof(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetProof")
 	ctx := r.Context()
 	jobId := r.URL.Query().Get("jobId")
+	log.Println("GetProof", jobId)
 	_, err := uuid.Parse(jobId)
 	if err != nil {
 		http.Error(w, "Invalid JobId", http.StatusBadRequest)
@@ -127,5 +130,4 @@ func (s *State) GetProof(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(status)
-	log.Println("GetProof done. jobId", jobId)
 }

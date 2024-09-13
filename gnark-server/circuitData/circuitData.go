@@ -1,4 +1,4 @@
-package state
+package circuitData
 
 import (
 	"os"
@@ -17,13 +17,13 @@ type CircuitData struct {
 }
 
 func InitCircuitData(circuitName string) CircuitData{
-	var state CircuitData
+	var data CircuitData
 	{
 		fVk, err := os.Open("data/"+circuitName+"/verifying.key")
 		if err != nil {
 			panic(err)
 		}
-		_, _ = state.Vk.ReadFrom(fVk)
+		_, _ = data.Vk.ReadFrom(fVk)
 		defer fVk.Close()
 	}
 	{
@@ -31,7 +31,7 @@ func InitCircuitData(circuitName string) CircuitData{
 		if err != nil {
 			panic(err)
 		}
-		_, _ = state.Pk.ReadFrom(fPk)
+		_, _ = data.Pk.ReadFrom(fPk)
 		defer fPk.Close()
 	}
 	{
@@ -39,11 +39,11 @@ func InitCircuitData(circuitName string) CircuitData{
 		if err != nil {
 			panic(err)
 		}
-		_, _ = state.Ccs.ReadFrom(fCs)
+		_, _ = data.Ccs.ReadFrom(fCs)
 		defer fCs.Close()
 	}
 	{
-		state.VerifierOnlyCircuitData = variables.DeserializeVerifierOnlyCircuitData(types.ReadVerifierOnlyCircuitData("data/"+circuitName+"/verifier_only_circuit_data.json"))
+		data.VerifierOnlyCircuitData = variables.DeserializeVerifierOnlyCircuitData(types.ReadVerifierOnlyCircuitData("data/"+circuitName+"/verifier_only_circuit_data.json"))
 	}
-	return state
+	return data
 }
