@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Byte32Lib} from "./Byte32Lib.sol";
+import {Byte32Lib} from "./lib/Byte32Lib.sol";
 import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 import {IRollup} from "./interfaces/IRollup.sol";
 import {IL2ScrollMessenger} from "@scroll-tech/contracts/L2/IL2ScrollMessenger.sol";
 import {ICommon} from "./interfaces/ICommon.sol";
-import {IMinterV1} from "./interfaces/IMinterV1.sol";
+import {IMinterV2} from "./interfaces/IMinterV2.sol";
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -93,7 +93,7 @@ contract MintVerifier is Ownable {
         uint256 value = 0;
         uint256 gasLimit = type(uint256).max;
         bytes memory message = abi.encodeWithSelector(
-            IMinterV1.processClaims.selector,
+            IMinterV2.processClaims.selector,
             claims
         );
         l2ScrollMessenger.sendMessage{value: value}(
