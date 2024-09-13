@@ -96,7 +96,7 @@ impl Processor {
         let last_claim_hash = values.last().unwrap().new_claim_hash;
         let pis = ClaimPublicInputs {
             deposit_tree_root: values[0].deposit_tree_root,
-            eligible_tree_root: values[0].deposit_tree_root,
+            eligible_tree_root: values[0].eligible_tree_root,
             last_claim_hash,
         };
         Ok(ClaimOutput {
