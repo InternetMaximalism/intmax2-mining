@@ -4,11 +4,11 @@ pragma solidity ^0.8.24;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {IL1ScrollMessenger} from "@scroll-tech/contracts/L1/IL1ScrollMessenger.sol";
-import {IMinterV1} from "./interfaces/IMinterV1.sol";
+import {IMinterV2} from "./interfaces/IMinterV2.sol";
 import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
 import {ICommon} from "./interfaces/ICommon.sol";
 
-contract MinterV1 is IMinterV1, Ownable {
+contract MinterV2 is IMinterV2, Ownable {
     // contracts
     IL1ScrollMessenger public l1ScrollMessenger;
     IINTMAXToken public token;

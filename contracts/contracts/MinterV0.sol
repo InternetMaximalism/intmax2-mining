@@ -5,10 +5,9 @@ import {Byte32Lib} from "./Byte32Lib.sol";
 import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
 import {IInt0} from "./interfaces/IInt0.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-
-contract MinterV0 is Ownable {
+contract MinterV0 is AccessControl {
     using Byte32Lib for bytes32;
 
     // structs
@@ -37,11 +36,13 @@ contract MinterV0 is Ownable {
     constructor(
         address plonkVerifier_,
         address token_,
-        address int0_
-    ) Ownable(msg.sender) {
+        address int1_,
+        address admin_
+    ) {
         verifier = IPlonkVerifier(plonkVerifier_);
         token = IINTMAXToken(token_);
-        int0 = IInt0(int0_);
+        int0 = IInt0(int1_);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
     function claimTokens(
@@ -98,11 +99,13 @@ contract MinterV0 is Ownable {
         token.transfer(claim.recipient, claim.amount);
     }
 
-    function mint() external onlyOwner {
+    function mint() external onlyRole(DEFAULT_ADMIN_ROLE) {
         token.mint(address(this));
     }
 
-    function setTreeRoots(bytes32 eligibleTreeRoot_) external onlyOwner {
+    function setTreeRoots(
+        bytes32 eligibleTreeRoot_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         eligibleTreeRoot = eligibleTreeRoot_;
         depositTreeRoot = int0.getDepositRoot();
     }
