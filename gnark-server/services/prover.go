@@ -80,7 +80,8 @@ func prepareResult(proof plonk_bn254.Proof, witness witness.Witness) (models.Pro
 func handleError(ctx context.Context, s *app.State, jobId, message string, err error) error {
 	fullErr := fmt.Errorf("%s: %w", message, err)
 	log.Printf("Error in Prove for jobId %s: %v", jobId, fullErr)
-	if setErr := SetStatus(ctx, s, jobId, models.Status{Status: "error"}); setErr != nil {
+	errorMessage := fmt.Sprintf("%s: %v", message, err)
+	if setErr := SetStatus(ctx, s, jobId, models.Status{Status: "error", ErrorMessage: errorMessage}); setErr != nil {
 		log.Printf("Failed to set error status for jobId %s: %v", jobId, setErr)
 	}
 	return fullErr

@@ -7,5 +7,6 @@ type ProveResult struct {
 
 type Status struct {
 	Status string      `json:"status"`
+	ErrorMessage string    `json:"errorMessage,omitempty"`
 	Result ProveResult `json:"result,omitempty"`
 }
