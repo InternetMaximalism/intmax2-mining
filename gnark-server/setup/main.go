@@ -101,7 +101,7 @@ func main() {
 		panic(err)
 	}
 	{
-		fSol, _ := os.Create("verifier.sol")
+		fSol, _ := os.Create("data/"+*circuitName+"/verifier.sol")
 		_ = vk.ExportSolidity(fSol)
 		fSol.Close()
 	}
