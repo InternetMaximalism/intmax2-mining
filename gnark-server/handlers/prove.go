@@ -32,14 +32,14 @@ func StartProof(s *app.State, w http.ResponseWriter, r *http.Request) {
 
 	proveCtx := context.Background()
 	go func() {
-    defer func() {
-        if r := recover(); r != nil {
-            log.Printf("Panic in Prove goroutine for job %s: %v", jobId, r)
-            services.SetStatus(ctx, s, jobId, models.Status{Status: "failed", ErrorMessage: fmt.Sprintf("%v", r)})
-        }
-    }()
-    services.Prove(proveCtx, s, jobId, input)
-}()
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Panic in Prove goroutine for job %s: %v", jobId, r)
+				services.SetStatus(ctx, s, jobId, models.Status{Status: "failed", ErrorMessage: fmt.Sprintf("%v", r)})
+			}
+		}()
+		services.Prove(proveCtx, s, jobId, input)
+	}()
 
 	json.NewEncoder(w).Encode(map[string]string{"jobId": jobId})
 	log.Println("StartProof", jobId)

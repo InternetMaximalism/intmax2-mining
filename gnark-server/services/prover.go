@@ -19,6 +19,13 @@ import (
 )
 
 func Prove(ctx context.Context, s *app.State, jobId string, proofRaw types.ProofWithPublicInputsRaw) error {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Panic in Prove for job %s: %v", jobId, r)
+			SetStatus(ctx, s, jobId, models.Status{Status: "error", ErrorMessage: fmt.Sprintf("%v", r)})
+		}
+	}()
+
 	log.Printf("Starting Prove for jobId: %s", jobId)
 
 	witness, err := prepareWitness(s, proofRaw)
