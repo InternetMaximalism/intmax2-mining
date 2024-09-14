@@ -56,7 +56,7 @@ func main() {
 	
 	http.HandleFunc("/health", handlers.HealthHandler)
 	http.HandleFunc("/start-proof", withState(state, handlers.StartProof))
-	http.HandleFunc("/get-proof", withState(state, handlers.StartProof))
+	http.HandleFunc("/get-proof", withState(state, handlers.GetProof))
 	log.Println("Server is running on port " + port)
 	if err := http.ListenAndServe(":" + port, nil); err != nil {
 		panic(err)
