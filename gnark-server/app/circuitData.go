@@ -1,4 +1,4 @@
-package circuitData
+package app
 
 import (
 	"os"
