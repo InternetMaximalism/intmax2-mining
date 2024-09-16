@@ -51,6 +51,14 @@ contract MinterV0 is AccessControl {
         bytes calldata proof
     ) external {
         // verify proof and nullifiers
+        require(
+            publicInputs.depositTreeRoot == depositTreeRoot,
+            "Invalid deposit tree root"
+        );
+        require(
+            publicInputs.eligibleTreeRoot == eligibleTreeRoot,
+            "Invalid eligible tree root"
+        );
         bytes32 claimHash = _verifyClaimChain(claims);
         require(
             claimHash == publicInputs.lastClaimHash,
@@ -108,5 +116,10 @@ contract MinterV0 is AccessControl {
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         eligibleTreeRoot = eligibleTreeRoot_;
         depositTreeRoot = int0.getDepositRoot();
+    }
+
+    function migrate(address newMinter) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint256 balance = token.balanceOf(address(this));
+        token.transfer(newMinter, balance);
     }
 }
