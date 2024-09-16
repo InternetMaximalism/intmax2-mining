@@ -78,7 +78,11 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         bytes32 root = depositTree.getRoot();
         depositRoots[root] = block.timestamp;
 
-        emit DepositsAnalyzedAndProcessed(upToDepositId, rejectDepositIds);
+        emit DepositsAnalyzedAndProcessed(
+            upToDepositId,
+            rejectDepositIds,
+            depositHashes
+        );
     }
 
     function cancelDeposit(

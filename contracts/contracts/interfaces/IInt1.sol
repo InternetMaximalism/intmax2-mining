@@ -7,13 +7,32 @@ interface IInt1 {
     error InvalidDepositHash(bytes32 depositDataHash, bytes32 calculatedHash);
 
     event DepositCanceled(uint256 indexed depositId);
-    event DepositsAnalyzedAndProcessed(
-        uint256 indexed upToDepositId,
-        uint256[] rejectedIndices
+
+    event Deposited(
+        uint256 indexed depositId,
+        address indexed sender,
+        bytes32 indexed recipientSaltHash,
+        uint32 tokenIndex,
+        uint256 amount,
+        uint256 depositedAt
     );
+
     event DepositLeafInserted(
         uint32 indexed depositIndex,
         bytes32 indexed depositHash
+    );
+
+    event DepositsAnalyzedAndProcessed(
+        uint256 indexed upToDepositId,
+        uint256[] rejectedIndices,
+        bytes32[] depositHashes
+    );
+
+    event Withdrawn(
+        address indexed recipient,
+        bytes32 indexed nullifier,
+        uint32 tokenIndex,
+        uint256 amount
     );
 
     struct DepositLeaf {
@@ -29,22 +48,6 @@ interface IInt1 {
         uint32 tokenIndex;
         uint256 amount;
     }
-
-    event Deposited(
-        uint256 indexed depositId,
-        address indexed sender,
-        bytes32 indexed recipientSaltHash,
-        uint32 tokenIndex,
-        uint256 amount,
-        uint256 depositedAt
-    );
-
-    event Withdrawn(
-        address indexed recipient,
-        bytes32 indexed nullifier,
-        uint32 tokenIndex,
-        uint256 amount
-    );
 
     function depositNativeToken(bytes32 recipientSaltHash) external payable;
 
@@ -63,4 +66,6 @@ interface IInt1 {
     function getLastProcessedDepositId() external view returns (uint256);
 
     function getLastDepositId() external view returns (uint256);
+
+    function depositRoots(bytes32 depositRoot) external view returns (uint256);
 }
