@@ -51,6 +51,14 @@ contract MinterV1 is AccessControl {
         bytes calldata proof
     ) external {
         // verify proof and nullifiers
+        require(
+            publicInputs.depositTreeRoot == depositTreeRoot,
+            "Invalid deposit tree root"
+        );
+        require(
+            publicInputs.eligibleTreeRoot == eligibleTreeRoot,
+            "Invalid eligible tree root"
+        );
         bytes32 claimHash = _verifyClaimChain(claims);
         require(
             claimHash == publicInputs.lastClaimHash,
