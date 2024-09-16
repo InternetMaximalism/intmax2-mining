@@ -116,6 +116,12 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
                 publicInputs.amount + msg.value // gas top-up
             );
         }
+        emit Withdrawn(
+            publicInputs.recipient,
+            publicInputs.nullifier,
+            publicInputs.tokenIndex,
+            publicInputs.amount
+        );
     }
 
     function getDepositData(

@@ -39,6 +39,13 @@ interface IInt1 {
         uint256 depositedAt
     );
 
+    event Withdrawn(
+        address indexed recipient,
+        bytes32 indexed nullifier,
+        uint32 tokenIndex,
+        uint256 amount
+    );
+
     function depositNativeToken(bytes32 recipientSaltHash) external payable;
 
     function analyzeAndProcessDeposits(
