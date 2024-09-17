@@ -30,7 +30,6 @@ contract MinterV1 is AccessControl {
 
     // state
     bytes32 public eligibleTreeRoot;
-    bytes32 public depositTreeRoot;
     mapping(bytes32 => bool) nullifiers;
 
     constructor(
@@ -52,13 +51,14 @@ contract MinterV1 is AccessControl {
     ) external {
         // verify proof and nullifiers
         require(
-            publicInputs.depositTreeRoot == depositTreeRoot,
-            "Invalid deposit tree root"
-        );
-        require(
             publicInputs.eligibleTreeRoot == eligibleTreeRoot,
             "Invalid eligible tree root"
         );
+        require(
+            int1.depositRoots(publicInputs.depositTreeRoot) > 0,
+            "Invalid deposit tree root"
+        );
+
         bytes32 claimHash = _verifyClaimChain(claims);
         require(
             claimHash == publicInputs.lastClaimHash,
@@ -113,10 +113,11 @@ contract MinterV1 is AccessControl {
 
     function setTreeRoots(
         bytes32 eligibleTreeRoot_,
-        uint256 burnAmount
+        uint256 targetBalance
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         eligibleTreeRoot = eligibleTreeRoot_;
-        depositTreeRoot = int1.getDepositRoot();
+        uint256 balance = token.balanceOf(address(this));
+        uint256 burnAmount = balance - targetBalance;
         token.burn(burnAmount);
     }
 

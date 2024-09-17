@@ -134,6 +134,19 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         return depositQueue.depositData[depositId];
     }
 
+    function getDepositDataBatch(
+        uint256[] memory depositIds
+    ) external view returns (DepositQueueLib.DepositData[] memory) {
+        DepositQueueLib.DepositData[]
+            memory depositData = new DepositQueueLib.DepositData[](
+                depositIds.length
+            );
+        for (uint256 i = 0; i < depositIds.length; i++) {
+            depositData[i] = depositQueue.depositData[depositIds[i]];
+        }
+        return depositData;
+    }
+
     function getDepositRoot() external view returns (bytes32) {
         return depositTree.getRoot();
     }
