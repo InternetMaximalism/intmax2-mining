@@ -31,8 +31,8 @@ impl Leafable for DepositHash {
 
 #[derive(Debug, Clone)]
 pub struct DepositHashTree {
-    tree: IncrementalMerkleTree<DepositHash>,
-    hashes: HashMap<Bytes32, u32>,
+    pub tree: IncrementalMerkleTree<DepositHash>,
+    pub hashes: HashMap<Bytes32, u32>,
 }
 
 impl DepositHashTree {
