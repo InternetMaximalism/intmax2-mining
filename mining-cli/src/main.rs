@@ -1,19 +1,20 @@
-use clap::Parser;
+use cli::run;
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    #[clap(short, long)]
-    name: String,
+pub mod cli;
+pub mod config;
+pub mod external_api;
+pub mod private_data;
+pub mod services;
+pub mod state;
+pub mod test;
+pub mod utils;
 
-    #[clap(short, long, default_value_t = 1)]
-    count: u8,
-}
+#[tokio::main]
+async fn main() {
+    let _config = config::Settings::new().expect("Failed to load config");
 
-fn main() {
-    let args = Args::parse();
-
-    for _ in 0..args.count {
-        println!("Hello {}!", args.name);
+    match run().await {
+        Ok(_) => {}
+        Err(e) => eprintln!("{:?}", e),
     }
 }
