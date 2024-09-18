@@ -113,14 +113,10 @@ pub async fn determin_next_mining_process(state: &State) -> anyhow::Result<Minin
 
 #[cfg(test)]
 mod tests {
-    use crate::services::sync::deposit_tree::sync_deposit_tree;
-
     #[tokio::test]
     async fn test_determin_next_mining_process() {
-        let deposit_hash_tree = sync_deposit_tree().await.unwrap();
-
         let mut state = crate::test::get_dummy_state();
-        state.deposit_hash_tree = deposit_hash_tree;
+        state.sync_tree().await.unwrap();
 
         let result = super::determin_next_mining_process(&state).await.unwrap();
         dbg!(result);

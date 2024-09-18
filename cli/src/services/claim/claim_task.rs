@@ -155,18 +155,14 @@ mod tests {
 
     use determin::ClaimProcess;
 
-    use crate::{
-        services::sync::deposit_tree::sync_deposit_tree, state::prover::Prover,
-        test::get_dummy_state,
-    };
+    use crate::{state::prover::Prover, test::get_dummy_state};
 
     use super::*;
 
     #[tokio::test]
     async fn test_claim_task() {
         let mut state = get_dummy_state();
-        let deposit_hash_tree = sync_deposit_tree().await.unwrap();
-        state.deposit_hash_tree = deposit_hash_tree;
+        state.sync_tree().await.unwrap();
         let process = determin::determin_next_claim_process(&state).await.unwrap();
         dbg!(&process);
 

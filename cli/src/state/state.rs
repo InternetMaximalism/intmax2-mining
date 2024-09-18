@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use super::prover::Prover;
 use crate::{
     private_data::PrivateData,
-    services::sync::{deposit_tree::sync_deposit_tree, eligible_tree::sync_eligible_tree},
+    services::sync::{deposit_tree::update_deposit_tree, eligible_tree::sync_eligible_tree},
     utils::{deposit_hash_tree::DepositHashTree, eligible_tree_with_map::EligibleTreeWithMap},
 };
 
@@ -34,8 +34,8 @@ impl State {
     }
 
     pub async fn sync_tree(&mut self) -> anyhow::Result<()> {
-        self.deposit_hash_tree = sync_deposit_tree().await?;
         self.eligible_tree = sync_eligible_tree().await?;
+        update_deposit_tree(&mut self.deposit_hash_tree, 0).await?;
         Ok(())
     }
 }

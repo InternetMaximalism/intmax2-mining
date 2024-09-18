@@ -4,12 +4,11 @@ use crate::{
 };
 use anyhow::ensure;
 
-pub async fn sync_deposit_tree() -> anyhow::Result<DepositHashTree> {
-    let mut deposit_hash_tree = DepositHashTree::new();
-
-    // TODO: fetch the checkpoint from github
-    // For now, we fetch all the events from the contract but in the future we will only fetch the new events
-    let events = get_deposit_leaf_inserted_event(0).await?;
+pub async fn update_deposit_tree(
+    deposit_hash_tree: &mut DepositHashTree,
+    from_block: u64,
+) -> anyhow::Result<()> {
+    let events = get_deposit_leaf_inserted_event(from_block).await?;
     for event in events {
         deposit_hash_tree.push(event.deposit_hash);
     }
@@ -21,8 +20,7 @@ pub async fn sync_deposit_tree() -> anyhow::Result<DepositHashTree> {
         expected_root,
         actual_root
     );
-
-    Ok(deposit_hash_tree)
+    Ok(())
 }
 
 #[cfg(test)]
@@ -31,6 +29,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_sync_deposit_tree() {
-        let _deposit_tree = sync_deposit_tree().await.unwrap();
+        let mut deposit_tree = DepositHashTree::new();
+        update_deposit_tree(&mut deposit_tree, 0).await.unwrap();
     }
 }
