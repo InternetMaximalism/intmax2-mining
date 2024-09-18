@@ -1,4 +1,5 @@
 use std::{
+    env,
     fs::OpenOptions,
     io::{BufReader, BufWriter},
 };
@@ -7,6 +8,8 @@ use config::{Config, ConfigError, File};
 use serde::{Deserialize, Serialize};
 
 const CONFIG_NAME: &'static str = "config";
+const CONFIG_LOCALNET_NAME: &'static str = "config.local";
+
 const USER_SETTINGS_PATH: &'static str = "data/user_settings.json";
 
 #[derive(Clone, Debug, Deserialize)]
@@ -18,8 +21,14 @@ pub struct Settings {
 
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
+        let network = env::var("NETWORK").unwrap_or_else(|_| "testnet".into());
+        let config_name = match network.as_str() {
+            "testnet" => CONFIG_NAME,
+            "local" => CONFIG_LOCALNET_NAME,
+            _ => panic!("Unsupported network"),
+        };
         let s = Config::builder()
-            .add_source(File::with_name(CONFIG_NAME))
+            .add_source(File::with_name(config_name))
             .build()?;
         s.try_deserialize()
     }

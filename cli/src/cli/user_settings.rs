@@ -90,10 +90,12 @@ async fn initial_balance(
     if deposit_balance < initial_deposit {
         let deposit_balance_formatted = pretty_format_u256(deposit_balance);
         let initial_deposit_formatted = pretty_format_u256(initial_deposit);
-        println!("Deposit Address: {:?}", addresses.deposit_address);
-        println!("{}ETH", deposit_balance_formatted);
         println!(
-            "Please deposit at least {}ETH + gas {}ETH to the above address",
+            "Deposit Address: {:?}  Balance: {} ETH",
+            addresses.deposit_address, deposit_balance_formatted
+        );
+        println!(
+            "Please deposit at least {} ETH + gas {} ETH to the above address",
             initial_deposit_formatted, mining_gas_formatted
         );
         loop {
@@ -109,10 +111,12 @@ async fn initial_balance(
     let claim_balance = client.get_balance(addresses.claim_address, None).await?;
     if claim_balance < mining_gas {
         let claim_balance_formatted = pretty_format_u256(claim_balance);
-        println!("Claim Address: {:?}", addresses.claim_address);
-        println!("{}ETH", claim_balance_formatted);
         println!(
-            "Please deposit at least {}ETH as gas to the above address",
+            "Claim Address: {:?} Balance: {} ETH",
+            addresses.claim_address, claim_balance_formatted
+        );
+        println!(
+            "Please deposit at least {} ETH as gas to the above address",
             mining_gas_formatted
         );
         loop {
