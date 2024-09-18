@@ -1,5 +1,6 @@
 use availability::check_avaliability;
 use dialoguer::Select;
+use status::print_status;
 
 use crate::{
     services::{
@@ -42,9 +43,10 @@ async fn start() -> anyhow::Result<State> {
     // construct state
     let mode = select_mode();
     let mut state = State::new(private_data, mode);
-    state.build_circuit()?;
 
-    println!("Startup completed");
+    print_status("Building circuit");
+    state.build_circuit()?;
+    print_status("Circuit built!");
     Ok(state)
 }
 

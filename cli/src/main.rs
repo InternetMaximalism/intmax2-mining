@@ -19,11 +19,14 @@ async fn main() {
 
     // setup logging
     let log_file = File::create("cli.log").unwrap();
-    WriteLogger::init(LevelFilter::Debug, Config::default(), log_file).unwrap();
+    WriteLogger::init(LevelFilter::Info, Config::default(), log_file).unwrap();
 
     // run the CLI
     match run().await {
         Ok(_) => {}
-        Err(e) => eprintln!("{:?}", e),
+        Err(e) => {
+            log::error!("{:?}", e);
+            std::process::exit(1);
+        }
     }
 }

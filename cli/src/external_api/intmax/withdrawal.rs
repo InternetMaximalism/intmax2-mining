@@ -75,7 +75,6 @@ pub async fn submit_withdrawal(
         match response {
             SumbitWithdrawalResponse::Sucess(success) => H256::from_str(&success.tx_hash)?,
             SumbitWithdrawalResponse::Error(error) => {
-                dbg!(input);
                 return Err(anyhow::anyhow!("Error submitting withdrawal: {:?}", error));
             }
         }
