@@ -17,3 +17,10 @@ pub fn print_status(message: &str) {
 
     info!("Status: {}", message);
 }
+
+pub fn print_error(message: &str) {
+    let term = Term::stdout();
+    let colored_message = format!("{} {}", style("ERROR:").red().bold(), style(message).red());
+    term.write_line(&colored_message).unwrap();
+    info!("Error: {}", message);
+}
