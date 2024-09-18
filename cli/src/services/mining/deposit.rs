@@ -42,7 +42,7 @@ pub async fn deposit_task(state: &State) -> anyhow::Result<()> {
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    print_status(&format!("deposit tx hash: {:?}", pending_tx.tx_hash()));
+    print_status(&format!("Deposit tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
 
     // reduce remaining deposits

@@ -42,7 +42,7 @@ pub async fn claim_tokens(
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    print_status(&format!("claim tx hash: {:?}", pending_tx.tx_hash()));
+    print_status(&format!("Claim tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
     Ok(())
 }

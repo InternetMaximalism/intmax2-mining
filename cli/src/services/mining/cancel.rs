@@ -26,7 +26,7 @@ pub async fn cancel_task(state: &State, event: Deposited) -> anyhow::Result<()> 
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    print_status(&format!("cancel tx hash: {:?}", pending_tx.tx_hash()));
+    print_status(&format!("Cancel tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
     Ok(())
 }
