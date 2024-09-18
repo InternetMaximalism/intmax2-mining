@@ -1,4 +1,7 @@
+use std::fs::File;
+
 use cli::run;
+use simplelog::{Config, LevelFilter, WriteLogger};
 
 pub mod cli;
 pub mod config;
@@ -11,10 +14,19 @@ pub mod utils;
 
 #[tokio::main]
 async fn main() {
-    let _config = config::Settings::new().expect("Failed to load config");
+    // load config
+    config::Settings::new().expect("Failed to load config");
 
+    // setup logging
+    let log_file = File::create("cli.log").unwrap();
+    WriteLogger::init(LevelFilter::Info, Config::default(), log_file).unwrap();
+
+    // run the CLI
     match run().await {
         Ok(_) => {}
-        Err(e) => eprintln!("{:?}", e),
+        Err(e) => {
+            log::error!("{:?}", e);
+            eprintln!("An error occurred: {:?}", e);
+        }
     }
 }

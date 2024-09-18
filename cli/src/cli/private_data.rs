@@ -29,7 +29,7 @@ pub fn set_private_data() -> anyhow::Result<PrivateData> {
                 &withdrawal_address,
             )?;
             let password = Password::new()
-                .with_prompt("Password")
+                .with_prompt("Password to encrypt private key")
                 .with_confirmation("Confirm password", "Passwords do not match")
                 .interact()?;
             let encrypted_private_data = private_data.encrypt(&password)?;

@@ -3,13 +3,14 @@ availability_server_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/availabil
 withdrawal_gnark_prover_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/gnark-withdraw-circuit"
 claim_gnark_prover_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/gnark-claim-circuit"
 withdrawal_server_url="https://dev.v1.mining-gateway.intmax.xyz/v1/withdrawal/submit-proof"
-gnark_get_proof_cooldown_in_sec = 10
+gnark_get_proof_cooldown_in_sec = 15
 
 [blockchain]
-chain_id = 31337
-int1_address = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
-minter_address = "0x0165878A594ca255338adfa4d48449f69242Eb8F"
+chain_id = 11155111
+int1_address = "0x6EC83B7c8F78c6BA1b0994beDF8dfDeD824Ec400"
+minter_address = "0x6cc424557e836e60cE417B3C6719AAeD2FFEc226"
 
 [service]
-mining_cooldown_in_sec = 10
-claim_cooldown_in_sec = 10
+mining_max_cooldown_in_sec = 20
+claim_max_cooldown_in_sec = 20
+main_loop_cooldown_in_sec = 10

@@ -3,7 +3,7 @@ use ethers::{providers::Middleware as _, types::U256};
 use tokio::time::sleep;
 
 use crate::{
-    config::{InitialDeposit, MiningAmount, UserSettings},
+    config::{InitialDeposit, MiningAmount, Settings, UserSettings},
     external_api::contracts::utils::get_client,
     private_data::PrivateData,
 };
@@ -13,7 +13,18 @@ pub async fn user_settings(private_data: &PrivateData) -> anyhow::Result<()> {
         // user settings already exists
         return Ok(());
     }
-    let rpc_url: String = Input::new().with_prompt("RPC URL").interact()?;
+
+    let rpc_url: String = Input::new()
+        .with_prompt("RPC URL")
+        .validate_with(|rpc_url: &String| {
+            if rpc_url.starts_with("http") {
+                Ok(())
+            } else {
+                Err("Invalid RPC URL")
+            }
+        })
+        .interact()?;
+    check_rpc_url(&rpc_url).await?;
 
     let mining_amount = {
         let items = vec!["0.1 ETH", "1.0 ETH"];
@@ -90,10 +101,12 @@ async fn initial_balance(
     if deposit_balance < initial_deposit {
         let deposit_balance_formatted = pretty_format_u256(deposit_balance);
         let initial_deposit_formatted = pretty_format_u256(initial_deposit);
-        println!("Deposit Address: {:?}", addresses.deposit_address);
-        println!("{}ETH", deposit_balance_formatted);
         println!(
-            "Please deposit at least {}ETH + gas {}ETH to the above address",
+            "Deposit Address: {:?}  Balance: {} ETH",
+            addresses.deposit_address, deposit_balance_formatted
+        );
+        println!(
+            "Please deposit at least {} ETH + gas {} ETH to the above address",
             initial_deposit_formatted, mining_gas_formatted
         );
         loop {
@@ -109,10 +122,12 @@ async fn initial_balance(
     let claim_balance = client.get_balance(addresses.claim_address, None).await?;
     if claim_balance < mining_gas {
         let claim_balance_formatted = pretty_format_u256(claim_balance);
-        println!("Claim Address: {:?}", addresses.claim_address);
-        println!("{}ETH", claim_balance_formatted);
         println!(
-            "Please deposit at least {}ETH as gas to the above address",
+            "Claim Address: {:?} Balance: {} ETH",
+            addresses.claim_address, claim_balance_formatted
+        );
+        println!(
+            "Please deposit at least {} ETH as gas to the above address",
             mining_gas_formatted
         );
         loop {
@@ -132,6 +147,20 @@ fn pretty_format_u256(value: U256) -> String {
     // remove trailing zeros
     let s = s.trim_end_matches('0').trim_end_matches('.');
     s.to_string()
+}
+
+async fn check_rpc_url(rpc_url: &str) -> anyhow::Result<()> {
+    let client = ethers::providers::Provider::<ethers::providers::Http>::try_from(rpc_url)?;
+    let chain_id = client.get_chainid().await?;
+    let setting = Settings::new()?;
+    if chain_id != setting.blockchain.chain_id.into() {
+        return Err(anyhow::anyhow!(
+            "RPC URL chain id {} does not match the expected chain id {}",
+            chain_id.as_u64(),
+            setting.blockchain.chain_id,
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(test)]

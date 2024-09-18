@@ -5,6 +5,7 @@ use contract::claim_tokens;
 use mining_circuit::claim::claim_circuit::ClaimPublicInputs;
 
 use crate::{
+    cli::status::print_status,
     config::Settings,
     external_api::{
         contracts::events::Deposited,
@@ -36,6 +37,7 @@ pub async fn resume_claim_task(state: &State) -> anyhow::Result<()> {
 
 // Generate witness
 async fn from_step1(state: &State, events: &[Deposited]) -> anyhow::Result<()> {
+    print_status("Claim: generating claim witness");
     let witness = witness_generation::generate_claim_witness(state, events).await?;
     let status = temp::ClaimStatus {
         next_step: temp::ClaimStep::Plonky2Prove,
@@ -52,6 +54,7 @@ async fn from_step1(state: &State, events: &[Deposited]) -> anyhow::Result<()> {
 
 // Prove with Plonky2
 async fn from_step2(state: &State) -> anyhow::Result<()> {
+    print_status("Claim: proving with plonky2");
     let mut status = temp::ClaimStatus::new()?;
     ensure!(status.next_step == temp::ClaimStep::Plonky2Prove);
     ensure!(state.prover.is_some(), "Prover is not initialized");
@@ -80,6 +83,7 @@ async fn from_step2(state: &State) -> anyhow::Result<()> {
 
 // Start Gnark
 async fn from_step3(state: &State) -> anyhow::Result<()> {
+    print_status("Claim: starting gnark prover");
     let mut status = temp::ClaimStatus::new()?;
     ensure!(status.next_step == temp::ClaimStep::GnarkStart);
     let settings = Settings::new()?;
@@ -102,6 +106,7 @@ async fn from_step3(state: &State) -> anyhow::Result<()> {
 
 // Get Gnark proof
 async fn from_step4(_state: &State) -> anyhow::Result<()> {
+    print_status("Claim: getting gnark proof");
     let mut status = temp::ClaimStatus::new()?;
     ensure!(status.next_step == temp::ClaimStep::GnarkGetProof);
     let settings = Settings::new()?;
@@ -121,6 +126,7 @@ async fn from_step4(_state: &State) -> anyhow::Result<()> {
 
 // Call contract
 async fn from_step5(state: &State) -> anyhow::Result<()> {
+    print_status("Claim: calling contract");
     let status = temp::ClaimStatus::new()?;
     ensure!(status.next_step == temp::ClaimStep::ContractCall);
     let mut claims = Vec::new();

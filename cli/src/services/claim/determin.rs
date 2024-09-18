@@ -34,25 +34,36 @@ pub async fn determin_next_claim_process(state: &State) -> anyhow::Result<ClaimP
         }
     }
 
+    let mut contained_eligible_tree = Vec::new();
+    for event in contained_deposit_events.iter() {
+        if state
+            .eligible_tree
+            .get_leaf_index(event.deposit_index.unwrap())
+            .is_some()
+        {
+            contained_eligible_tree.push(event);
+        }
+    }
+
     // check if there are any deposits that are not claimed.
     let deposit_key = state.private_data.deposit_key;
-    let mut not_claimed_deposit_events = Vec::new();
-    for event in contained_deposit_events {
+    let mut not_claimed_eligible_deposits = Vec::new();
+    for event in contained_eligible_tree {
         let salt = get_salt_from_private_key_nonce(deposit_key, event.tx_nonce.unwrap());
         let nullifier = get_deposit_nullifier(&event.deposit(), salt);
         let is_exists = get_claim_nullifier_exists(nullifier).await?;
         if !is_exists {
-            not_claimed_deposit_events.push(event);
+            not_claimed_eligible_deposits.push(event.clone());
         }
     }
 
-    if !not_claimed_deposit_events.is_empty() {
+    if !not_claimed_eligible_deposits.is_empty() {
         // take at most MAX_CLAIMS events
-        let not_claimed_deposit_events = not_claimed_deposit_events
+        let not_claimed_eligible_deposits = not_claimed_eligible_deposits
             .into_iter()
             .take(MAX_CLAIMS)
             .collect::<Vec<_>>();
-        return Ok(ClaimProcess::Claim(not_claimed_deposit_events));
+        return Ok(ClaimProcess::Claim(not_claimed_eligible_deposits));
     }
 
     match state.mode {

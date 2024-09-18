@@ -7,7 +7,10 @@ use ethers::{
 use intmax2_zkp::ethereum_types::u32limb_trait::U32LimbTrait;
 use mining_circuit::claim::{claim_circuit::ClaimPublicInputs, mining_claim::MiningClaim};
 
-use crate::external_api::contracts::minter::{get_minter_contract_with_signer, minter_v1};
+use crate::{
+    cli::status::print_status,
+    external_api::contracts::minter::{get_minter_contract_with_signer, minter_v1},
+};
 
 pub async fn claim_tokens(
     claim_key: H256,
@@ -39,7 +42,7 @@ pub async fn claim_tokens(
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    println!("claim tx hash: {:?}", pending_tx.tx_hash());
+    print_status(&format!("claim tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
     Ok(())
 }

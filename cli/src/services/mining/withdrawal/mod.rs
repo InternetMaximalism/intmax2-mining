@@ -4,6 +4,7 @@ use anyhow::ensure;
 use mining_circuit::withdrawal::simple_withraw_circuit::SimpleWithdrawalPublicInputs;
 
 use crate::{
+    cli::status::print_status,
     config::Settings,
     external_api::{
         contracts::events::Deposited,
@@ -28,6 +29,7 @@ pub async fn resume_withdrawal_task(state: &State) -> anyhow::Result<()> {
         Ok(status) => status,
         Err(_) => return Ok(()),
     };
+    print_status("Withdrawal: resuming withdrawal");
     match status.next_step {
         temp::WithdrawalStep::Plonky2Prove => from_step2(state).await?,
         temp::WithdrawalStep::GnarkStart => from_step3(state).await?,
@@ -39,6 +41,7 @@ pub async fn resume_withdrawal_task(state: &State) -> anyhow::Result<()> {
 
 // Generate witness
 async fn from_step1(state: &State, event: Deposited) -> anyhow::Result<()> {
+    print_status("Withdrawal: generating withdrawal witness");
     let witness = witness_generation::generate_withdrawa_witness(state, event)?;
     let status = temp::WithdrawalStatus {
         next_step: temp::WithdrawalStep::Plonky2Prove,
@@ -55,6 +58,7 @@ async fn from_step1(state: &State, event: Deposited) -> anyhow::Result<()> {
 
 // Prove with Plonky2
 async fn from_step2(state: &State) -> anyhow::Result<()> {
+    print_status("Withdrawal: proving with plonky2");
     let mut status = temp::WithdrawalStatus::new()?;
     ensure!(status.next_step == temp::WithdrawalStep::Plonky2Prove);
     ensure!(state.prover.is_some(), "Prover is not initialized");
@@ -73,6 +77,7 @@ async fn from_step2(state: &State) -> anyhow::Result<()> {
 
 // Start Gnark
 async fn from_step3(state: &State) -> anyhow::Result<()> {
+    print_status("Withdrawal: starting gnark");
     let mut status = temp::WithdrawalStatus::new()?;
     ensure!(status.next_step == temp::WithdrawalStep::GnarkStart);
     let settings = Settings::new()?;
@@ -94,6 +99,7 @@ async fn from_step3(state: &State) -> anyhow::Result<()> {
 
 // Get Gnark proof
 async fn from_step4(_state: &State) -> anyhow::Result<()> {
+    print_status("Withdrawal: getting gnark proof");
     let mut status = temp::WithdrawalStatus::new()?;
     ensure!(status.next_step == temp::WithdrawalStep::GnarkGetProof);
     let settings = Settings::new()?;
@@ -113,6 +119,7 @@ async fn from_step4(_state: &State) -> anyhow::Result<()> {
 
 // Call contract
 async fn from_step5(_state: &State) -> anyhow::Result<()> {
+    print_status("Withdrawal: calling contract");
     let status = temp::WithdrawalStatus::new()?;
     ensure!(status.next_step == temp::WithdrawalStep::ContractCall);
     let pis = SimpleWithdrawalPublicInputs {
@@ -123,7 +130,7 @@ async fn from_step5(_state: &State) -> anyhow::Result<()> {
         amount: status.witness.deposit_leaf.amount,
     };
     let tx_hash = submit_withdrawal(pis, status.gnark_proof.as_ref().unwrap()).await?;
-    println!("withdral tx hash: {:?}", tx_hash);
+    print_status(&format!("withdral tx hash: {:?}", tx_hash));
     temp::WithdrawalStatus::delete()?;
     Ok(())
 }
@@ -168,9 +175,8 @@ mod tests {
         let deposit_hash_tree = sync_deposit_tree().await.unwrap();
         let mut state = get_dummy_state();
         state.deposit_hash_tree = deposit_hash_tree;
-        // let prover = Prover::new();
-        // state.prover = Some(prover);
-        // println!("state initialized");
+        let prover = Prover::new();
+        state.prover = Some(prover);
         super::resume_withdrawal_task(&state).await.unwrap();
     }
 

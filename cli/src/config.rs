@@ -1,4 +1,5 @@
 use std::{
+    env,
     fs::OpenOptions,
     io::{BufReader, BufWriter},
 };
@@ -6,8 +7,23 @@ use std::{
 use config::{Config, ConfigError, File};
 use serde::{Deserialize, Serialize};
 
-const CONFIG_NAME: &'static str = "config";
-const USER_SETTINGS_PATH: &'static str = "data/user_settings.json";
+fn config_name() -> &'static str {
+    let network = env::var("NETWORK").unwrap_or_else(|_| "testnet".into());
+    match network.as_str() {
+        "testnet" => "config.testnet",
+        "localnet" => "config.localnet",
+        _ => panic!("Unsupported network"),
+    }
+}
+
+fn user_settings_path() -> &'static str {
+    let network = env::var("NETWORK").unwrap_or_else(|_| "testnet".into());
+    match network.as_str() {
+        "testnet" => "data/user_settings.testnet.json",
+        "localnet" => "data/user_settings.localnet.json",
+        _ => panic!("Unsupported network"),
+    }
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Settings {
@@ -19,7 +35,7 @@ pub struct Settings {
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
         let s = Config::builder()
-            .add_source(File::with_name(CONFIG_NAME))
+            .add_source(File::with_name(config_name()))
             .build()?;
         s.try_deserialize()
     }
@@ -43,8 +59,9 @@ pub struct Blockchain {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Service {
-    pub mining_cooldown_in_sec: u64,
-    pub claim_cooldown_in_sec: u64,
+    pub mining_max_cooldown_in_sec: u64,
+    pub claim_max_cooldown_in_sec: u64,
+    pub main_loop_cooldown_in_sec: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -73,7 +90,7 @@ pub struct UserSettings {
 
 impl UserSettings {
     pub fn new() -> anyhow::Result<Self> {
-        let file = std::fs::File::open(&USER_SETTINGS_PATH)?;
+        let file = std::fs::File::open(&user_settings_path())?;
         let reader = BufReader::new(file);
         let settings: UserSettings = serde_json::from_reader(reader)?;
         Ok(settings)
@@ -84,7 +101,7 @@ impl UserSettings {
             .write(true)
             .create(true)
             .truncate(true)
-            .open(&USER_SETTINGS_PATH)?;
+            .open(&user_settings_path())?;
         let writer = BufWriter::new(file);
         serde_json::to_writer_pretty(writer, self)?;
         Ok(())
