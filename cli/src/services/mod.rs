@@ -9,7 +9,7 @@ use mining::{
     withdrawal::withdrawal_task,
 };
 
-use crate::{config::Settings, state::state::State};
+use crate::{cli::status::print_status, config::Settings, state::state::State};
 
 pub mod claim;
 pub mod mining;
@@ -27,26 +27,27 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
         let next_process = determin_next_mining_process(state).await?;
         match next_process {
             MiningProcess::Deposit => {
-                println!("Deposit");
+                print_status("Deposit");
                 deposit_task(state).await?
             }
             MiningProcess::Withdrawal(event) => {
-                println!("Withdrawal");
+                print_status("Withdrawal");
                 withdrawal_task(state, event).await?
             }
             MiningProcess::Cancel(event) => {
-                println!("Cancel");
+                print_status("Cancel");
                 cancel_task(state, event).await?
             }
             MiningProcess::WaitingForAnalyze => {
-                println!("WaitingForAnalyze");
+                print_status("WaitingForAnalyze");
             }
             MiningProcess::End => {
-                println!("MiningEnd");
+                print_status("MiningEnd");
                 is_mining_ended = true;
             }
         }
         // sleep for mining cooldown
+        print_status("Mining cooldown...");
         tokio::time::sleep(std::time::Duration::from_secs(
             settings.service.mining_cooldown_in_sec,
         ))
@@ -54,11 +55,15 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
 
         let next_process = determin_next_claim_process(state).await?;
         match next_process {
-            ClaimProcess::Claim(events) => claim_task(state, &events).await?,
+            ClaimProcess::Claim(events) => {
+                print_status(&format!("Claim {}", events.len()));
+                claim_task(state, &events).await?;
+            }
             ClaimProcess::Wait => (),
             ClaimProcess::End => break,
         }
         // sleep for claim cooldown
+        print_status("Claim cooldown...");
         tokio::time::sleep(std::time::Duration::from_secs(
             settings.service.claim_cooldown_in_sec,
         ))
