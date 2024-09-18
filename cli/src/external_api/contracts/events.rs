@@ -105,13 +105,14 @@ pub async fn get_deposit_leaf_inserted_event(
         .from_block(from_block)
         .query_with_meta()
         .await?;
-    let events: Vec<DepositLeafInserted> = events
+    let mut events: Vec<DepositLeafInserted> = events
         .into_iter()
         .map(|(event, _meta)| DepositLeafInserted {
             deposit_index: event.deposit_index,
             deposit_hash: Bytes32::from_bytes_be(&event.deposit_hash),
         })
         .collect();
+    events.sort_by_key(|event| event.deposit_index);
     Ok(events)
 }
 

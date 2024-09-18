@@ -3,11 +3,11 @@ use intmax2_zkp::{
     constants::DEPOSIT_TREE_HEIGHT,
     ethereum_types::{bytes32::Bytes32, u256::U256, u32limb_trait::U32LimbTrait},
 };
-use mining_circuit::eligible_tree::{EligibleLeaf, EligibleTree, ELIGIBLE_TREE_HEIGHT};
+use mining_circuit::eligible_tree::{EligibleLeaf, ELIGIBLE_TREE_HEIGHT};
 use num_bigint::BigUint;
 use serde::{Deserialize, Serialize};
 
-use super::deposit_hash_tree::DepositHashTree;
+use super::{deposit_hash_tree::DepositHashTree, eligible_tree_with_map::EligibleTreeWithMap};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -29,14 +29,14 @@ pub struct BinEligibleTree {
 pub struct EligibleTreeInfo {
     pub root: Bytes32,
     pub block_number: u64,
-    pub tree: EligibleTree,
+    pub tree: EligibleTreeWithMap,
 }
 
 impl TryFrom<BinEligibleTree> for EligibleTreeInfo {
     type Error = anyhow::Error;
 
     fn try_from(bin_tree: BinEligibleTree) -> anyhow::Result<Self> {
-        let mut tree = EligibleTree::new(ELIGIBLE_TREE_HEIGHT);
+        let mut tree = EligibleTreeWithMap::new();
         for leaf in bin_tree.leaves {
             let amount: U256 = BigUint::from_bytes_le(&leaf.amount).try_into()?;
             tree.push(EligibleLeaf {
@@ -63,6 +63,7 @@ impl TryFrom<BinEligibleTree> for EligibleTreeInfo {
 impl From<EligibleTreeInfo> for BinEligibleTree {
     fn from(tree_info: EligibleTreeInfo) -> Self {
         let leaves: Vec<BinEligibleLeaf> = tree_info
+            .tree
             .tree
             .leaves()
             .iter()
@@ -185,7 +186,7 @@ mod tests {
         let eligible_tree_info = EligibleTreeInfo {
             root: eligible_tree.get_root(),
             block_number: 0,
-            tree: eligible_tree.tree.clone(),
+            tree: eligible_tree.clone(),
         };
 
         let eligible_bin_tree: BinEligibleTree = eligible_tree_info.clone().into();

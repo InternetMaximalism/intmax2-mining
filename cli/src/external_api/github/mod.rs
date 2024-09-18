@@ -8,7 +8,7 @@ use crate::{
     utils::bin_parser::{BinDepositTree, BinEligibleTree},
 };
 
-pub async fn fetch_latest_tree(
+pub async fn fetch_latest_tree_from_github(
     last_update: NaiveDateTime,
 ) -> anyhow::Result<Option<(BinDepositTree, BinEligibleTree, NaiveDateTime)>> {
     let settings = Settings::new()?;
@@ -95,7 +95,7 @@ mod tests {
     async fn test_fetch_latest_files() {
         let last_update =
             NaiveDateTime::parse_from_str("2023-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
-        let result = fetch_latest_tree(last_update).await.unwrap();
+        let result = fetch_latest_tree_from_github(last_update).await.unwrap();
         assert!(result.is_some());
     }
 
@@ -103,7 +103,7 @@ mod tests {
     async fn test_fetch_latest_files_no_new_files() {
         let last_update =
             NaiveDateTime::parse_from_str("2999-12-31 23:59:59", "%Y-%m-%d %H:%M:%S").unwrap();
-        let result = fetch_latest_tree(last_update).await.unwrap();
+        let result = fetch_latest_tree_from_github(last_update).await.unwrap();
         assert!(result.is_none());
     }
 }

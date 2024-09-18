@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use intmax2_zkp::ethereum_types::u256::U256;
 use mining_circuit::eligible_tree::EligibleLeaf;
 use num_bigint::BigUint;
@@ -27,7 +28,7 @@ pub fn get_dummy_state() -> State {
         private_data,
         deposit_hash_tree: DepositHashTree::new(),
         eligible_tree,
-        last_tree_feched_at: None,
+        last_tree_feched_at: NaiveDateTime::default(),
         mode: RunMode::Normal,
         prover: None,
     };
