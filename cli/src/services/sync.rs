@@ -38,7 +38,9 @@ pub async fn sync_trees(
                 sync_to_latest_deposit_tree(deposit_hash_tree, deposit_tree_info.block_number)
                     .await?;
         }
-        None => {}
+        None => {
+            *last_update = now; // update last_update to now
+        }
     }
     Ok(())
 }
