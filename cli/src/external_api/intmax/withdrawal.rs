@@ -24,7 +24,7 @@ pub struct SubmitWithdrawalInput {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SubmitWithdrawalSuccess {
-    pub tx_hash: String,
+    pub transaction_hash: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,7 +64,7 @@ pub async fn submit_withdrawal(
     } else {
         let input = SubmitWithdrawalInput {
             public_inputs: pis,
-            proof: proof.to_string(),
+            proof: "0x".to_string() + proof, // add 0x prefix
         };
         let response = reqwest::Client::new()
             .post(settings.api.withdrawal_server_url)
@@ -73,7 +73,7 @@ pub async fn submit_withdrawal(
             .await?;
         let response: SumbitWithdrawalResponse = response.json().await?;
         match response {
-            SumbitWithdrawalResponse::Sucess(success) => H256::from_str(&success.tx_hash)?,
+            SumbitWithdrawalResponse::Sucess(success) => H256::from_str(&success.transaction_hash)?,
             SumbitWithdrawalResponse::Error(error) => {
                 return Err(anyhow::anyhow!("Error submitting withdrawal: {:?}", error));
             }
