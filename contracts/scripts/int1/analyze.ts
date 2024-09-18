@@ -7,10 +7,14 @@ const env = cleanEnv(process.env, {
 });
 
 async function main() {
+  const [signer] = await ethers.getSigners();
+  console.log("signer address:", signer.address);
+
   const int1 = await ethers.getContractAt("Int1", env.INT1_CONTRACT_ADDRESS);
   const analyzer = new ethers.Wallet(env.ANALYZER_PRIVATE_KEY, ethers.provider);
-  await int1.connect(analyzer).analyzeAndProcessDeposits(3, [1]); // analyze up to depositId = 3, rejecting depositId = 1
-
+  const lastDepositId = await int1.getLastDepositId();
+  console.log(`Last deposit ID: ${lastDepositId}`);
+  await int1.connect(analyzer).analyzeAndProcessDeposits(lastDepositId, []);
   const lastProcessedDepositId = await int1.getLastProcessedDepositId();
   console.log(`Last processed deposit ID: ${lastProcessedDepositId}`); // should be 3
 }

@@ -1,7 +1,7 @@
 import { cleanEnv, str } from "envalid";
 import { ethers } from "hardhat";
-import { getRandomPubkey, getRandomSalt } from "../../utils/rand";
-import { getPubkeySaltHash } from "../../utils/hash";
+import { getRandomPubkey, getRandomSalt } from "../utils/rand";
+import { getPubkeySaltHash } from "../utils/hash";
 
 const env = cleanEnv(process.env, {
   INT1_CONTRACT_ADDRESS: str(),
@@ -15,7 +15,7 @@ async function main() {
     const pubkey = getRandomPubkey();
     const salt = getRandomSalt();
     const pubkeySaltHash = getPubkeySaltHash(pubkey, salt);
-    const tx = await int1.depositNativeToken(pubkeySaltHash, {
+    await int1.depositNativeToken(pubkeySaltHash, {
       value: ethers.parseEther("1"),
     });
   }

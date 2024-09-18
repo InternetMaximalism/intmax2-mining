@@ -30,11 +30,6 @@ npx hardhat run scripts/int1/deposit.ts --network localhost
 npx hardhat run scripts/int1/analyze.ts --network localhost
 ```
 
-### Comparison between Int1 and Liquidity Contract
-
-- `Deposited` event is the same
-- `DepositsAnalyzedAndRelayed` of Liquidity Contract corresponds to `DepositsAnalyzedAndProcessed` of Int1. The difference is that the Liquidity Contract relays the deposits to the Scroll contract, while Int1 processes the deposits itself. Thus `gasLimit` and `message` are not present in the Int1 event.
-
 ## Int0
 
 ## Setup
@@ -45,9 +40,5 @@ npx hardhat run scripts/int1/analyze.ts --network localhost
 ```
 
 ./setup.sh
-
-```
-
-```
 
 ```

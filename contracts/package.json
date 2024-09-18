@@ -17,7 +17,7 @@
     "poseidon-goldilocks": "^0.2.3"
   },
   "scripts": {
-    "compile": "hardhat compile && npm run copy-types",
+    "compile": "hardhat compile",
     "copy-types": "rsync -avh typechain-types/ ../miner/typechain-types/",
     "deposit": "hardhat run scripts/deposit.ts --network localhost",
     "withdrawal": "hardhat run scripts/withdrawal.ts --network localhost",

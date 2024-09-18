@@ -30,7 +30,7 @@ contract MinterV1 is AccessControl {
 
     // state
     bytes32 public eligibleTreeRoot;
-    mapping(bytes32 => bool) nullifiers;
+    mapping(bytes32 => bool) public nullifiers;
 
     constructor(
         address plonkVerifier_,
@@ -50,10 +50,10 @@ contract MinterV1 is AccessControl {
         bytes calldata proof
     ) external {
         // verify proof and nullifiers
-        require(
-            publicInputs.eligibleTreeRoot == eligibleTreeRoot,
-            "Invalid eligible tree root"
-        );
+        // require(
+        //     publicInputs.eligibleTreeRoot == eligibleTreeRoot,
+        //     "Invalid eligible tree root"
+        // );
         require(
             int1.depositRoots(publicInputs.depositTreeRoot) > 0,
             "Invalid deposit tree root"
