@@ -1,7 +1,7 @@
 import { cleanEnv, str } from "envalid";
 import { ethers } from "hardhat";
-import { getRandomPubkey, getRandomSalt } from "../utils/rand";
-import { getPubkeySaltHash } from "../utils/hash";
+import { getRandomPubkey, getRandomSalt } from "../../utils/rand";
+import { getPubkeySaltHash } from "../../utils/hash";
 
 const env = cleanEnv(process.env, {
   INT1_CONTRACT_ADDRESS: str(),

@@ -1,5 +1,5 @@
 import { ethers, upgrades } from "hardhat";
-import { Int1 } from "../typechain-types";
+import { Int1 } from "../../typechain-types";
 import { cleanEnv, str } from "envalid";
 
 const env = cleanEnv(process.env, {
@@ -28,7 +28,7 @@ async function main() {
   console.log(`Int1 deployed at: ${await int1.getAddress()}`);
 
   // deploy token
-  const tokenFactory = await ethers.getContractFactory("INTMAXToken");
+  const tokenFactory = await ethers.getContractFactory("DummyToken");
   const token = await tokenFactory.deploy(admin, ethers.ZeroAddress);
 
   const claimVerifierFactory = await ethers.getContractFactory(
