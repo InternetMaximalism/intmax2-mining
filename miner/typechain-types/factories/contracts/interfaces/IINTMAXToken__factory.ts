@@ -10,6 +10,11 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "TransferNotAllowed",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -58,6 +63,91 @@ const _abi = [
     ],
     name: "Transfer",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "GENESIS_TIMESTAMP",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "MAX_SUPPLY",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "MINTER_ROLE",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "NUM_PHASES",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "PHASE0_PERIOD",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "PHASE0_REWARD_PER_DAY",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "allowTransfers",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
@@ -154,6 +244,32 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "totalBurnedAmount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalClaimedAmount",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "totalMintableAmount",
     outputs: [
       {
@@ -229,6 +345,19 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "transfersAllowed",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const;

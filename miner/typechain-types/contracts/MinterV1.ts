@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../common";
 
-export declare namespace ICommon {
+export declare namespace MinterV1 {
   export type MintClaimStruct = {
     recipient: AddressLike;
     nullifier: BytesLike;
@@ -35,78 +35,196 @@ export declare namespace ICommon {
     nullifier: string,
     amount: bigint
   ] & { recipient: string; nullifier: string; amount: bigint };
+
+  export type ClaimPublicInputsStruct = {
+    depositTreeRoot: BytesLike;
+    eligibleTreeRoot: BytesLike;
+    lastClaimHash: BytesLike;
+  };
+
+  export type ClaimPublicInputsStructOutput = [
+    depositTreeRoot: string,
+    eligibleTreeRoot: string,
+    lastClaimHash: string
+  ] & {
+    depositTreeRoot: string;
+    eligibleTreeRoot: string;
+    lastClaimHash: string;
+  };
 }
 
 export interface MinterV1Interface extends Interface {
   getFunction(
     nameOrSignature:
-      | "l1ScrollMessenger"
+      | "DEFAULT_ADMIN_ROLE"
+      | "claimTokens"
+      | "eligibleTreeRoot"
+      | "getRoleAdmin"
+      | "grantRole"
+      | "hasRole"
+      | "int1"
+      | "migrate"
       | "mint"
-      | "mintVerifier"
-      | "owner"
-      | "processClaims"
-      | "renounceOwnership"
+      | "nullifiers"
+      | "renounceRole"
+      | "revokeRole"
+      | "setTreeRoots"
+      | "supportsInterface"
       | "token"
-      | "transferOwnership"
+      | "verifier"
   ): FunctionFragment;
 
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "RoleAdminChanged" | "RoleGranted" | "RoleRevoked"
+  ): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "l1ScrollMessenger",
+    functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimTokens",
+    values: [
+      MinterV1.MintClaimStruct[],
+      MinterV1.ClaimPublicInputsStruct,
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "eligibleTreeRoot",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grantRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(functionFragment: "int1", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "migrate",
+    values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "mintVerifier",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "processClaims",
-    values: [ICommon.MintClaimStruct[]]
+    functionFragment: "nullifiers",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
+    functionFragment: "renounceRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTreeRoots",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "token", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [AddressLike]
-  ): string;
+  encodeFunctionData(functionFragment: "verifier", values?: undefined): string;
 
   decodeFunctionResult(
-    functionFragment: "l1ScrollMessenger",
+    functionFragment: "DEFAULT_ADMIN_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "claimTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "eligibleTreeRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleAdmin",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "int1", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "migrate", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "nullifiers", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "mintVerifier",
+    functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "processClaims",
+    functionFragment: "setTreeRoots",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "renounceOwnership",
+    functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "verifier", data: BytesLike): Result;
 }
 
-export namespace OwnershipTransferredEvent {
-  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
-  export type OutputTuple = [previousOwner: string, newOwner: string];
+export namespace RoleAdminChangedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    previousAdminRole: BytesLike,
+    newAdminRole: BytesLike
+  ];
+  export type OutputTuple = [
+    role: string,
+    previousAdminRole: string,
+    newAdminRole: string
+  ];
   export interface OutputObject {
-    previousOwner: string;
-    newOwner: string;
+    role: string;
+    previousAdminRole: string;
+    newAdminRole: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RoleGrantedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    account: AddressLike,
+    sender: AddressLike
+  ];
+  export type OutputTuple = [role: string, account: string, sender: string];
+  export interface OutputObject {
+    role: string;
+    account: string;
+    sender: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace RoleRevokedEvent {
+  export type InputTuple = [
+    role: BytesLike,
+    account: AddressLike,
+    sender: AddressLike
+  ];
+  export type OutputTuple = [role: string, account: string, sender: string];
+  export interface OutputObject {
+    role: string;
+    account: string;
+    sender: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -157,81 +275,205 @@ export interface MinterV1 extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  l1ScrollMessenger: TypedContractMethod<[], [string], "view">;
+  DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
+
+  claimTokens: TypedContractMethod<
+    [
+      claims: MinterV1.MintClaimStruct[],
+      publicInputs: MinterV1.ClaimPublicInputsStruct,
+      proof: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  eligibleTreeRoot: TypedContractMethod<[], [string], "view">;
+
+  getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
+
+  grantRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  hasRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  int1: TypedContractMethod<[], [string], "view">;
+
+  migrate: TypedContractMethod<[newMinter: AddressLike], [void], "nonpayable">;
 
   mint: TypedContractMethod<[], [void], "nonpayable">;
 
-  mintVerifier: TypedContractMethod<[], [string], "view">;
+  nullifiers: TypedContractMethod<[arg0: BytesLike], [boolean], "view">;
 
-  owner: TypedContractMethod<[], [string], "view">;
-
-  processClaims: TypedContractMethod<
-    [claims: ICommon.MintClaimStruct[]],
+  renounceRole: TypedContractMethod<
+    [role: BytesLike, callerConfirmation: AddressLike],
     [void],
     "nonpayable"
   >;
 
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+  revokeRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  setTreeRoots: TypedContractMethod<
+    [eligibleTreeRoot_: BytesLike, targetBalance: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  supportsInterface: TypedContractMethod<
+    [interfaceId: BytesLike],
+    [boolean],
+    "view"
+  >;
 
   token: TypedContractMethod<[], [string], "view">;
 
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
-    [void],
-    "nonpayable"
-  >;
+  verifier: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "l1ScrollMessenger"
+    nameOrSignature: "DEFAULT_ADMIN_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "mint"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "mintVerifier"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "owner"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "processClaims"
+    nameOrSignature: "claimTokens"
   ): TypedContractMethod<
-    [claims: ICommon.MintClaimStruct[]],
+    [
+      claims: MinterV1.MintClaimStruct[],
+      publicInputs: MinterV1.ClaimPublicInputsStruct,
+      proof: BytesLike
+    ],
     [void],
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "renounceOwnership"
+    nameOrSignature: "eligibleTreeRoot"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRoleAdmin"
+  ): TypedContractMethod<[role: BytesLike], [string], "view">;
+  getFunction(
+    nameOrSignature: "grantRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "hasRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [boolean],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "int1"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "migrate"
+  ): TypedContractMethod<[newMinter: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "mint"
   ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "nullifiers"
+  ): TypedContractMethod<[arg0: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "renounceRole"
+  ): TypedContractMethod<
+    [role: BytesLike, callerConfirmation: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "revokeRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setTreeRoots"
+  ): TypedContractMethod<
+    [eligibleTreeRoot_: BytesLike, targetBalance: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "supportsInterface"
+  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
     nameOrSignature: "token"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "transferOwnership"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+    nameOrSignature: "verifier"
+  ): TypedContractMethod<[], [string], "view">;
 
   getEvent(
-    key: "OwnershipTransferred"
+    key: "RoleAdminChanged"
   ): TypedContractEvent<
-    OwnershipTransferredEvent.InputTuple,
-    OwnershipTransferredEvent.OutputTuple,
-    OwnershipTransferredEvent.OutputObject
+    RoleAdminChangedEvent.InputTuple,
+    RoleAdminChangedEvent.OutputTuple,
+    RoleAdminChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RoleGranted"
+  ): TypedContractEvent<
+    RoleGrantedEvent.InputTuple,
+    RoleGrantedEvent.OutputTuple,
+    RoleGrantedEvent.OutputObject
+  >;
+  getEvent(
+    key: "RoleRevoked"
+  ): TypedContractEvent<
+    RoleRevokedEvent.InputTuple,
+    RoleRevokedEvent.OutputTuple,
+    RoleRevokedEvent.OutputObject
   >;
 
   filters: {
-    "OwnershipTransferred(address,address)": TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": TypedContractEvent<
+      RoleAdminChangedEvent.InputTuple,
+      RoleAdminChangedEvent.OutputTuple,
+      RoleAdminChangedEvent.OutputObject
     >;
-    OwnershipTransferred: TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
+    RoleAdminChanged: TypedContractEvent<
+      RoleAdminChangedEvent.InputTuple,
+      RoleAdminChangedEvent.OutputTuple,
+      RoleAdminChangedEvent.OutputObject
+    >;
+
+    "RoleGranted(bytes32,address,address)": TypedContractEvent<
+      RoleGrantedEvent.InputTuple,
+      RoleGrantedEvent.OutputTuple,
+      RoleGrantedEvent.OutputObject
+    >;
+    RoleGranted: TypedContractEvent<
+      RoleGrantedEvent.InputTuple,
+      RoleGrantedEvent.OutputTuple,
+      RoleGrantedEvent.OutputObject
+    >;
+
+    "RoleRevoked(bytes32,address,address)": TypedContractEvent<
+      RoleRevokedEvent.InputTuple,
+      RoleRevokedEvent.OutputTuple,
+      RoleRevokedEvent.OutputObject
+    >;
+    RoleRevoked: TypedContractEvent<
+      RoleRevokedEvent.InputTuple,
+      RoleRevokedEvent.OutputTuple,
+      RoleRevokedEvent.OutputObject
     >;
   };
 }

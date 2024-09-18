@@ -34,6 +34,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC165Upgradeable__factory>;
     getContractFactory(
+      name: "AccessControl",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AccessControl__factory>;
+    getContractFactory(
       name: "IAccessControl",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAccessControl__factory>;
@@ -61,6 +65,10 @@ declare module "hardhat/types/runtime" {
       name: "Address",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Address__factory>;
+    getContractFactory(
+      name: "ERC165",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC165__factory>;
     getContractFactory(
       name: "IERC165",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -102,9 +110,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IINTMAXToken__factory>;
     getContractFactory(
-      name: "IMinterV1",
+      name: "IMinterV2",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IMinterV1__factory>;
+    ): Promise<Contracts.IMinterV2__factory>;
     getContractFactory(
       name: "IPlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -130,6 +138,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MinterV1__factory>;
     getContractFactory(
+      name: "MinterV2",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MinterV2__factory>;
+    getContractFactory(
       name: "MintVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MintVerifier__factory>;
@@ -137,6 +149,10 @@ declare module "hardhat/types/runtime" {
       name: "ClaimPlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ClaimPlonkVerifier__factory>;
+    getContractFactory(
+      name: "V1WithdrawalPlonkVerifier",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.V1WithdrawalPlonkVerifier__factory>;
     getContractFactory(
       name: "WithdrawalPlonkVerifier",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -168,6 +184,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ERC165Upgradeable>;
     getContractAt(
+      name: "AccessControl",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AccessControl>;
+    getContractAt(
       name: "IAccessControl",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -202,6 +223,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Address>;
+    getContractAt(
+      name: "ERC165",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC165>;
     getContractAt(
       name: "IERC165",
       address: string | ethers.Addressable,
@@ -253,10 +279,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IINTMAXToken>;
     getContractAt(
-      name: "IMinterV1",
+      name: "IMinterV2",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
-    ): Promise<Contracts.IMinterV1>;
+    ): Promise<Contracts.IMinterV2>;
     getContractAt(
       name: "IPlonkVerifier",
       address: string | ethers.Addressable,
@@ -288,6 +314,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.MinterV1>;
     getContractAt(
+      name: "MinterV2",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MinterV2>;
+    getContractAt(
       name: "MintVerifier",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -297,6 +328,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.ClaimPlonkVerifier>;
+    getContractAt(
+      name: "V1WithdrawalPlonkVerifier",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.V1WithdrawalPlonkVerifier>;
     getContractAt(
       name: "WithdrawalPlonkVerifier",
       address: string | ethers.Addressable,
@@ -324,6 +360,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC165Upgradeable>;
     deployContract(
+      name: "AccessControl",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.AccessControl>;
+    deployContract(
       name: "IAccessControl",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAccessControl>;
@@ -351,6 +391,10 @@ declare module "hardhat/types/runtime" {
       name: "Address",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Address>;
+    deployContract(
+      name: "ERC165",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC165>;
     deployContract(
       name: "IERC165",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -392,9 +436,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IINTMAXToken>;
     deployContract(
-      name: "IMinterV1",
+      name: "IMinterV2",
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IMinterV1>;
+    ): Promise<Contracts.IMinterV2>;
     deployContract(
       name: "IPlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -420,6 +464,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MinterV1>;
     deployContract(
+      name: "MinterV2",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MinterV2>;
+    deployContract(
       name: "MintVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MintVerifier>;
@@ -427,6 +475,10 @@ declare module "hardhat/types/runtime" {
       name: "ClaimPlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ClaimPlonkVerifier>;
+    deployContract(
+      name: "V1WithdrawalPlonkVerifier",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.V1WithdrawalPlonkVerifier>;
     deployContract(
       name: "WithdrawalPlonkVerifier",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -458,6 +510,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC165Upgradeable>;
     deployContract(
+      name: "AccessControl",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.AccessControl>;
+    deployContract(
       name: "IAccessControl",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -492,6 +549,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Address>;
+    deployContract(
+      name: "ERC165",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC165>;
     deployContract(
       name: "IERC165",
       args: any[],
@@ -543,10 +605,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IINTMAXToken>;
     deployContract(
-      name: "IMinterV1",
+      name: "IMinterV2",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IMinterV1>;
+    ): Promise<Contracts.IMinterV2>;
     deployContract(
       name: "IPlonkVerifier",
       args: any[],
@@ -578,6 +640,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MinterV1>;
     deployContract(
+      name: "MinterV2",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MinterV2>;
+    deployContract(
       name: "MintVerifier",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -587,6 +654,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ClaimPlonkVerifier>;
+    deployContract(
+      name: "V1WithdrawalPlonkVerifier",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.V1WithdrawalPlonkVerifier>;
     deployContract(
       name: "WithdrawalPlonkVerifier",
       args: any[],

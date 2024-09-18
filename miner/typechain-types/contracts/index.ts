@@ -13,3 +13,4 @@ export type { Int1 } from "./Int1";
 export type { MintVerifier } from "./MintVerifier";
 export type { MinterV0 } from "./MinterV0";
 export type { MinterV1 } from "./MinterV1";
+export type { MinterV2 } from "./MinterV2";

@@ -23,6 +23,34 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export declare namespace DepositLib {
+  export type DepositStruct = {
+    recipientSaltHash: BytesLike;
+    tokenIndex: BigNumberish;
+    amount: BigNumberish;
+  };
+
+  export type DepositStructOutput = [
+    recipientSaltHash: string,
+    tokenIndex: bigint,
+    amount: bigint
+  ] & { recipientSaltHash: string; tokenIndex: bigint; amount: bigint };
+}
+
+export declare namespace DepositQueueLib {
+  export type DepositDataStruct = {
+    depositHash: BytesLike;
+    sender: AddressLike;
+    isRejected: boolean;
+  };
+
+  export type DepositDataStructOutput = [
+    depositHash: string,
+    sender: string,
+    isRejected: boolean
+  ] & { depositHash: string; sender: string; isRejected: boolean };
+}
+
 export declare namespace IInt1 {
   export type WithdrawalPublicInputsStruct = {
     depositRoot: BytesLike;
@@ -54,10 +82,15 @@ export interface Int1Interface extends Interface {
       | "DEFAULT_ADMIN_ROLE"
       | "UPGRADE_INTERFACE_VERSION"
       | "analyzeAndProcessDeposits"
+      | "cancelDeposit"
       | "depositIndex"
       | "depositNativeToken"
       | "depositRoots"
+      | "getDepositData"
+      | "getDepositDataBatch"
       | "getDepositRoot"
+      | "getLastDepositId"
+      | "getLastProcessedDepositId"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
@@ -65,7 +98,6 @@ export interface Int1Interface extends Interface {
       | "nullifiers"
       | "proxiableUUID"
       | "renounceRole"
-      | "rescue"
       | "revokeRole"
       | "supportsInterface"
       | "upgradeToAndCall"
@@ -76,13 +108,16 @@ export interface Int1Interface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "DepositCanceled"
       | "DepositLeafInserted"
       | "Deposited"
+      | "DepositsAnalyzedAndProcessed"
       | "Initialized"
       | "RoleAdminChanged"
       | "RoleGranted"
       | "RoleRevoked"
       | "Upgraded"
+      | "Withdrawn"
   ): EventFragment;
 
   encodeFunctionData(functionFragment: "ANALYZER", values?: undefined): string;
@@ -99,6 +134,10 @@ export interface Int1Interface extends Interface {
     values: [BigNumberish, BigNumberish[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "cancelDeposit",
+    values: [BigNumberish, DepositLib.DepositStruct]
+  ): string;
+  encodeFunctionData(
     functionFragment: "depositIndex",
     values?: undefined
   ): string;
@@ -111,7 +150,23 @@ export interface Int1Interface extends Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "getDepositData",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getDepositDataBatch",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getDepositRoot",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getLastDepositId",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getLastProcessedDepositId",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -142,7 +197,6 @@ export interface Int1Interface extends Interface {
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "rescue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, AddressLike]
@@ -182,6 +236,10 @@ export interface Int1Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "cancelDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "depositIndex",
     data: BytesLike
   ): Result;
@@ -194,7 +252,23 @@ export interface Int1Interface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getDepositData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getDepositDataBatch",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getDepositRoot",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getLastDepositId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getLastProcessedDepositId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -213,7 +287,6 @@ export interface Int1Interface extends Interface {
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "rescue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
@@ -232,6 +305,18 @@ export interface Int1Interface extends Interface {
     functionFragment: "withdrawalVerifier",
     data: BytesLike
   ): Result;
+}
+
+export namespace DepositCanceledEvent {
+  export type InputTuple = [depositId: BigNumberish];
+  export type OutputTuple = [depositId: bigint];
+  export interface OutputObject {
+    depositId: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace DepositLeafInsertedEvent {
@@ -271,6 +356,28 @@ export namespace DepositedEvent {
     tokenIndex: bigint;
     amount: bigint;
     depositedAt: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace DepositsAnalyzedAndProcessedEvent {
+  export type InputTuple = [
+    upToDepositId: BigNumberish,
+    rejectedIndices: BigNumberish[],
+    depositHashes: BytesLike[]
+  ];
+  export type OutputTuple = [
+    upToDepositId: bigint,
+    rejectedIndices: bigint[],
+    depositHashes: string[]
+  ];
+  export interface OutputObject {
+    upToDepositId: bigint;
+    rejectedIndices: bigint[];
+    depositHashes: string[];
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -360,6 +467,31 @@ export namespace UpgradedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace WithdrawnEvent {
+  export type InputTuple = [
+    recipient: AddressLike,
+    nullifier: BytesLike,
+    tokenIndex: BigNumberish,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    recipient: string,
+    nullifier: string,
+    tokenIndex: bigint,
+    amount: bigint
+  ];
+  export interface OutputObject {
+    recipient: string;
+    nullifier: string;
+    tokenIndex: bigint;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export interface Int1 extends BaseContract {
   connect(runner?: ContractRunner | null): Int1;
   waitForDeployment(): Promise<this>;
@@ -412,7 +544,13 @@ export interface Int1 extends BaseContract {
   analyzeAndProcessDeposits: TypedContractMethod<
     [upToDepositId: BigNumberish, rejectDepositIds: BigNumberish[]],
     [void],
-    "payable"
+    "nonpayable"
+  >;
+
+  cancelDeposit: TypedContractMethod<
+    [depositId: BigNumberish, deposit: DepositLib.DepositStruct],
+    [void],
+    "nonpayable"
   >;
 
   depositIndex: TypedContractMethod<[], [bigint], "view">;
@@ -425,7 +563,23 @@ export interface Int1 extends BaseContract {
 
   depositRoots: TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
 
+  getDepositData: TypedContractMethod<
+    [depositId: BigNumberish],
+    [DepositQueueLib.DepositDataStructOutput],
+    "view"
+  >;
+
+  getDepositDataBatch: TypedContractMethod<
+    [depositIds: BigNumberish[]],
+    [DepositQueueLib.DepositDataStructOutput[]],
+    "view"
+  >;
+
   getDepositRoot: TypedContractMethod<[], [string], "view">;
+
+  getLastDepositId: TypedContractMethod<[], [bigint], "view">;
+
+  getLastProcessedDepositId: TypedContractMethod<[], [bigint], "view">;
 
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
@@ -456,8 +610,6 @@ export interface Int1 extends BaseContract {
     [void],
     "nonpayable"
   >;
-
-  rescue: TypedContractMethod<[], [void], "nonpayable">;
 
   revokeRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -509,7 +661,14 @@ export interface Int1 extends BaseContract {
   ): TypedContractMethod<
     [upToDepositId: BigNumberish, rejectDepositIds: BigNumberish[]],
     [void],
-    "payable"
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "cancelDeposit"
+  ): TypedContractMethod<
+    [depositId: BigNumberish, deposit: DepositLib.DepositStruct],
+    [void],
+    "nonpayable"
   >;
   getFunction(
     nameOrSignature: "depositIndex"
@@ -521,8 +680,28 @@ export interface Int1 extends BaseContract {
     nameOrSignature: "depositRoots"
   ): TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
   getFunction(
+    nameOrSignature: "getDepositData"
+  ): TypedContractMethod<
+    [depositId: BigNumberish],
+    [DepositQueueLib.DepositDataStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getDepositDataBatch"
+  ): TypedContractMethod<
+    [depositIds: BigNumberish[]],
+    [DepositQueueLib.DepositDataStructOutput[]],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "getDepositRoot"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getLastDepositId"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getLastProcessedDepositId"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
@@ -561,9 +740,6 @@ export interface Int1 extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "rescue"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "revokeRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -599,6 +775,13 @@ export interface Int1 extends BaseContract {
   ): TypedContractMethod<[], [string], "view">;
 
   getEvent(
+    key: "DepositCanceled"
+  ): TypedContractEvent<
+    DepositCanceledEvent.InputTuple,
+    DepositCanceledEvent.OutputTuple,
+    DepositCanceledEvent.OutputObject
+  >;
+  getEvent(
     key: "DepositLeafInserted"
   ): TypedContractEvent<
     DepositLeafInsertedEvent.InputTuple,
@@ -611,6 +794,13 @@ export interface Int1 extends BaseContract {
     DepositedEvent.InputTuple,
     DepositedEvent.OutputTuple,
     DepositedEvent.OutputObject
+  >;
+  getEvent(
+    key: "DepositsAnalyzedAndProcessed"
+  ): TypedContractEvent<
+    DepositsAnalyzedAndProcessedEvent.InputTuple,
+    DepositsAnalyzedAndProcessedEvent.OutputTuple,
+    DepositsAnalyzedAndProcessedEvent.OutputObject
   >;
   getEvent(
     key: "Initialized"
@@ -647,8 +837,26 @@ export interface Int1 extends BaseContract {
     UpgradedEvent.OutputTuple,
     UpgradedEvent.OutputObject
   >;
+  getEvent(
+    key: "Withdrawn"
+  ): TypedContractEvent<
+    WithdrawnEvent.InputTuple,
+    WithdrawnEvent.OutputTuple,
+    WithdrawnEvent.OutputObject
+  >;
 
   filters: {
+    "DepositCanceled(uint256)": TypedContractEvent<
+      DepositCanceledEvent.InputTuple,
+      DepositCanceledEvent.OutputTuple,
+      DepositCanceledEvent.OutputObject
+    >;
+    DepositCanceled: TypedContractEvent<
+      DepositCanceledEvent.InputTuple,
+      DepositCanceledEvent.OutputTuple,
+      DepositCanceledEvent.OutputObject
+    >;
+
     "DepositLeafInserted(uint32,bytes32)": TypedContractEvent<
       DepositLeafInsertedEvent.InputTuple,
       DepositLeafInsertedEvent.OutputTuple,
@@ -669,6 +877,17 @@ export interface Int1 extends BaseContract {
       DepositedEvent.InputTuple,
       DepositedEvent.OutputTuple,
       DepositedEvent.OutputObject
+    >;
+
+    "DepositsAnalyzedAndProcessed(uint256,uint256[],bytes32[])": TypedContractEvent<
+      DepositsAnalyzedAndProcessedEvent.InputTuple,
+      DepositsAnalyzedAndProcessedEvent.OutputTuple,
+      DepositsAnalyzedAndProcessedEvent.OutputObject
+    >;
+    DepositsAnalyzedAndProcessed: TypedContractEvent<
+      DepositsAnalyzedAndProcessedEvent.InputTuple,
+      DepositsAnalyzedAndProcessedEvent.OutputTuple,
+      DepositsAnalyzedAndProcessedEvent.OutputObject
     >;
 
     "Initialized(uint64)": TypedContractEvent<
@@ -724,6 +943,17 @@ export interface Int1 extends BaseContract {
       UpgradedEvent.InputTuple,
       UpgradedEvent.OutputTuple,
       UpgradedEvent.OutputObject
+    >;
+
+    "Withdrawn(address,bytes32,uint32,uint256)": TypedContractEvent<
+      WithdrawnEvent.InputTuple,
+      WithdrawnEvent.OutputTuple,
+      WithdrawnEvent.OutputObject
+    >;
+    Withdrawn: TypedContractEvent<
+      WithdrawnEvent.InputTuple,
+      WithdrawnEvent.OutputTuple,
+      WithdrawnEvent.OutputObject
     >;
   };
 }

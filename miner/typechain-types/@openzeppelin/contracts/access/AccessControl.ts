@@ -3,7 +3,6 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -21,57 +20,18 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../common";
+} from "../../../common";
 
-export declare namespace MinterV0 {
-  export type MintClaimStruct = {
-    recipient: AddressLike;
-    nullifier: BytesLike;
-    amount: BigNumberish;
-  };
-
-  export type MintClaimStructOutput = [
-    recipient: string,
-    nullifier: string,
-    amount: bigint
-  ] & { recipient: string; nullifier: string; amount: bigint };
-
-  export type ClaimPublicInputsStruct = {
-    depositTreeRoot: BytesLike;
-    eligibleTreeRoot: BytesLike;
-    lastClaimHash: BytesLike;
-  };
-
-  export type ClaimPublicInputsStructOutput = [
-    depositTreeRoot: string,
-    eligibleTreeRoot: string,
-    lastClaimHash: string
-  ] & {
-    depositTreeRoot: string;
-    eligibleTreeRoot: string;
-    lastClaimHash: string;
-  };
-}
-
-export interface MinterV0Interface extends Interface {
+export interface AccessControlInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
-      | "claimTokens"
-      | "depositTreeRoot"
-      | "eligibleTreeRoot"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
-      | "int0"
-      | "migrate"
-      | "mint"
       | "renounceRole"
       | "revokeRole"
-      | "setTreeRoots"
       | "supportsInterface"
-      | "token"
-      | "verifier"
   ): FunctionFragment;
 
   getEvent(
@@ -80,22 +40,6 @@ export interface MinterV0Interface extends Interface {
 
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "claimTokens",
-    values: [
-      MinterV0.MintClaimStruct[],
-      MinterV0.ClaimPublicInputsStruct,
-      BytesLike
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "depositTreeRoot",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "eligibleTreeRoot",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -110,12 +54,6 @@ export interface MinterV0Interface extends Interface {
     functionFragment: "hasRole",
     values: [BytesLike, AddressLike]
   ): string;
-  encodeFunctionData(functionFragment: "int0", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "migrate",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(functionFragment: "mint", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
@@ -125,30 +63,12 @@ export interface MinterV0Interface extends Interface {
     values: [BytesLike, AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "setTreeRoots",
-    values: [BytesLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(functionFragment: "token", values?: undefined): string;
-  encodeFunctionData(functionFragment: "verifier", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "claimTokens",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "depositTreeRoot",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "eligibleTreeRoot",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -157,24 +77,15 @@ export interface MinterV0Interface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "int0", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "migrate", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setTreeRoots",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "verifier", data: BytesLike): Result;
 }
 
 export namespace RoleAdminChangedEvent {
@@ -235,11 +146,11 @@ export namespace RoleRevokedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface MinterV0 extends BaseContract {
-  connect(runner?: ContractRunner | null): MinterV0;
+export interface AccessControl extends BaseContract {
+  connect(runner?: ContractRunner | null): AccessControl;
   waitForDeployment(): Promise<this>;
 
-  interface: MinterV0Interface;
+  interface: AccessControlInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -280,20 +191,6 @@ export interface MinterV0 extends BaseContract {
 
   DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
 
-  claimTokens: TypedContractMethod<
-    [
-      claims: MinterV0.MintClaimStruct[],
-      publicInputs: MinterV0.ClaimPublicInputsStruct,
-      proof: BytesLike
-    ],
-    [void],
-    "nonpayable"
-  >;
-
-  depositTreeRoot: TypedContractMethod<[], [string], "view">;
-
-  eligibleTreeRoot: TypedContractMethod<[], [string], "view">;
-
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
 
   grantRole: TypedContractMethod<
@@ -308,12 +205,6 @@ export interface MinterV0 extends BaseContract {
     "view"
   >;
 
-  int0: TypedContractMethod<[], [string], "view">;
-
-  migrate: TypedContractMethod<[newMinter: AddressLike], [void], "nonpayable">;
-
-  mint: TypedContractMethod<[], [void], "nonpayable">;
-
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
     [void],
@@ -326,21 +217,11 @@ export interface MinterV0 extends BaseContract {
     "nonpayable"
   >;
 
-  setTreeRoots: TypedContractMethod<
-    [eligibleTreeRoot_: BytesLike],
-    [void],
-    "nonpayable"
-  >;
-
   supportsInterface: TypedContractMethod<
     [interfaceId: BytesLike],
     [boolean],
     "view"
   >;
-
-  token: TypedContractMethod<[], [string], "view">;
-
-  verifier: TypedContractMethod<[], [string], "view">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
@@ -348,23 +229,6 @@ export interface MinterV0 extends BaseContract {
 
   getFunction(
     nameOrSignature: "DEFAULT_ADMIN_ROLE"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "claimTokens"
-  ): TypedContractMethod<
-    [
-      claims: MinterV0.MintClaimStruct[],
-      publicInputs: MinterV0.ClaimPublicInputsStruct,
-      proof: BytesLike
-    ],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "depositTreeRoot"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "eligibleTreeRoot"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "getRoleAdmin"
@@ -384,15 +248,6 @@ export interface MinterV0 extends BaseContract {
     "view"
   >;
   getFunction(
-    nameOrSignature: "int0"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "migrate"
-  ): TypedContractMethod<[newMinter: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "mint"
-  ): TypedContractMethod<[], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
@@ -407,17 +262,8 @@ export interface MinterV0 extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "setTreeRoots"
-  ): TypedContractMethod<[eligibleTreeRoot_: BytesLike], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
-  getFunction(
-    nameOrSignature: "token"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "verifier"
-  ): TypedContractMethod<[], [string], "view">;
 
   getEvent(
     key: "RoleAdminChanged"

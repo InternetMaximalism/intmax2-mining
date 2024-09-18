@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { ClaimPlonkVerifier } from "./ClaimPlonkVerifier";
+export type { V1WithdrawalPlonkVerifier } from "./V1WithdrawalPlonkVerifier";
 export type { WithdrawalPlonkVerifier } from "./WithdrawalPlonkVerifier";

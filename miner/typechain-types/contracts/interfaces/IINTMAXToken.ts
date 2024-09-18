@@ -26,19 +26,57 @@ import type {
 export interface IINTMAXTokenInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "GENESIS_TIMESTAMP"
+      | "MAX_SUPPLY"
+      | "MINTER_ROLE"
+      | "NUM_PHASES"
+      | "PHASE0_PERIOD"
+      | "PHASE0_REWARD_PER_DAY"
+      | "allowTransfers"
       | "allowance"
       | "approve"
       | "balanceOf"
       | "burn"
       | "mint"
+      | "totalBurnedAmount"
+      | "totalClaimedAmount"
       | "totalMintableAmount"
       | "totalSupply"
       | "transfer"
       | "transferFrom"
+      | "transfersAllowed"
   ): FunctionFragment;
 
   getEvent(nameOrSignatureOrTopic: "Approval" | "Transfer"): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: "GENESIS_TIMESTAMP",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MAX_SUPPLY",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MINTER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "NUM_PHASES",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "PHASE0_PERIOD",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "PHASE0_REWARD_PER_DAY",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "allowTransfers",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [AddressLike, AddressLike]
@@ -53,6 +91,14 @@ export interface IINTMAXTokenInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "mint", values: [AddressLike]): string;
+  encodeFunctionData(
+    functionFragment: "totalBurnedAmount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalClaimedAmount",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "totalMintableAmount",
     values?: undefined
@@ -69,12 +115,46 @@ export interface IINTMAXTokenInterface extends Interface {
     functionFragment: "transferFrom",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transfersAllowed",
+    values?: undefined
+  ): string;
 
+  decodeFunctionResult(
+    functionFragment: "GENESIS_TIMESTAMP",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "MAX_SUPPLY", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "MINTER_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "NUM_PHASES", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "PHASE0_PERIOD",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "PHASE0_REWARD_PER_DAY",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "allowTransfers",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalBurnedAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "totalClaimedAmount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "totalMintableAmount",
     data: BytesLike
@@ -86,6 +166,10 @@ export interface IINTMAXTokenInterface extends Interface {
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transfersAllowed",
     data: BytesLike
   ): Result;
 }
@@ -169,6 +253,20 @@ export interface IINTMAXToken extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  GENESIS_TIMESTAMP: TypedContractMethod<[], [bigint], "view">;
+
+  MAX_SUPPLY: TypedContractMethod<[], [bigint], "view">;
+
+  MINTER_ROLE: TypedContractMethod<[], [string], "view">;
+
+  NUM_PHASES: TypedContractMethod<[], [bigint], "view">;
+
+  PHASE0_PERIOD: TypedContractMethod<[], [bigint], "view">;
+
+  PHASE0_REWARD_PER_DAY: TypedContractMethod<[], [bigint], "view">;
+
+  allowTransfers: TypedContractMethod<[], [void], "nonpayable">;
+
   allowance: TypedContractMethod<
     [owner: AddressLike, spender: AddressLike],
     [bigint],
@@ -187,6 +285,10 @@ export interface IINTMAXToken extends BaseContract {
 
   mint: TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
 
+  totalBurnedAmount: TypedContractMethod<[], [bigint], "view">;
+
+  totalClaimedAmount: TypedContractMethod<[], [bigint], "view">;
+
   totalMintableAmount: TypedContractMethod<[], [bigint], "view">;
 
   totalSupply: TypedContractMethod<[], [bigint], "view">;
@@ -203,10 +305,33 @@ export interface IINTMAXToken extends BaseContract {
     "nonpayable"
   >;
 
+  transfersAllowed: TypedContractMethod<[], [boolean], "view">;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "GENESIS_TIMESTAMP"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "MAX_SUPPLY"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "MINTER_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "NUM_PHASES"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "PHASE0_PERIOD"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "PHASE0_REWARD_PER_DAY"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "allowTransfers"
+  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "allowance"
   ): TypedContractMethod<
@@ -231,6 +356,12 @@ export interface IINTMAXToken extends BaseContract {
     nameOrSignature: "mint"
   ): TypedContractMethod<[to: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "totalBurnedAmount"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "totalClaimedAmount"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "totalMintableAmount"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -250,6 +381,9 @@ export interface IINTMAXToken extends BaseContract {
     [boolean],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "transfersAllowed"
+  ): TypedContractMethod<[], [boolean], "view">;
 
   getEvent(
     key: "Approval"

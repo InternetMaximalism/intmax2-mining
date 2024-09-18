@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { ClaimPlonkVerifier__factory } from "./ClaimPlonkVerifier__factory";
+export { V1WithdrawalPlonkVerifier__factory } from "./V1WithdrawalPlonkVerifier__factory";
 export { WithdrawalPlonkVerifier__factory } from "./WithdrawalPlonkVerifier__factory";

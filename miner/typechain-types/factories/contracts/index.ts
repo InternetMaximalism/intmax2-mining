@@ -10,3 +10,4 @@ export { Int1__factory } from "./Int1__factory";
 export { MintVerifier__factory } from "./MintVerifier__factory";
 export { MinterV0__factory } from "./MinterV0__factory";
 export { MinterV1__factory } from "./MinterV1__factory";
+export { MinterV2__factory } from "./MinterV2__factory";
