@@ -147,7 +147,6 @@ mod tests {
             events::{get_deposited_event, DepositQuery, Deposited},
             int1::get_withdrawal_nullifier_exists,
         },
-        services::sync::deposit_tree::sync_deposit_tree,
         state::{prover::Prover, state::State},
         test::get_dummy_state,
         utils::salt::{get_pubkey_from_private_key, get_salt_from_private_key_nonce},
@@ -155,9 +154,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_withdrawal() {
-        let deposit_hash_tree = sync_deposit_tree().await.unwrap();
         let mut state = get_dummy_state();
-        state.deposit_hash_tree = deposit_hash_tree;
+        state.sync_tree().await.unwrap();
 
         let events = get_not_withdrawn_deposit_events(&state).await.unwrap();
         assert!(events.len() > 0);
@@ -172,9 +170,8 @@ mod tests {
 
     #[tokio::test]
     async fn test_resume_withdrawal() {
-        let deposit_hash_tree = sync_deposit_tree().await.unwrap();
         let mut state = get_dummy_state();
-        state.deposit_hash_tree = deposit_hash_tree;
+        state.sync_tree().await.unwrap();
         let prover = Prover::new();
         state.prover = Some(prover);
         super::resume_withdrawal_task(&state).await.unwrap();

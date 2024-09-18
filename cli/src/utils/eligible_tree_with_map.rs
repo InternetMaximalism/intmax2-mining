@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use intmax2_zkp::ethereum_types::bytes32::Bytes32;
 use mining_circuit::eligible_tree::{EligibleLeaf, EligibleTree, ELIGIBLE_TREE_HEIGHT};
 
+#[derive(Debug, Clone)]
 pub struct EligibleTreeWithMap {
     pub tree: EligibleTree,
     pub map: HashMap<u32, u32>, // key: deposit_index, value: eligible index

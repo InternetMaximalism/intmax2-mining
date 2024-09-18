@@ -1,7 +1,8 @@
+use chrono::NaiveDateTime;
+
 use super::prover::Prover;
 use crate::{
     private_data::PrivateData,
-    services::sync::{deposit_tree::sync_deposit_tree, eligible_tree::sync_eligible_tree},
     utils::{deposit_hash_tree::DepositHashTree, eligible_tree_with_map::EligibleTreeWithMap},
 };
 
@@ -9,6 +10,7 @@ pub struct State {
     pub private_data: PrivateData,
     pub deposit_hash_tree: DepositHashTree,
     pub eligible_tree: EligibleTreeWithMap,
+    pub last_tree_feched_at: NaiveDateTime,
     pub mode: RunMode,
     pub prover: Option<Prover>,
 }
@@ -19,6 +21,7 @@ impl State {
             private_data,
             deposit_hash_tree: DepositHashTree::new(),
             eligible_tree: EligibleTreeWithMap::new(),
+            last_tree_feched_at: NaiveDateTime::default(),
             mode,
             prover: None,
         }
@@ -30,8 +33,11 @@ impl State {
     }
 
     pub async fn sync_tree(&mut self) -> anyhow::Result<()> {
-        self.deposit_hash_tree = sync_deposit_tree().await?;
-        self.eligible_tree = sync_eligible_tree().await?;
+        let (deposit_hash_tree, eligible_tree, last_tree_feched_at) =
+            crate::services::sync::sync_trees(self.last_tree_feched_at).await?;
+        self.deposit_hash_tree = deposit_hash_tree;
+        self.eligible_tree = eligible_tree;
+        self.last_tree_feched_at = last_tree_feched_at;
         Ok(())
     }
 }

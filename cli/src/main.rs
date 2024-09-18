@@ -1,6 +1,6 @@
 use std::fs::File;
 
-use cli::run;
+use cli::{run, status::print_error};
 use simplelog::{Config, LevelFilter, WriteLogger};
 
 pub mod cli;
@@ -25,8 +25,7 @@ async fn main() {
     match run().await {
         Ok(_) => {}
         Err(e) => {
-            log::error!("{:?}", e);
-            eprintln!("An error occurred: {:?}", e);
+            print_error(&e.to_string());
         }
     }
 }

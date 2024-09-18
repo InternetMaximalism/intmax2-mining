@@ -1,10 +1,7 @@
-use std::collections::HashSet;
-
 use ethers::{providers::Middleware as _, types::Address};
 use intmax2_zkp::{
     common::deposit::Deposit,
     ethereum_types::{bytes32::Bytes32, u256::U256, u32limb_trait::U32LimbTrait},
-    utils::leafable::Leafable,
 };
 
 use super::{
@@ -108,35 +105,15 @@ pub async fn get_deposit_leaf_inserted_event(
         .from_block(from_block)
         .query_with_meta()
         .await?;
-    let events: Vec<DepositLeafInserted> = events
+    let mut events: Vec<DepositLeafInserted> = events
         .into_iter()
         .map(|(event, _meta)| DepositLeafInserted {
             deposit_index: event.deposit_index,
             deposit_hash: Bytes32::from_bytes_be(&event.deposit_hash),
         })
         .collect();
+    events.sort_by_key(|event| event.deposit_index);
     Ok(events)
-}
-
-// get filtered deposited events that are actually inserted into the deposit tree
-pub async fn get_effective_deposits(from_block: u64) -> anyhow::Result<Vec<Deposited>> {
-    let deposited_events = get_deposited_event(DepositQuery::FromBlock(from_block)).await?;
-    let deposit_leaf_inserted_events = get_deposit_leaf_inserted_event(from_block).await?;
-
-    // Use HashSet for faster search
-    let mut effective_deposit_hashes = HashSet::new();
-    for event in deposit_leaf_inserted_events {
-        effective_deposit_hashes.insert(event.deposit_hash);
-    }
-
-    let mut filtered_events = Vec::new();
-    for event in deposited_events {
-        let deposit_hash = event.deposit().hash();
-        if effective_deposit_hashes.contains(&deposit_hash) {
-            filtered_events.push(event);
-        }
-    }
-    Ok(filtered_events)
 }
 
 #[cfg(test)]

@@ -3,6 +3,7 @@ availability_server_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/availabil
 withdrawal_gnark_prover_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/gnark-withdraw-circuit"
 claim_gnark_prover_url = "https://dev.v1.mining-gateway.intmax.xyz/v1/gnark-claim-circuit"
 withdrawal_server_url="https://dev.v1.mining-gateway.intmax.xyz/v1/withdrawal/submit-proof"
+tree_data_repository="kbizikav/sample-data-repo"
 gnark_get_proof_cooldown_in_sec = 15
 
 [blockchain]
@@ -11,6 +12,6 @@ int1_address = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
 minter_address = "0x0165878A594ca255338adfa4d48449f69242Eb8F"
 
 [service]
+main_loop_cooldown_in_sec = 10
 mining_max_cooldown_in_sec = 20
 claim_max_cooldown_in_sec = 20
-main_loop_cooldown_in_sec = 10

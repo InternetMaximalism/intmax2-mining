@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use intmax2_zkp::ethereum_types::u256::U256;
 use mining_circuit::eligible_tree::EligibleLeaf;
 use num_bigint::BigUint;
@@ -15,6 +16,7 @@ pub fn get_dummy_state() -> State {
         "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
     )
     .unwrap();
+
     let mut eligible_tree = EligibleTreeWithMap::new();
     for i in 0..100 {
         eligible_tree.push(EligibleLeaf {
@@ -27,6 +29,7 @@ pub fn get_dummy_state() -> State {
         private_data,
         deposit_hash_tree: DepositHashTree::new(),
         eligible_tree,
+        last_tree_feched_at: NaiveDateTime::default(),
         mode: RunMode::Normal,
         prover: None,
     };
