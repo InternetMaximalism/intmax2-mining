@@ -14,30 +14,34 @@ pub async fn sync_trees(
     last_update: NaiveDateTime,
 ) -> anyhow::Result<(DepositHashTree, EligibleTreeWithMap, NaiveDateTime)> {
     let (mut deposit_hash_tree, eligible_tree, from_block, last_update) =
-        match fetch_latest_tree_from_github(last_update).await? {
-            Some((bin_deposit_tree, bin_eligible_tree, last_update)) => {
-                let deposit_tree_info: DepositTreeInfo = bin_deposit_tree.try_into()?;
-                let eligible_tree_info: EligibleTreeInfo = bin_eligible_tree.try_into()?;
-                (
-                    deposit_tree_info.tree,
-                    eligible_tree_info.tree,
-                    deposit_tree_info.block_number,
-                    last_update,
-                )
-            }
-            None => {
-                let deposit_hash_tree = DepositHashTree::new();
-                let eligible_tree = EligibleTreeWithMap::new();
-                (
-                    deposit_hash_tree,
-                    eligible_tree,
-                    0,
-                    NaiveDateTime::default(),
-                )
-            }
-        };
+        fetch_or_create_trees(last_update).await?;
+
     update_deposit_tree(&mut deposit_hash_tree, from_block).await?;
+
     Ok((deposit_hash_tree, eligible_tree, last_update))
+}
+
+async fn fetch_or_create_trees(
+    last_update: NaiveDateTime,
+) -> anyhow::Result<(DepositHashTree, EligibleTreeWithMap, u64, NaiveDateTime)> {
+    match fetch_latest_tree_from_github(last_update).await? {
+        Some((bin_deposit_tree, bin_eligible_tree, last_update)) => {
+            let deposit_tree_info: DepositTreeInfo = bin_deposit_tree.try_into()?;
+            let eligible_tree_info: EligibleTreeInfo = bin_eligible_tree.try_into()?;
+            Ok((
+                deposit_tree_info.tree,
+                eligible_tree_info.tree,
+                deposit_tree_info.block_number,
+                last_update,
+            ))
+        }
+        None => Ok((
+            DepositHashTree::new(),
+            EligibleTreeWithMap::new(),
+            0,
+            NaiveDateTime::default(),
+        )),
+    }
 }
 
 async fn update_deposit_tree(
