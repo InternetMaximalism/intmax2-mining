@@ -112,7 +112,6 @@ pub async fn fetch_gnark_proof(
     let cooldown = Settings::new()?.api.gnark_get_proof_cooldown_in_sec;
     sleep_until(start_query_time).await;
 
-    // TODO: better error handling and retry logic
     loop {
         let output = gnark_get_proof(base_url, job_id).await?;
         if output.status == "done" {
