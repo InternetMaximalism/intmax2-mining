@@ -4,10 +4,12 @@ import { cleanEnv, str } from "envalid";
 
 const env = cleanEnv(process.env, {
   ANALYZER_ADDRESS: str(),
+  MINTER_V1_ADMIN_ADDRESS: str(),
 });
 
 async function main() {
   const [admin] = await ethers.getSigners();
+  console.log(`Deploying contracts with the account: ${admin.address}`);
 
   const withdrawalVerifierFactory = await ethers.getContractFactory(
     "V1WithdrawalPlonkVerifier"
@@ -30,20 +32,26 @@ async function main() {
   // deploy token
   const tokenFactory = await ethers.getContractFactory("DummyToken");
   const token = await tokenFactory.deploy(admin, ethers.ZeroAddress);
+  console.log(`Dummy token deployed at: ${await token.getAddress()}`);
 
   const claimVerifierFactory = await ethers.getContractFactory(
     "ClaimPlonkVerifier"
   );
   const claimVerifier = await claimVerifierFactory.deploy();
   const minterFactory = await ethers.getContractFactory("MinterV1");
-  const minter = await minterFactory.deploy(claimVerifier, token, int1, admin);
+  const minter = await minterFactory.deploy(
+    claimVerifier,
+    token,
+    int1,
+    env.MINTER_V1_ADMIN_ADDRESS
+  );
   console.log(`Minter deployed at: ${await minter.getAddress()}`);
 
   // add token's minter role to minter
   await token.grantRole(await token.MINTER_ROLE(), minter);
-  await minter.mint();
-  const balance = await token.balanceOf(minter);
-  console.log(`Minter's balance: ${ethers.formatEther(balance)}`);
+  // await minter.mint();
+  // const balance = await token.balanceOf(minter);
+  // console.log(`Minter's balance: ${ethers.formatEther(balance)}`);
 
   // fund analyzer
   const analyzerBalance = await ethers.provider.getBalance(
