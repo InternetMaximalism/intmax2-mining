@@ -3,7 +3,7 @@ use ethers::{providers::Middleware as _, types::U256};
 use tokio::time::sleep;
 
 use crate::{
-    config::{InitialDeposit, MiningAmount, UserSettings},
+    config::{InitialDeposit, MiningAmount, Settings, UserSettings},
     external_api::contracts::utils::get_client,
     private_data::PrivateData,
 };
@@ -13,7 +13,18 @@ pub async fn user_settings(private_data: &PrivateData) -> anyhow::Result<()> {
         // user settings already exists
         return Ok(());
     }
-    let rpc_url: String = Input::new().with_prompt("RPC URL").interact()?;
+
+    let rpc_url: String = Input::new()
+        .with_prompt("RPC URL")
+        .validate_with(|rpc_url: &String| {
+            if rpc_url.starts_with("http") {
+                Ok(())
+            } else {
+                Err("Invalid RPC URL")
+            }
+        })
+        .interact()?;
+    check_rpc_url(&rpc_url).await?;
 
     let mining_amount = {
         let items = vec!["0.1 ETH", "1.0 ETH"];
@@ -136,6 +147,20 @@ fn pretty_format_u256(value: U256) -> String {
     // remove trailing zeros
     let s = s.trim_end_matches('0').trim_end_matches('.');
     s.to_string()
+}
+
+async fn check_rpc_url(rpc_url: &str) -> anyhow::Result<()> {
+    let client = ethers::providers::Provider::<ethers::providers::Http>::try_from(rpc_url)?;
+    let chain_id = client.get_chainid().await?;
+    let setting = Settings::new()?;
+    if chain_id != setting.blockchain.chain_id.into() {
+        return Err(anyhow::anyhow!(
+            "RPC URL chain id {} does not match the expected chain id {}",
+            chain_id.as_u64(),
+            setting.blockchain.chain_id,
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(test)]
