@@ -1,3 +1,4 @@
+use anyhow::Context;
 use chrono::{NaiveDate, NaiveDateTime};
 use regex::Regex;
 use reqwest;
@@ -23,7 +24,8 @@ pub async fn fetch_latest_tree_from_github(
         .send()
         .await?
         .json::<Vec<Value>>()
-        .await?;
+        .await
+        .context("Failed to fetch data from GitHub")?;
 
     let deposit_pattern = Regex::new(r"^\d{4}-\d{2}-\d{2}-depositTree\.txt$").unwrap();
     let eligible_pattern = Regex::new(r"^\d{4}-\d{2}-\d{2}-eligibleTree\.txt$").unwrap();
