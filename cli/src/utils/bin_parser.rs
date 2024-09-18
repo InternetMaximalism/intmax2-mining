@@ -11,14 +11,14 @@ use super::deposit_hash_tree::DepositHashTree;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
-struct BinEligibleLeaf {
+pub struct BinEligibleLeaf {
     pub deposit_index: u32,
     pub amount: [u8; 32],
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
-struct BinEligibleTree {
+pub struct BinEligibleTree {
     pub root_hash: [u8; 32],
     pub block_number: u64,
     pub tree_height: u32,
@@ -89,7 +89,7 @@ impl From<EligibleTreeInfo> for BinEligibleTree {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 #[serde(rename_all = "camelCase")]
-struct BinDepositTree {
+pub struct BinDepositTree {
     pub root_hash: [u8; 32],
     pub block_number: u64,
     pub tree_height: u32,
