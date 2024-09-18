@@ -8,7 +8,7 @@ use crate::{
     utils::bin_parser::{BinDepositTree, BinEligibleTree},
 };
 
-async fn fetch_latest_files(
+pub async fn fetch_latest_tree(
     last_update: NaiveDateTime,
 ) -> anyhow::Result<Option<(BinDepositTree, BinEligibleTree, NaiveDateTime)>> {
     let settings = Settings::new()?;
@@ -25,8 +25,6 @@ async fn fetch_latest_files(
         .json::<Vec<Value>>()
         .await?;
 
-    dbg!(&response);
-
     let deposit_pattern = Regex::new(r"^\d{4}-\d{2}-\d{2}-depositTree\.txt$").unwrap();
     let eligible_pattern = Regex::new(r"^\d{4}-\d{2}-\d{2}-eligibleTree\.txt$").unwrap();
     let mut latest_deposit_file: Option<&Value> = None;
@@ -36,6 +34,9 @@ async fn fetch_latest_files(
 
     for file in response.iter() {
         if let Some(name) = file["name"].as_str() {
+            if name.len() < 10 {
+                continue;
+            }
             if let Ok(date) = NaiveDate::parse_from_str(&name[0..10], "%Y-%m-%d") {
                 if deposit_pattern.is_match(name) && date > latest_deposit_date {
                     latest_deposit_date = date;
@@ -94,7 +95,7 @@ mod tests {
     async fn test_fetch_latest_files() {
         let last_update =
             NaiveDateTime::parse_from_str("2023-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
-        let result = fetch_latest_files(last_update).await.unwrap();
+        let result = fetch_latest_tree(last_update).await.unwrap();
         assert!(result.is_some());
     }
 
@@ -102,15 +103,7 @@ mod tests {
     async fn test_fetch_latest_files_no_new_files() {
         let last_update =
             NaiveDateTime::parse_from_str("2999-12-31 23:59:59", "%Y-%m-%d %H:%M:%S").unwrap();
-        let result = fetch_latest_files(last_update).await.unwrap();
-        assert!(result.is_none());
-    }
-
-    #[tokio::test]
-    async fn test_fetch_latest_files_empty_repo() {
-        let last_update =
-            NaiveDateTime::parse_from_str("1970-01-01 00:00:00", "%Y-%m-%d %H:%M:%S").unwrap();
-        let result = fetch_latest_files(last_update).await.unwrap();
+        let result = fetch_latest_tree(last_update).await.unwrap();
         assert!(result.is_none());
     }
 }

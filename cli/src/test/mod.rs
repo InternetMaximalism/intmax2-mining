@@ -27,6 +27,7 @@ pub fn get_dummy_state() -> State {
         private_data,
         deposit_hash_tree: DepositHashTree::new(),
         eligible_tree,
+        last_tree_feched_at: None,
         mode: RunMode::Normal,
         prover: None,
     };

@@ -1,3 +1,5 @@
+use chrono::NaiveDateTime;
+
 use super::prover::Prover;
 use crate::{
     private_data::PrivateData,
@@ -9,6 +11,7 @@ pub struct State {
     pub private_data: PrivateData,
     pub deposit_hash_tree: DepositHashTree,
     pub eligible_tree: EligibleTreeWithMap,
+    pub last_tree_feched_at: Option<NaiveDateTime>,
     pub mode: RunMode,
     pub prover: Option<Prover>,
 }
@@ -19,6 +22,7 @@ impl State {
             private_data,
             deposit_hash_tree: DepositHashTree::new(),
             eligible_tree: EligibleTreeWithMap::new(),
+            last_tree_feched_at: None,
             mode,
             prover: None,
         }
