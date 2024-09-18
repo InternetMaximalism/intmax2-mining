@@ -16,6 +16,7 @@ pub fn get_dummy_state() -> State {
         "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
     )
     .unwrap();
+
     let mut eligible_tree = EligibleTreeWithMap::new();
     for i in 0..100 {
         eligible_tree.push(EligibleLeaf {
