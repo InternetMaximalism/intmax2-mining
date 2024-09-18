@@ -11,6 +11,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::Settings;
 
+use super::IntmaxErrorResponse;
+
 type F = GoldilocksField;
 type C = PoseidonBN128GoldilocksConfig;
 const D: usize = 2;
@@ -32,17 +34,31 @@ impl GnarkStartProofInput {
     }
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum GnarkStartProofResponse {
+    Success(GnarkStartProofSucessResponse),
+    Error(IntmaxErrorResponse),
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct GnarkStartProofOutput {
+pub struct GnarkStartProofSucessResponse {
     pub job_id: String,
     pub status: String,
     pub estimated_time: Option<u64>, // in milliseconds
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(untagged)]
+enum GnarkGetProofResponse {
+    Success(GnarkGetProofSucessResponse),
+    Error(IntmaxErrorResponse),
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct GnarkGetProofOutput {
+pub struct GnarkGetProofSucessResponse {
     pub job_id: String,
     pub status: String,
     pub result: Option<GnarkProof>,
@@ -59,25 +75,33 @@ pub async fn gnark_start_prove(
     base_url: &str,
     address: Address,
     plonky2_proof: ProofWithPublicInputs<F, C, D>,
-) -> anyhow::Result<GnarkStartProofOutput> {
+) -> anyhow::Result<GnarkStartProofSucessResponse> {
     let input = GnarkStartProofInput::new(address, plonky2_proof);
-
     let response = reqwest::Client::new()
         .post(format!("{}/start-proof", base_url))
         .json(&input)
         .send()
         .await?;
-    let output: GnarkStartProofOutput = response.json().await.unwrap();
-    Ok(output)
+    let output: GnarkStartProofResponse = response.json().await.unwrap();
+    match output {
+        GnarkStartProofResponse::Success(success) => Ok(success),
+        GnarkStartProofResponse::Error(error) => anyhow::bail!("Gnark prover error: {:?}", error),
+    }
 }
 
-pub async fn gnark_get_proof(base_url: &str, job_id: &str) -> anyhow::Result<GnarkGetProofOutput> {
+pub async fn gnark_get_proof(
+    base_url: &str,
+    job_id: &str,
+) -> anyhow::Result<GnarkGetProofSucessResponse> {
     let response = reqwest::Client::new()
         .get(format!("{}/get-proof?jobId={}", base_url, job_id))
         .send()
         .await?;
-    let output: GnarkGetProofOutput = response.json().await?;
-    Ok(output)
+    let output: GnarkGetProofResponse = response.json().await?;
+    match output {
+        GnarkGetProofResponse::Success(success) => Ok(success),
+        GnarkGetProofResponse::Error(error) => anyhow::bail!("Gnark prover error: {:?}", error),
+    }
 }
 
 pub async fn fetch_gnark_proof(
@@ -111,10 +135,4 @@ async fn sleep_until(target_time: u64) {
         }
         tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
     }
-}
-
-#[cfg(test)]
-mod tests {
-    #[tokio::test]
-    async fn test_gnark_start_prove() {}
 }

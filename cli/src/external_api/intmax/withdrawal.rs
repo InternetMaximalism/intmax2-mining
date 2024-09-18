@@ -12,6 +12,8 @@ use crate::{
     external_api::contracts::int1::{get_int1_contract_with_signer, int_1},
 };
 
+use super::IntmaxErrorResponse;
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SubmitWithdrawalInput {
@@ -19,12 +21,24 @@ pub struct SubmitWithdrawalInput {
     pub proof: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SubmitWithdrawalSuccess {
+    pub tx_hash: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
+enum SumbitWithdrawalResponse {
+    Sucess(SubmitWithdrawalSuccess),
+    Error(IntmaxErrorResponse),
+}
+
 pub async fn submit_withdrawal(
     pis: SimpleWithdrawalPublicInputs,
     proof: &str,
 ) -> anyhow::Result<H256> {
     let settings = Settings::new()?;
-
     let tx_hash = if settings.blockchain.chain_id == 31337 {
         // dummy private key for localnet
         let local_private_key =
@@ -56,8 +70,33 @@ pub async fn submit_withdrawal(
             })
             .send()
             .await?;
-        let _: String = response.json().await?;
-        H256::default()
+        let response: SumbitWithdrawalResponse = response.json().await?;
+        match response {
+            SumbitWithdrawalResponse::Sucess(success) => H256::from_str(&success.tx_hash)?,
+            SumbitWithdrawalResponse::Error(error) => {
+                return Err(anyhow::anyhow!("Error submitting withdrawal: {:?}", error));
+            }
+        }
     };
     Ok(tx_hash)
+}
+
+#[cfg(test)]
+mod tests {
+    use intmax2_zkp::ethereum_types::{address::Address, bytes32::Bytes32, u256::U256};
+
+    #[tokio::test]
+    async fn test_submit_withdrawal() {
+        let pis =
+            mining_circuit::withdrawal::simple_withraw_circuit::SimpleWithdrawalPublicInputs {
+                deposit_root: Bytes32::default(),
+                nullifier: Bytes32::default(),
+                recipient: Address::default(),
+                token_index: 0,
+                amount: U256::default(),
+            };
+        let proof = "0x12345678";
+        let tx_hash = super::submit_withdrawal(pis, proof).await.unwrap();
+        println!("tx_hash: {:?}", tx_hash);
+    }
 }
