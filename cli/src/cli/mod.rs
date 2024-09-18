@@ -2,7 +2,9 @@ use availability::check_avaliability;
 use dialoguer::Select;
 
 use crate::{
-    services::main_loop,
+    services::{
+        claim::claim_task::resume_claim_task, main_loop, mining::withdrawal::resume_withdrawal_task,
+    },
     state::state::{RunMode, State},
 };
 
@@ -12,8 +14,16 @@ pub mod status;
 pub mod user_settings;
 
 pub async fn run() -> anyhow::Result<()> {
+    // start up
     let mut state = start().await?;
+
+    // resume task
+    resume_withdrawal_task(&state).await?;
+    resume_claim_task(&state).await?;
+
+    // main loop
     main_loop(&mut state).await?;
+
     Ok(())
 }
 
