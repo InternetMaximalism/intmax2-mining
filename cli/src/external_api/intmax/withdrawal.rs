@@ -62,18 +62,20 @@ pub async fn submit_withdrawal(
         };
         pending_tx.tx_hash()
     } else {
+        let input = SubmitWithdrawalInput {
+            public_inputs: pis,
+            proof: proof.to_string(),
+        };
         let response = reqwest::Client::new()
             .post(settings.api.withdrawal_server_url)
-            .json(&SubmitWithdrawalInput {
-                public_inputs: pis,
-                proof: proof.to_string(),
-            })
+            .json(&input)
             .send()
             .await?;
         let response: SumbitWithdrawalResponse = response.json().await?;
         match response {
             SumbitWithdrawalResponse::Sucess(success) => H256::from_str(&success.tx_hash)?,
             SumbitWithdrawalResponse::Error(error) => {
+                dbg!(input);
                 return Err(anyhow::anyhow!("Error submitting withdrawal: {:?}", error));
             }
         }

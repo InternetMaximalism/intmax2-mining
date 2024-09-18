@@ -12,7 +12,14 @@ use crate::external_api::contracts::utils::get_wallet;
 
 const NONCE: &'static str = "intmaxmining";
 
-const PRIVATE_DATA_PATH: &'static str = "data/private.bin";
+fn private_data_path() -> &'static str {
+    let network = std::env::var("NETWORK").unwrap_or_else(|_| "testnet".into());
+    match network.as_str() {
+        "testnet" => "data/private.testnet.bin",
+        "localnet" => "data/private.localnet.bin",
+        _ => panic!("Unsupported network"),
+    }
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PrivateData {
@@ -86,7 +93,7 @@ fn keccak256_hash(input: &str) -> [u8; 32] {
 }
 
 pub fn load_encrypted_private_data() -> Option<Vec<u8>> {
-    let mut file = match std::fs::File::open(PRIVATE_DATA_PATH) {
+    let mut file = match std::fs::File::open(private_data_path()) {
         Ok(file) => file,
         Err(_) => return None,
     };
@@ -98,7 +105,7 @@ pub fn load_encrypted_private_data() -> Option<Vec<u8>> {
 }
 
 pub fn write_encrypted_private_data(input: &[u8]) -> anyhow::Result<()> {
-    let mut file = std::fs::File::create(PRIVATE_DATA_PATH)?;
+    let mut file = std::fs::File::create(private_data_path())?;
     file.write_all(input)?;
     Ok(())
 }

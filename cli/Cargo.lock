@@ -2049,6 +2049,7 @@ dependencies = [
  "dialoguer",
  "ethers",
  "intmax2-zkp",
+ "log",
  "mining_circuit",
  "num-bigint 0.4.6",
  "plonky2",
