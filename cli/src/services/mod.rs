@@ -16,7 +16,6 @@ pub mod mining;
 pub mod sync;
 
 pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
-    let settings = Settings::new()?;
     let mut is_mining_ended = false;
 
     loop {
@@ -28,11 +27,13 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
         match next_process {
             MiningProcess::Deposit => {
                 print_status("Deposit");
-                deposit_task(state).await?
+                deposit_task(state).await?;
+                mining_cooldown().await?;
             }
             MiningProcess::Withdrawal(event) => {
                 print_status("Withdrawal");
-                withdrawal_task(state, event).await?
+                withdrawal_task(state, event).await?;
+                mining_cooldown().await?;
             }
             MiningProcess::Cancel(event) => {
                 print_status("Cancel");
@@ -46,28 +47,36 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
                 is_mining_ended = true;
             }
         }
-        // sleep for mining cooldown
-        print_status("Mining cooldown...");
-        tokio::time::sleep(std::time::Duration::from_secs(
-            settings.service.mining_cooldown_in_sec,
-        ))
-        .await;
-
         let next_process = determin_next_claim_process(state).await?;
         match next_process {
             ClaimProcess::Claim(events) => {
                 print_status(&format!("Claim {}", events.len()));
                 claim_task(state, &events).await?;
+                claim_cooldown().await?;
             }
             ClaimProcess::Wait => (),
             ClaimProcess::End => break,
         }
-        // sleep for claim cooldown
-        print_status("Claim cooldown...");
-        tokio::time::sleep(std::time::Duration::from_secs(
-            settings.service.claim_cooldown_in_sec,
-        ))
-        .await;
     }
+    Ok(())
+}
+
+async fn mining_cooldown() -> anyhow::Result<()> {
+    print_status("Mining cooldown...");
+    let settings = Settings::new()?;
+    tokio::time::sleep(std::time::Duration::from_secs(
+        settings.service.mining_cooldown_in_sec,
+    ))
+    .await;
+    Ok(())
+}
+
+async fn claim_cooldown() -> anyhow::Result<()> {
+    print_status("Claim cooldown...");
+    let settings = Settings::new()?;
+    tokio::time::sleep(std::time::Duration::from_secs(
+        settings.service.claim_cooldown_in_sec,
+    ))
+    .await;
     Ok(())
 }

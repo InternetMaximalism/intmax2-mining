@@ -175,9 +175,8 @@ mod tests {
         let deposit_hash_tree = sync_deposit_tree().await.unwrap();
         let mut state = get_dummy_state();
         state.deposit_hash_tree = deposit_hash_tree;
-        // let prover = Prover::new();
-        // state.prover = Some(prover);
-        // println!("state initialized");
+        let prover = Prover::new();
+        state.prover = Some(prover);
         super::resume_withdrawal_task(&state).await.unwrap();
     }
 
