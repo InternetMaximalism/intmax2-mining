@@ -45,8 +45,14 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
                 main_loop_cooldown().await?;
                 continue;
             }
-            MiningProcess::End => {
+            MiningProcess::EndBecauseOfNoRemainingDeposit => {
                 print_status("Mining end");
+                println!("No deposit is remaining. Please use new deposit address.");
+                println!();
+                is_mining_ended = true;
+            }
+            MiningProcess::EndBecauseOfShutdown => {
+                print_status("No withdrawal is remaining");
                 is_mining_ended = true;
             }
         }

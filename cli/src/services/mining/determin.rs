@@ -19,7 +19,8 @@ pub enum MiningProcess {
     Deposit,
     Withdrawal(Deposited),
     WaitingForAnalyze,
-    End,
+    EndBecauseOfNoRemainingDeposit,
+    EndBecauseOfShutdown,
 }
 
 // determin which mining process should run next.
@@ -101,12 +102,12 @@ pub async fn determin_next_mining_process(state: &State) -> anyhow::Result<Minin
         RunMode::Normal => {
             let user_settings = UserSettings::new()?;
             if user_settings.remaining_deposits == 0 {
-                return Ok(MiningProcess::End);
+                return Ok(MiningProcess::EndBecauseOfNoRemainingDeposit);
             } else {
                 return Ok(MiningProcess::Deposit);
             }
         }
-        RunMode::Shutdown => Ok(MiningProcess::End),
+        RunMode::Shutdown => Ok(MiningProcess::EndBecauseOfShutdown),
     }
 }
 
