@@ -94,6 +94,7 @@ pub async fn get_deposited_event(query: DepositQuery) -> anyhow::Result<Vec<Depo
 pub struct DepositLeafInserted {
     pub deposit_index: u32,
     pub deposit_hash: Bytes32,
+    pub block_number: u64,
 }
 
 pub async fn get_deposit_leaf_inserted_event(
@@ -107,9 +108,10 @@ pub async fn get_deposit_leaf_inserted_event(
         .await?;
     let mut events: Vec<DepositLeafInserted> = events
         .into_iter()
-        .map(|(event, _meta)| DepositLeafInserted {
+        .map(|(event, meta)| DepositLeafInserted {
             deposit_index: event.deposit_index,
             deposit_hash: Bytes32::from_bytes_be(&event.deposit_hash),
+            block_number: meta.block_number.as_u64(),
         })
         .collect();
     events.sort_by_key(|event| event.deposit_index);

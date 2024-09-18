@@ -20,7 +20,7 @@ pub async fn main_loop(state: &mut State) -> anyhow::Result<()> {
     let mut is_mining_ended = false;
 
     loop {
-        state.sync_tree().await?;
+        state.sync_trees().await?;
         if is_mining_ended {
             break;
         }

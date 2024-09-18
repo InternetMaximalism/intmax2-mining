@@ -46,7 +46,6 @@ async fn start() -> anyhow::Result<State> {
 
     print_status("Building circuit");
     state.build_circuit()?;
-    print_status("Circuit built!");
     Ok(state)
 }
 

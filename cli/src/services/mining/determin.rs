@@ -116,7 +116,7 @@ mod tests {
     #[tokio::test]
     async fn test_determin_next_mining_process() {
         let mut state = crate::test::get_dummy_state();
-        state.sync_tree().await.unwrap();
+        state.sync_trees().await.unwrap();
 
         let result = super::determin_next_mining_process(&state).await.unwrap();
         dbg!(result);

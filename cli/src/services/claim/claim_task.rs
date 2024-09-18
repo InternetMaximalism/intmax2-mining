@@ -162,7 +162,7 @@ mod tests {
     #[tokio::test]
     async fn test_claim_task() {
         let mut state = get_dummy_state();
-        state.sync_tree().await.unwrap();
+        state.sync_trees().await.unwrap();
         let process = determin::determin_next_claim_process(&state).await.unwrap();
         dbg!(&process);
 

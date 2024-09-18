@@ -30,6 +30,7 @@ pub fn get_dummy_state() -> State {
         deposit_hash_tree: DepositHashTree::new(),
         eligible_tree,
         last_tree_feched_at: NaiveDateTime::default(),
+        last_deposit_synced_block: 0,
         mode: RunMode::Normal,
         prover: None,
     };
