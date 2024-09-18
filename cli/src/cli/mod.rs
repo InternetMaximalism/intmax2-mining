@@ -8,6 +8,7 @@ use crate::{
 
 pub mod availability;
 pub mod private_data;
+pub mod status;
 pub mod user_settings;
 
 pub async fn run() -> anyhow::Result<()> {
