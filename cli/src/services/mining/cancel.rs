@@ -2,6 +2,7 @@ use ethers::providers::{Http, PendingTransaction};
 use intmax2_zkp::ethereum_types::u32limb_trait::U32LimbTrait as _;
 
 use crate::{
+    cli::status::print_status,
     external_api::contracts::{
         events::Deposited,
         int1::{get_int1_contract_with_signer, int_1},
@@ -25,7 +26,7 @@ pub async fn cancel_task(state: &State, event: Deposited) -> anyhow::Result<()> 
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    println!("cancel tx hash: {:?}", pending_tx.tx_hash());
+    print_status(&format!("cancel tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
     Ok(())
 }

@@ -7,6 +7,7 @@ use intmax2_zkp::{
 };
 
 use crate::{
+    cli::status::print_status,
     config::{MiningAmount, UserSettings},
     external_api::contracts::{int1::get_int1_contract_with_signer, utils::get_account_nonce},
     state::state::State,
@@ -41,7 +42,7 @@ pub async fn deposit_task(state: &State) -> anyhow::Result<()> {
             return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
         }
     };
-    println!("deposit tx hash: {:?}", pending_tx.tx_hash());
+    print_status(&format!("deposit tx hash: {:?}", pending_tx.tx_hash()));
     let _tx_receipt = pending_tx.await?;
 
     // reduce remaining deposits

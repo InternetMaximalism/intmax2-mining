@@ -130,7 +130,7 @@ async fn from_step5(_state: &State) -> anyhow::Result<()> {
         amount: status.witness.deposit_leaf.amount,
     };
     let tx_hash = submit_withdrawal(pis, status.gnark_proof.as_ref().unwrap()).await?;
-    println!("withdral tx hash: {:?}", tx_hash);
+    print_status(&format!("withdral tx hash: {:?}", tx_hash));
     temp::WithdrawalStatus::delete()?;
     Ok(())
 }

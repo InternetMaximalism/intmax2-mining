@@ -26,7 +26,7 @@ async fn main() {
         Ok(_) => {}
         Err(e) => {
             log::error!("{:?}", e);
-            std::process::exit(1);
+            eprintln!("An error occurred: {:?}", e);
         }
     }
 }
