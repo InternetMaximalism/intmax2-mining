@@ -1,5 +1,5 @@
 use crate::{
-    cli::status::print_status,
+    cli::console::print_status,
     external_api::{
         contracts::{events::get_deposit_leaf_inserted_event, int1::get_deposit_root},
         github::fetch_latest_tree_from_github,

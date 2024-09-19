@@ -10,9 +10,7 @@ use ethers::{
 };
 use intmax2_zkp::ethereum_types::{bytes32::Bytes32, u32limb_trait::U32LimbTrait};
 
-use crate::config::UserSettings;
-
-use super::utils::{get_client, get_wallet};
+use super::utils::{get_client, get_client_with_signer};
 
 abigen!(MinterV1, "abi/MinterV1.json",);
 
@@ -28,10 +26,7 @@ pub async fn get_minter_contract_with_signer(
     private_key: H256,
 ) -> anyhow::Result<minter_v1::MinterV1<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>> {
     let settings = crate::config::Settings::new()?;
-    let user_settings = UserSettings::new()?;
-    let wallet = get_wallet(private_key).await?;
-    let provider = Provider::<Http>::try_from(user_settings.rpc_url)?;
-    let client = SignerMiddleware::new(provider, wallet);
+    let client = get_client_with_signer(private_key).await?;
     let minter_address: Address = settings.blockchain.minter_address.parse()?;
     let contract = MinterV1::new(minter_address, Arc::new(client));
     Ok(contract)

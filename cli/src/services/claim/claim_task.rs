@@ -5,7 +5,7 @@ use contract::claim_tokens;
 use mining_circuit::claim::claim_circuit::ClaimPublicInputs;
 
 use crate::{
-    cli::status::print_status,
+    cli::console::print_status,
     config::Settings,
     external_api::{
         contracts::events::Deposited,

@@ -10,7 +10,7 @@ use mining::{
 };
 use rand::Rng;
 
-use crate::{cli::status::print_status, config::Settings, state::state::State};
+use crate::{cli::console::print_status, config::Settings, state::state::State};
 
 pub mod claim;
 pub mod mining;

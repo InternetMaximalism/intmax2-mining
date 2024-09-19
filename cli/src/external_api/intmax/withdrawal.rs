@@ -6,6 +6,7 @@ use intmax2_zkp::ethereum_types::u32limb_trait::U32LimbTrait;
 use mining_circuit::withdrawal::simple_withraw_circuit::SimpleWithdrawalPublicInputs;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use tokio::time::sleep;
 
 use crate::{
     config::Settings,
@@ -55,7 +56,10 @@ pub async fn submit_withdrawal(
         let proof = Bytes::from_str(proof)?;
         let tx = int1.withdraw(public_inputs, proof);
         let pending_tx: PendingTransaction<Http> = match tx.send().await {
-            Ok(tx) => tx,
+            Ok(tx) => {
+                sleep(std::time::Duration::from_secs(5)).await;
+                tx
+            }
             Err(e) => {
                 return Err(anyhow::anyhow!("Error sending transaction: {:?}", e));
             }

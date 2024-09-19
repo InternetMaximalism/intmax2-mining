@@ -56,6 +56,8 @@ pub struct Blockchain {
     pub chain_id: u64,
     pub int1_address: String,
     pub minter_address: String,
+    pub single_deposit_gas_fee: String,
+    pub sinlge_claim_gas_fee: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
