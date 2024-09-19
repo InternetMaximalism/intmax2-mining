@@ -1,6 +1,6 @@
 use availability::check_avaliability;
 use dialoguer::Select;
-use status::print_status;
+use console::print_status;
 
 use crate::{
     services::{
@@ -11,7 +11,7 @@ use crate::{
 
 pub mod availability;
 pub mod private_data;
-pub mod status;
+pub mod console;
 pub mod user_settings;
 
 pub async fn run() -> anyhow::Result<()> {

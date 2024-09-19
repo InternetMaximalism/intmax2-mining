@@ -5,7 +5,7 @@ use ethers::{
     middleware::SignerMiddleware,
     providers::{Http, Middleware, Provider},
     signers::{Signer, Wallet},
-    types::{Address, H256},
+    types::{Address, H256, U256},
 };
 
 use crate::config::UserSettings;
@@ -42,6 +42,12 @@ pub async fn get_account_nonce(address: Address) -> anyhow::Result<u64> {
     let client = get_client().await?;
     let nonce = client.get_transaction_count(address, None).await?;
     Ok(nonce.as_u64())
+}
+
+pub async fn get_balance(address: Address) -> anyhow::Result<U256> {
+    let client = get_client().await?;
+    let balance = client.get_balance(address, None).await?;
+    Ok(balance)
 }
 
 pub fn u256_as_bytes_be(u256: ethers::types::U256) -> [u8; 32] {

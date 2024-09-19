@@ -1,5 +1,5 @@
 use dialoguer::{Input, Select};
-use ethers::{providers::Middleware as _, types::U256};
+use ethers::providers::Middleware as _;
 use tokio::time::sleep;
 
 use crate::{
@@ -7,6 +7,8 @@ use crate::{
     external_api::contracts::utils::get_client,
     private_data::PrivateData,
 };
+
+use super::console::pretty_format_u256;
 
 pub async fn user_settings(private_data: &PrivateData) -> anyhow::Result<()> {
     if !UserSettings::new().is_err() {
@@ -142,13 +144,6 @@ async fn initial_balance(
     Ok(())
 }
 
-fn pretty_format_u256(value: U256) -> String {
-    let s = ethers::utils::format_units(value, "ether").unwrap();
-    // remove trailing zeros
-    let s = s.trim_end_matches('0').trim_end_matches('.');
-    s.to_string()
-}
-
 async fn check_rpc_url(rpc_url: &str) -> anyhow::Result<()> {
     let client = ethers::providers::Provider::<ethers::providers::Http>::try_from(rpc_url)?;
     let chain_id = client.get_chainid().await?;
@@ -161,19 +156,4 @@ async fn check_rpc_url(rpc_url: &str) -> anyhow::Result<()> {
         ));
     }
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn test_pretty_format() {
-        let value = ethers::utils::parse_ether("1.01000000000000000").unwrap();
-        let pretty = super::pretty_format_u256(value);
-        assert_eq!(pretty, "1.01");
-
-        let value = ethers::utils::parse_ether("1.00000000000000000").unwrap();
-        let pretty = super::pretty_format_u256(value);
-        assert_eq!(pretty, "1");
-    }
 }

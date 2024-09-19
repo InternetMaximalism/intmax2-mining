@@ -7,10 +7,15 @@ pub mod utils;
 mod tests {
     use ethers::{
         providers::Middleware as _,
+        signers::Signer,
         types::{Address, TransactionRequest, U256},
     };
 
-    use crate::{external_api::contracts::utils::get_client_with_signer, test::get_dummy_state};
+    use crate::{
+        cli::console::insuffient_balance_instruction,
+        external_api::contracts::utils::{get_client_with_signer, get_wallet},
+        test::get_dummy_state,
+    };
 
     #[tokio::test]
     async fn test_innsufficient_balance() -> anyhow::Result<()> {
@@ -29,9 +34,10 @@ mod tests {
             Ok(_) => println!("Transaction sent successfully"),
             Err(e) => {
                 let error_message = e.to_string();
-                if error_message.contains("-32000") { // Insufficient funds code 
-                    println!("Error: Insufficient funds to send the transaction");
-                    println!("JSON-RPC error: {}", error_message);
+                if error_message.contains("-32000") {
+                    // Insufficient funds code
+                    let address = get_wallet(state.private_data.deposit_key).await?.address();
+                    insuffient_balance_instruction(address, "deposit").await?;
                 } else {
                     println!("JSON-RPC error: {}", error_message);
                 }

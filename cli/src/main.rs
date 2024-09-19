@@ -1,6 +1,6 @@
 use std::fs::File;
 
-use cli::{run, status::print_error};
+use cli::{run, console::print_error};
 use simplelog::{Config, LevelFilter, WriteLogger};
 
 pub mod cli;

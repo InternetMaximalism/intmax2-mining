@@ -4,7 +4,7 @@ use anyhow::ensure;
 use mining_circuit::withdrawal::simple_withraw_circuit::SimpleWithdrawalPublicInputs;
 
 use crate::{
-    cli::status::print_status,
+    cli::console::print_status,
     config::Settings,
     external_api::{
         contracts::events::Deposited,
