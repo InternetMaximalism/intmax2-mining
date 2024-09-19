@@ -1,5 +1,0 @@
-target/
-data/*.json
-data/*.bin
-temp/
-*.log
