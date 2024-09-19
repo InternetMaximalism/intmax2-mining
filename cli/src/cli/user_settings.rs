@@ -3,6 +3,7 @@ use ethers::providers::Middleware as _;
 use tokio::time::sleep;
 
 use crate::{
+    cli::console::print_status,
     config::{InitialDeposit, MiningAmount, Settings, UserSettings},
     external_api::contracts::utils::get_client,
     private_data::PrivateData,
@@ -114,7 +115,8 @@ async fn initial_balance(
         loop {
             let deposit_balance = client.get_balance(addresses.deposit_address, None).await?;
             if deposit_balance >= initial_deposit + mining_gas {
-                println!("Deposit completed!");
+                print_status("Deposit completed");
+                sleep(std::time::Duration::from_secs(5)).await;
                 break;
             }
             sleep(std::time::Duration::from_secs(5)).await;
@@ -135,7 +137,8 @@ async fn initial_balance(
         loop {
             let claim_balance = client.get_balance(addresses.claim_address, None).await?;
             if claim_balance >= mining_gas {
-                println!("Deposit completed");
+                print_status("Deposit completed");
+                sleep(std::time::Duration::from_secs(5)).await;
                 break;
             }
             sleep(std::time::Duration::from_secs(5)).await;

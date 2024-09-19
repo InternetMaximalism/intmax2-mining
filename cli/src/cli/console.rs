@@ -3,7 +3,7 @@ use ethers::{
     providers::Middleware as _,
     types::{Address, U256},
 };
-use log::info;
+use log::{error, info, warn};
 
 use crate::external_api::contracts::utils::get_client;
 
@@ -20,26 +20,29 @@ pub fn print_status(message: &str) {
     );
 
     term.write_line(&colored_message).unwrap();
-
-    info!("Status: {}", message);
+    info!("{}", message);
 }
 
 pub fn print_warning(message: &str) {
     let term = Term::stdout();
+    term.clear_last_lines(1).unwrap();
+
     let colored_message = format!(
         "{} {}",
         style("WARNING:").yellow().bold(),
         style(message).yellow()
     );
     term.write_line(&colored_message).unwrap();
-    info!("Warning: {}", message);
+    warn!("{}", message);
 }
 
 pub fn print_error(message: &str) {
     let term = Term::stdout();
+    term.clear_last_lines(1).unwrap();
+
     let colored_message = format!("{} {}", style("ERROR:").red().bold(), style(message).red());
     term.write_line(&colored_message).unwrap();
-    info!("Error: {}", message);
+    error!("{}", message);
 }
 
 pub async fn insuffient_balance_instruction(address: Address, name: &str) -> anyhow::Result<()> {
@@ -57,6 +60,7 @@ Waiting for your deposit...",
         let new_balance = client.get_balance(address, None).await?;
         if new_balance > balance {
             print_status("Balance updated");
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
             break;
         }
         tokio::time::sleep(std::time::Duration::from_secs(5)).await;
