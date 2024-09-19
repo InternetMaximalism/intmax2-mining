@@ -1,5 +1,5 @@
 [package]
-name = "mining_circuit"
+name = "mining_circuit_v0"
 version = "0.1.0"
 edition = "2021"
 
