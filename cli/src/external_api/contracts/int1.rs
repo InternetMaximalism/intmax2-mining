@@ -10,9 +10,7 @@ use ethers::{
 };
 use intmax2_zkp::ethereum_types::{bytes32::Bytes32, u32limb_trait::U32LimbTrait};
 
-use crate::config::UserSettings;
-
-use super::utils::{get_client, get_wallet};
+use super::utils::{get_client, get_client_with_signer};
 
 abigen!(Int1, "abi/Int1.json",);
 
@@ -28,10 +26,7 @@ pub async fn get_int1_contract_with_signer(
     private_key: H256,
 ) -> anyhow::Result<int_1::Int1<SignerMiddleware<Provider<Http>, Wallet<SigningKey>>>> {
     let settings = crate::config::Settings::new()?;
-    let user_settings = UserSettings::new()?;
-    let wallet = get_wallet(private_key).await?;
-    let provider = Provider::<Http>::try_from(user_settings.rpc_url)?;
-    let client = SignerMiddleware::new(provider, wallet);
+    let client = get_client_with_signer(private_key).await?;
     let int1_address: Address = settings.blockchain.int1_address.parse()?;
     let contract = Int1::new(int1_address, Arc::new(client));
     Ok(contract)

@@ -27,6 +27,8 @@ pub async fn cancel_task(state: &State, event: Deposited) -> anyhow::Result<()> 
         }
     };
     print_status(&format!("Cancel tx hash: {:?}", pending_tx.tx_hash()));
-    let _tx_receipt = pending_tx.await?;
+    let tx_receipt = pending_tx.await?.unwrap();
+    tx_receipt.status.unwrap();
     Ok(())
 }
+
