@@ -7,7 +7,7 @@ use crate::{
     cli::console::print_status,
     config::Settings,
     external_api::{
-        contracts::events::Deposited,
+        contracts::{events::Deposited, utils::get_tx_receipt},
         intmax::{
             gnark::{fetch_gnark_proof, gnark_start_prove},
             withdrawal::submit_withdrawal,
@@ -131,6 +131,11 @@ async fn from_step5(_state: &State) -> anyhow::Result<()> {
     };
     let tx_hash = submit_withdrawal(pis, status.gnark_proof.as_ref().unwrap()).await?;
     print_status(&format!("Withdral tx hash: {:?}", tx_hash));
+    let tx_reciept = get_tx_receipt(tx_hash).await?;
+    ensure!(
+        tx_reciept.status == Some(ethers::types::U64::from(1)),
+        "Withdrawal transaction failed"
+    );
     temp::WithdrawalStatus::delete()?;
     Ok(())
 }

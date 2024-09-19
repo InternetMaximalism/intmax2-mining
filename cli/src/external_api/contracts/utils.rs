@@ -50,6 +50,20 @@ pub async fn get_balance(address: Address) -> anyhow::Result<U256> {
     Ok(balance)
 }
 
+pub async fn get_tx_receipt(
+    tx_hash: H256,
+) -> anyhow::Result<ethers::core::types::TransactionReceipt> {
+    let client = get_client().await?;
+    let receipt = client
+        .get_transaction_receipt(tx_hash)
+        .await?
+        .ok_or(anyhow::anyhow!(
+            "Transaction receipt not found for tx hash: {}",
+            tx_hash
+        ))?;
+    Ok(receipt)
+}
+
 pub fn u256_as_bytes_be(u256: ethers::types::U256) -> [u8; 32] {
     let mut bytes = [0u8; 32];
     u256.to_big_endian(&mut bytes);
