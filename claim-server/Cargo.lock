@@ -673,7 +673,7 @@ dependencies = [
  "hex",
  "intmax2-zkp",
  "log",
- "mining_circuit",
+ "mining_circuit_v1",
  "num-bigint 0.4.6",
  "once_cell",
  "plonky2",
@@ -1538,7 +1538,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 
 [[package]]
-name = "mining_circuit"
+name = "mining_circuit_v1"
 version = "0.1.0"
 dependencies = [
  "anyhow",
