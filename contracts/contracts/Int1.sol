@@ -19,6 +19,8 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositQueueLib for DepositQueueLib.DepositQueue;
     using DepositLib for DepositLib.Deposit;
 
+    error AlreadyAnalyzed();
+
     // roles
     bytes32 public constant ANALYZER = keccak256("ANALYZER");
 
@@ -31,6 +33,27 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     uint32 public depositIndex;
     mapping(bytes32 => uint256) public depositRoots;
     mapping(bytes32 => uint256) public nullifiers;
+
+    modifier canCancelDeposit(
+        uint256 depositId,
+        DepositLib.Deposit memory deposit
+    ) {
+        DepositQueueLib.DepositData memory depositData = depositQueue
+            .depositData[depositId];
+        if (depositData.sender != _msgSender()) {
+            revert OnlySenderCanCancelDeposit();
+        }
+        bytes32 depositHash = deposit.getHash();
+        if (depositData.depositHash != depositHash) {
+            revert InvalidDepositHash(depositData.depositHash, depositHash);
+        }
+        if (depositId <= getLastProcessedDepositId()) {
+            if (depositData.isRejected == false) {
+                revert AlreadyAnalyzed();
+            }
+        }
+        _;
+    }
 
     function initialize(
         address withdrawalVerifier_,
@@ -88,7 +111,7 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     function cancelDeposit(
         uint256 depositId,
         DepositLib.Deposit calldata deposit
-    ) external {
+    ) external canCancelDeposit(depositId, deposit) {
         DepositQueueLib.DepositData memory depositData = depositQueue
             .deleteDeposit(depositId);
         if (depositData.sender != _msgSender()) {
@@ -151,7 +174,7 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         return depositTree.getRoot();
     }
 
-    function getLastProcessedDepositId() external view returns (uint256) {
+    function getLastProcessedDepositId() public view returns (uint256) {
         return depositQueue.front - 1;
     }
 

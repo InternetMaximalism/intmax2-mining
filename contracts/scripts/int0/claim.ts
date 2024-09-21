@@ -14,12 +14,11 @@ async function main() {
   );
   const depositRoot = await int0.getDepositRoot();
   console.log(`Deposit root: ${depositRoot}`);
-  const token = IINTMAXToken__factory.connect(
-    env.INTMAX_TOKEN_ADDRESS,
-    ethers.provider
-  );
-  const mintable = await token.totalMintableAmount();
-  console.log(`Mintable amount: ${ethers.formatEther(mintable)}`);
+
+  const root =
+    "0x4245f6e8400c614ade1022a91c652e9e6ac4ce0da6441ee8d360f2bed669f26e";
+  const r = await int0.depositRoots(root);
+  console.log(`Root: ${r}`);
 }
 
 main()
