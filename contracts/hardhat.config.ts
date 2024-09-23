@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@openzeppelin/hardhat-upgrades";
+import "@nomicfoundation/hardhat-verify";
 import { cleanEnv, str, url } from "envalid";
 import dotenv from "dotenv";
 dotenv.config();
@@ -10,6 +11,7 @@ const env = cleanEnv(process.env, {
   DEPLOYER_ADDRESS: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
+  ETHERSCAN_API_KEY: str(),
 });
 
 const config: HardhatUserConfig = {
@@ -23,6 +25,12 @@ const config: HardhatUserConfig = {
       url: env.MAINNET_RPC_URL,
       accounts: [env.DEPLOYER_PRIVATE_KEY],
     },
+  },
+  etherscan: {
+    apiKey: env.ETHERSCAN_API_KEY,
+  },
+  sourcify: {
+    enabled: false,
   },
 };
 

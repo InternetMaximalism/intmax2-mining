@@ -1,5 +1,4 @@
 import { ethers, upgrades } from "hardhat";
-import { Int1 } from "../../typechain-types";
 import { cleanEnv, str } from "envalid";
 
 const env = cleanEnv(process.env, {
