@@ -5,9 +5,12 @@ import { cleanEnv, str } from "envalid";
 const env = cleanEnv(process.env, {
   ANALYZER_ADDRESS: str(),
   MINTER_V1_ADMIN_ADDRESS: str(),
+  WITHDRAWER_ADDRESS: str(),
 });
 
 async function main() {
+  console.log("env", env);
+
   const [admin] = await ethers.getSigners();
   console.log(`Deploying contracts with the account: ${admin.address}`);
 
@@ -22,12 +25,17 @@ async function main() {
     kind: "uups",
   })) as unknown as Int1;
 
+  console.log(`Int1 deployed at: ${await int1.getAddress()}`);
+  // sleep for 60 seconds to wait for the proxy to be deployed
+  await new Promise((resolve) => setTimeout(resolve, 60000));
+
   // initialize
   await int1.initialize(
     await withdrawalVerifier.getAddress(),
     env.ANALYZER_ADDRESS
   );
-  console.log(`Int1 deployed at: ${await int1.getAddress()}`);
+  // grant role
+  await int1.grantRole(await int1.WITHDRAWER(), env.WITHDRAWER_ADDRESS);
 
   // deploy token
   const tokenFactory = await ethers.getContractFactory("DummyToken");
@@ -46,6 +54,9 @@ async function main() {
     env.MINTER_V1_ADMIN_ADDRESS
   );
   console.log(`Minter deployed at: ${await minter.getAddress()}`);
+
+  // sleep for 60 seconds to wait for the proxy to be deployed
+  await new Promise((resolve) => setTimeout(resolve, 60000));
 
   // add token's minter role to minter
   await token.grantRole(await token.MINTER_ROLE(), minter);

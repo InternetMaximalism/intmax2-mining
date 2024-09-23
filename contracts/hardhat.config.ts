@@ -8,7 +8,6 @@ dotenv.config();
 const env = cleanEnv(process.env, {
   DEPLOYER_PRIVATE_KEY: str(),
   DEPLOYER_ADDRESS: str(),
-  ANALYZER_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
 });

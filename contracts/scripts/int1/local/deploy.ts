@@ -21,12 +21,12 @@ async function main() {
     kind: "uups",
   })) as unknown as Int1;
 
-  // initialize
-  await int1.initialize(
-    await withdrawalVerifier.getAddress(),
-    env.ANALYZER_ADDRESS
-  );
   console.log(`Int1 deployed at: ${await int1.getAddress()}`);
+
+  // initialize
+  await int1.initialize(await withdrawalVerifier.getAddress(), admin);
+  // grant role
+  await int1.grantRole(await int1.WITHDRAWER(), admin);
 
   // deploy token
   const tokenFactory = await ethers.getContractFactory("DummyToken");
@@ -47,17 +47,17 @@ async function main() {
   const balance = await token.balanceOf(minter);
   console.log(`Minter's balance: ${ethers.formatEther(balance)}`);
 
-  // fund analyzer
-  const analyzerBalance = await ethers.provider.getBalance(
-    env.ANALYZER_ADDRESS
-  );
-  if (analyzerBalance === 0n) {
-    const signer = (await ethers.getSigners())[0];
-    await signer.sendTransaction({
-      to: env.ANALYZER_ADDRESS,
-      value: ethers.parseEther("0.01"),
-    });
-  }
+  // // fund analyzer
+  // const analyzerBalance = await ethers.provider.getBalance(
+  //   env.ANALYZER_ADDRESS
+  // );
+  // if (analyzerBalance === 0n) {
+  //   const signer = (await ethers.getSigners())[0];
+  //   await signer.sendTransaction({
+  //     to: env.ANALYZER_ADDRESS,
+  //     value: ethers.parseEther("0.01"),
+  //   });
+  // }
 }
 main()
   .then(() => process.exit(0))

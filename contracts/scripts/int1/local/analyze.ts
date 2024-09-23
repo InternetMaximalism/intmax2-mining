@@ -14,7 +14,7 @@ async function main() {
     "Int1",
     env.LOCAL_INT1_CONTRACT_ADDRESS
   );
-  const analyzer = new ethers.Wallet(env.ANALYZER_PRIVATE_KEY, ethers.provider);
+  const analyzer = signer;
   const lastDepositId = await int1.getLastDepositId();
   console.log(`Last deposit ID: ${lastDepositId}`);
   await int1.connect(analyzer).analyzeAndProcessDeposits(lastDepositId, []);

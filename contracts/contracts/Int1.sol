@@ -24,6 +24,12 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     // roles
     bytes32 public constant ANALYZER = keccak256("ANALYZER");
 
+    // previlaged withdrawer role
+    bytes32 public constant WITHDRAWER = keccak256("WITHDRAWER");
+
+    uint256 public constant TX_BASE_GAS = 21000;
+    uint256 public constant TX_TRANSFER_GAS = 2300;
+
     // external contracts
     IPlonkVerifier public withdrawalVerifier;
 
@@ -131,6 +137,7 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         WithdrawalPublicInputs memory publicInputs,
         bytes calldata proof
     ) external payable {
+        uint256 startGas = gasleft();
         require(
             depositRoots[publicInputs.depositRoot] > 0,
             "Invalid depositRoot"
@@ -138,17 +145,28 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         require(nullifiers[publicInputs.nullifier] == 0, "Invalid nullifier");
         require(verifyProof(publicInputs, proof), "Invalid proof");
         nullifiers[publicInputs.nullifier] = block.timestamp;
-        if (publicInputs.tokenIndex == 0) {
-            payable(publicInputs.recipient).transfer(
-                publicInputs.amount + msg.value // gas top-up
-            );
-        }
+        require(publicInputs.tokenIndex == 0);
         emit Withdrawn(
             publicInputs.recipient,
             publicInputs.nullifier,
             publicInputs.tokenIndex,
             publicInputs.amount
         );
+        if (hasRole(WITHDRAWER, _msgSender())) {
+            uint256 compensation = (TX_BASE_GAS +
+                2 *
+                TX_TRANSFER_GAS +
+                startGas -
+                gasleft()) * tx.gasprice;
+            payable(publicInputs.recipient).transfer(
+                publicInputs.amount + msg.value - compensation
+            );
+            payable(_msgSender()).transfer(compensation);
+        } else {
+            payable(publicInputs.recipient).transfer(
+                publicInputs.amount + msg.value
+            );
+        }
     }
 
     function getDepositData(

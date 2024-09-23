@@ -107,7 +107,7 @@ contract MinterV1 is AccessControl {
         token.transfer(claim.recipient, claim.amount);
     }
 
-    function mint() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function mint() public onlyRole(DEFAULT_ADMIN_ROLE) {
         token.mint(address(this));
     }
 
