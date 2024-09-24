@@ -3,7 +3,6 @@ import { ethers } from "hardhat";
 
 const env = cleanEnv(process.env, {
   LOCAL_INT1_CONTRACT_ADDRESS: str(),
-  ANALYZER_PRIVATE_KEY: str(),
 });
 
 async function main() {
