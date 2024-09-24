@@ -17,14 +17,14 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
 
+    // state
+    bytes32 public eligibleTreeRoot;
+    mapping(bytes32 => bool) public nullifiers;
+
     // contracts
     IPlonkVerifier public verifier;
     IINTMAXToken public token;
     IInt1 public int1;
-
-    // state
-    bytes32 public eligibleTreeRoot;
-    mapping(bytes32 => bool) public nullifiers;
 
     function initialize(
         address plonkVerifier_,

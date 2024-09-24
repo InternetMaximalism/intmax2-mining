@@ -26,13 +26,13 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     uint256 public constant TX_BASE_GAS = 21000;
     uint256 public constant TX_TRANSFER_GAS = 2300;
 
-    // external contracts
+    // contracts
     IPlonkVerifier public withdrawalVerifier;
 
     // states
+    uint32 public depositIndex;
     DepositTreeLib.DepositTree private depositTree;
     DepositQueueLib.DepositQueue private depositQueue;
-    uint32 public depositIndex;
     mapping(bytes32 => uint256) public depositRoots;
     mapping(bytes32 => uint256) public nullifiers;
     mapping(bytes32 => bool) private alreadyUseRecipientSaltHash;

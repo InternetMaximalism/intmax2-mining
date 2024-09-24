@@ -12,7 +12,7 @@ describe("Int1", () => {
   };
 
   async function setup(): Promise<TestObjects> {
-    const { analyzer } = await getSigners();
+    const { analyzer, admin } = await getSigners();
 
     const MockPlonkVerifierFactory = await ethers.getContractFactory(
       "MockPlonkVerifier"
@@ -23,34 +23,45 @@ describe("Int1", () => {
     const Int1Factory = await ethers.getContractFactory("Int1");
     const Int1 = (await upgrades.deployProxy(
       Int1Factory,
-      [await WithdrawalVerifier.getAddress(), await analyzer.getAddress()],
+      [await WithdrawalVerifier.getAddress(), await admin.getAddress()],
       { kind: "uups" }
     )) as unknown as Int1;
+
+    // grant roles
+    await Int1.connect(admin).grantRole(
+      await Int1.ANALYZER(),
+      await analyzer.getAddress()
+    );
+
     return {
       Int1,
       WithdrawalVerifier,
     };
   }
+
   type Signers = {
     deployer: HardhatEthersSigner;
+    admin: HardhatEthersSigner;
     analyzer: HardhatEthersSigner;
     user: HardhatEthersSigner;
   };
   const getSigners = async (): Promise<Signers> => {
-    const [deployer, analyzer, user] = await ethers.getSigners();
+    const [deployer, admin, analyzer, user] = await ethers.getSigners();
     return {
       deployer,
+      admin,
       analyzer,
       user,
     };
   };
+
   describe("initialize", () => {
     describe("success", () => {
-      it("deployer has admin role", async () => {
+      it("admin has admin role", async () => {
         const { Int1 } = await loadFixture(setup);
-        const { deployer } = await getSigners();
+        const { admin } = await getSigners();
         const role = await Int1.DEFAULT_ADMIN_ROLE();
-        expect(await Int1.hasRole(role, deployer.address)).to.be.true;
+        expect(await Int1.hasRole(role, admin.address)).to.be.true;
       });
       it("analyzer has analyzer role", async () => {
         const { Int1 } = await loadFixture(setup);
