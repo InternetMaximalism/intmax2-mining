@@ -19,12 +19,8 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositQueueLib for DepositQueueLib.DepositQueue;
     using DepositLib for DepositLib.Deposit;
 
-    error AlreadyAnalyzed();
-
     // roles
     bytes32 public constant ANALYZER = keccak256("ANALYZER");
-
-    // previlaged withdrawer role
     bytes32 public constant WITHDRAWER = keccak256("WITHDRAWER");
 
     uint256 public constant TX_BASE_GAS = 21000;
@@ -39,6 +35,14 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     uint32 public depositIndex;
     mapping(bytes32 => uint256) public depositRoots;
     mapping(bytes32 => uint256) public nullifiers;
+    mapping(bytes32 => bool) private alreadyUseRecipientSaltHash;
+
+    modifier canDeposit(bytes32 recipientSaltHash) {
+        if (alreadyUseRecipientSaltHash[recipientSaltHash]) {
+            revert RecipientSaltHashAlreadyUsed();
+        }
+        _;
+    }
 
     modifier canCancelDeposit(
         uint256 depositId,
@@ -73,10 +77,13 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         _grantRole(ANALYZER, analyzer_);
     }
 
-    function depositNativeToken(bytes32 recipientSaltHash) external payable {
+    function depositNativeToken(
+        bytes32 recipientSaltHash
+    ) external payable canDeposit(recipientSaltHash) {
         if (msg.value == 0) {
             revert TriedToDepositZero();
         }
+        alreadyUseRecipientSaltHash[recipientSaltHash] = true;
         bytes32 depositHash = DepositLib
             .Deposit(recipientSaltHash, 0, msg.value)
             .getHash();
