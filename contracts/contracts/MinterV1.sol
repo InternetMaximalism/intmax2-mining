@@ -1,27 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Byte32Lib} from "./lib/Byte32Lib.sol";
+// interfaces
+import {IMinterV1} from "./interfaces/IMinterV1.sol";
+import {IInt1} from "./interfaces/IInt1.sol";
 import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
 import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
-import {IInt1} from "./interfaces/IInt1.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract MinterV1 is AccessControl {
+// libs
+import {Byte32Lib} from "./lib/Byte32Lib.sol";
+
+// contracts
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+
+contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
-
-    // structs
-    struct MintClaim {
-        address recipient;
-        bytes32 nullifier;
-        uint256 amount;
-    }
-
-    struct ClaimPublicInputs {
-        bytes32 depositTreeRoot;
-        bytes32 eligibleTreeRoot;
-        bytes32 lastClaimHash;
-    }
 
     // contracts
     IPlonkVerifier public verifier;
@@ -32,12 +26,12 @@ contract MinterV1 is AccessControl {
     bytes32 public eligibleTreeRoot;
     mapping(bytes32 => bool) public nullifiers;
 
-    constructor(
+    function initialize(
         address plonkVerifier_,
         address token_,
         address int1_,
         address admin_
-    ) {
+    ) public initializer {
         verifier = IPlonkVerifier(plonkVerifier_);
         token = IINTMAXToken(token_);
         int1 = IInt1(int1_);
@@ -49,21 +43,22 @@ contract MinterV1 is AccessControl {
         ClaimPublicInputs memory publicInputs,
         bytes calldata proof
     ) external {
-        // verify proof and nullifiers
-        // require(
-        //     publicInputs.eligibleTreeRoot == eligibleTreeRoot,
-        //     "Invalid eligible tree root"
-        // );
-        require(
-            int1.depositRoots(publicInputs.depositTreeRoot) > 0,
-            "Invalid deposit tree root"
-        );
-
-        bytes32 claimHash = _verifyClaimChain(claims);
-        require(
-            claimHash == publicInputs.lastClaimHash,
-            "Invalid last claim hash"
-        );
+        if (publicInputs.eligibleTreeRoot != eligibleTreeRoot) {
+            revert EligibleTreeRootMismatch({
+                given: publicInputs.eligibleTreeRoot,
+                expected: eligibleTreeRoot
+            });
+        }
+        if (int1.depositRoots(publicInputs.depositTreeRoot) == 0) {
+            revert InvalidDepositTreeRoot(publicInputs.depositTreeRoot);
+        }
+        bytes32 lastClaimHash = _verifyClaimChain(claims);
+        if (publicInputs.lastClaimHash != lastClaimHash) {
+            revert LastClaimHashMismatch({
+                given: publicInputs.lastClaimHash,
+                expected: lastClaimHash
+            });
+        }
         bytes32 publicInputsHash = keccak256(
             abi.encodePacked(
                 publicInputs.depositTreeRoot,
@@ -71,40 +66,18 @@ contract MinterV1 is AccessControl {
                 publicInputs.lastClaimHash
             )
         );
-        bool success = verifier.Verify(proof, publicInputsHash.split());
-        require(success, "Invalid proof");
+        if (!verifier.Verify(proof, publicInputsHash.split())) {
+            revert InvalidProof();
+        }
         for (uint256 i = 0; i < claims.length; i++) {
             MintClaim memory claim = claims[i];
-            require(!nullifiers[claim.nullifier], "Nullifier already used");
+            if (nullifiers[claim.nullifier]) {
+                revert UsedNullifier(claim.nullifier);
+            }
             nullifiers[claim.nullifier] = true;
+            token.transfer(claim.recipient, claim.amount);
+            emit Claimed(claim.recipient, claim.nullifier, claim.amount);
         }
-        // claim tokens
-        for (uint256 i = 0; i < claims.length; i++) {
-            _claimTokens(claims[i]);
-        }
-    }
-
-    function _verifyClaimChain(
-        MintClaim[] memory claims
-    ) internal pure returns (bytes32) {
-        bytes32 lastClaimHash = 0;
-        for (uint256 i = 0; i < claims.length; i++) {
-            MintClaim memory claim = claims[i];
-            lastClaimHash = keccak256(
-                abi.encodePacked(
-                    lastClaimHash,
-                    claim.recipient,
-                    claim.nullifier,
-                    claim.amount
-                )
-            );
-        }
-        return lastClaimHash;
-    }
-
-    function _claimTokens(MintClaim memory claim) internal {
-        // claim tokens
-        token.transfer(claim.recipient, claim.amount);
     }
 
     function mint() public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -125,4 +98,26 @@ contract MinterV1 is AccessControl {
         uint256 balance = token.balanceOf(address(this));
         token.transfer(newMinter, balance);
     }
+
+    function _verifyClaimChain(
+        MintClaim[] memory claims
+    ) internal pure returns (bytes32) {
+        bytes32 lastClaimHash = 0;
+        for (uint256 i = 0; i < claims.length; i++) {
+            MintClaim memory claim = claims[i];
+            lastClaimHash = keccak256(
+                abi.encodePacked(
+                    lastClaimHash,
+                    claim.recipient,
+                    claim.nullifier,
+                    claim.amount
+                )
+            );
+        }
+        return lastClaimHash;
+    }
+
+    function _authorizeUpgrade(
+        address
+    ) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 }

@@ -19,6 +19,20 @@ interface IInt1 {
     /// @param calculatedHash The hash calculated from given input
     error InvalidDepositHash(bytes32 depositDataHash, bytes32 calculatedHash);
 
+    /// @notice Error thrown when the deposit root is invalid
+    /// @param depositRoot The deposit root
+    error InvalidDepositRoot(bytes32 depositRoot);
+
+    /// @notice Error thrown when the nullifier is already used
+    /// @param nullifier The nullifier
+    error UsedNullifier(bytes32 nullifier);
+
+    /// @notice Error thrown when the proof is invalid
+    error InvalidProof();
+
+    /// @notice Error thrown when the token index is other than 0
+    error InvalidTokenIndex();
+
     event DepositCanceled(uint256 indexed depositId);
 
     event Deposited(

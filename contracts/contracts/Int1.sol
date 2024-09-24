@@ -67,14 +67,13 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
 
     function initialize(
         address withdrawalVerifier_,
-        address analyzer_
+        address admin_
     ) external initializer {
         withdrawalVerifier = IPlonkVerifier(withdrawalVerifier_);
         depositTree.initialize();
         depositQueue.initialize();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(ANALYZER, analyzer_);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
     function depositNativeToken(
@@ -145,20 +144,28 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         bytes calldata proof
     ) external payable {
         uint256 startGas = gasleft();
-        require(
-            depositRoots[publicInputs.depositRoot] > 0,
-            "Invalid depositRoot"
-        );
-        require(nullifiers[publicInputs.nullifier] == 0, "Invalid nullifier");
-        require(verifyProof(publicInputs, proof), "Invalid proof");
+        if (depositRoots[publicInputs.depositRoot] == 0) {
+            revert InvalidDepositRoot(publicInputs.depositRoot);
+        }
+        if (nullifiers[publicInputs.nullifier] != 0) {
+            revert UsedNullifier(publicInputs.nullifier);
+        }
+        if (!verifyProof(publicInputs, proof)) {
+            revert InvalidProof();
+        }
+        if (publicInputs.tokenIndex != 0) {
+            revert InvalidTokenIndex();
+        }
         nullifiers[publicInputs.nullifier] = block.timestamp;
-        require(publicInputs.tokenIndex == 0);
+
         emit Withdrawn(
             publicInputs.recipient,
             publicInputs.nullifier,
             publicInputs.tokenIndex,
             publicInputs.amount
         );
+
+        // fund transfer and compensation
         if (hasRole(WITHDRAWER, _msgSender())) {
             uint256 compensation = (TX_BASE_GAS +
                 2 *
@@ -206,8 +213,6 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     function getLastDepositId() external view returns (uint256) {
         return depositQueue.rear - 1;
     }
-
-    //=========================utils===========================
 
     function verifyProof(
         WithdrawalPublicInputs memory pis,
