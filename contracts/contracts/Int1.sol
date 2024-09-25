@@ -19,26 +19,30 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositQueueLib for DepositQueueLib.DepositQueue;
     using DepositLib for DepositLib.Deposit;
 
-    error AlreadyAnalyzed();
-
     // roles
     bytes32 public constant ANALYZER = keccak256("ANALYZER");
-
-    // previlaged withdrawer role
     bytes32 public constant WITHDRAWER = keccak256("WITHDRAWER");
 
     uint256 public constant TX_BASE_GAS = 21000;
     uint256 public constant TX_TRANSFER_GAS = 2300;
 
-    // external contracts
+    // contracts
     IPlonkVerifier public withdrawalVerifier;
 
     // states
+    uint32 public depositIndex;
     DepositTreeLib.DepositTree private depositTree;
     DepositQueueLib.DepositQueue private depositQueue;
-    uint32 public depositIndex;
     mapping(bytes32 => uint256) public depositRoots;
     mapping(bytes32 => uint256) public nullifiers;
+    mapping(bytes32 => bool) private alreadyUseRecipientSaltHash;
+
+    modifier canDeposit(bytes32 recipientSaltHash) {
+        if (alreadyUseRecipientSaltHash[recipientSaltHash]) {
+            revert RecipientSaltHashAlreadyUsed();
+        }
+        _;
+    }
 
     modifier canCancelDeposit(
         uint256 depositId,
@@ -63,20 +67,22 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
 
     function initialize(
         address withdrawalVerifier_,
-        address analyzer_
+        address admin_
     ) external initializer {
         withdrawalVerifier = IPlonkVerifier(withdrawalVerifier_);
         depositTree.initialize();
         depositQueue.initialize();
-
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(ANALYZER, analyzer_);
+        depositRoots[depositTree.getRoot()] = block.timestamp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
-    function depositNativeToken(bytes32 recipientSaltHash) external payable {
+    function depositNativeToken(
+        bytes32 recipientSaltHash
+    ) external payable canDeposit(recipientSaltHash) {
         if (msg.value == 0) {
             revert TriedToDepositZero();
         }
+        alreadyUseRecipientSaltHash[recipientSaltHash] = true;
         bytes32 depositHash = DepositLib
             .Deposit(recipientSaltHash, 0, msg.value)
             .getHash();
@@ -138,26 +144,37 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         bytes calldata proof
     ) external payable {
         uint256 startGas = gasleft();
-        require(
-            depositRoots[publicInputs.depositRoot] > 0,
-            "Invalid depositRoot"
-        );
-        require(nullifiers[publicInputs.nullifier] == 0, "Invalid nullifier");
-        require(verifyProof(publicInputs, proof), "Invalid proof");
+        if (depositRoots[publicInputs.depositRoot] == 0) {
+            revert InvalidDepositRoot(publicInputs.depositRoot);
+        }
+        if (nullifiers[publicInputs.nullifier] != 0) {
+            revert UsedNullifier(publicInputs.nullifier);
+        }
+        if (!verifyProof(publicInputs, proof)) {
+            revert InvalidProof();
+        }
+        if (publicInputs.tokenIndex != 0) {
+            revert InvalidTokenIndex();
+        }
         nullifiers[publicInputs.nullifier] = block.timestamp;
-        require(publicInputs.tokenIndex == 0);
+
         emit Withdrawn(
             publicInputs.recipient,
             publicInputs.nullifier,
             publicInputs.tokenIndex,
             publicInputs.amount
         );
+
+        // fund transfer and compensation
         if (hasRole(WITHDRAWER, _msgSender())) {
             uint256 compensation = (TX_BASE_GAS +
                 2 *
                 TX_TRANSFER_GAS +
                 startGas -
                 gasleft()) * tx.gasprice;
+            if (compensation > publicInputs.amount + msg.value) {
+                revert GasTooHigh();
+            }
             payable(publicInputs.recipient).transfer(
                 publicInputs.amount + msg.value - compensation
             );
@@ -199,8 +216,6 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     function getLastDepositId() external view returns (uint256) {
         return depositQueue.rear - 1;
     }
-
-    //=========================utils===========================
 
     function verifyProof(
         WithdrawalPublicInputs memory pis,

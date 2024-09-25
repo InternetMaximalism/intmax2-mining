@@ -2,9 +2,39 @@
 pragma solidity ^0.8.24;
 
 interface IInt1 {
+    /// @notice Error thrown when already analyzed deposits
+    error AlreadyAnalyzed();
+
+    /// @notice Error thrown when the recipientSaltHash is already used
+    error RecipientSaltHashAlreadyUsed();
+
+    /// @notice Error thrown when trying to deposit zero amount of native token
     error TriedToDepositZero();
+
+    /// @notice Error thrown when someone other than the original depositor tries to cancel a deposit
     error OnlySenderCanCancelDeposit();
+
+    /// @notice Error thrown when the provided deposit hash doesn't match the calculated hash during cancellation
+    /// @param depositDataHash The hash from the deposit data
+    /// @param calculatedHash The hash calculated from given input
     error InvalidDepositHash(bytes32 depositDataHash, bytes32 calculatedHash);
+
+    /// @notice Error thrown when the deposit root is invalid
+    /// @param depositRoot The deposit root
+    error InvalidDepositRoot(bytes32 depositRoot);
+
+    /// @notice Error thrown when the nullifier is already used
+    /// @param nullifier The nullifier
+    error UsedNullifier(bytes32 nullifier);
+
+    /// @notice Error thrown when the proof is invalid
+    error InvalidProof();
+
+    /// @notice Error thrown when the token index is other than 0
+    error InvalidTokenIndex();
+
+    /// @notice Error thrown when the deposit is too high to compensate for gas
+    error GasTooHigh();
 
     event DepositCanceled(uint256 indexed depositId);
 

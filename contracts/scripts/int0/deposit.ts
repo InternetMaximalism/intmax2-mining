@@ -1,5 +1,5 @@
 import { ethers, ignition } from "hardhat";
-import Int0Module from "../../ignition/modules/Int0";
+import Int0Module from "../../ignition/modules/int0/Int0";
 import { getPubkeySaltHash } from "../../utils/hash";
 import { appendCSV, depositsCsvFilePath } from "../../utils/csv";
 import { getRandomPubkey, getRandomSalt } from "../../utils/rand";

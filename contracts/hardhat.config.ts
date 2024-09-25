@@ -9,6 +9,8 @@ dotenv.config();
 const env = cleanEnv(process.env, {
   DEPLOYER_PRIVATE_KEY: str(),
   DEPLOYER_ADDRESS: str(),
+  ADMIN_PRIVATE_KEY: str(),
+  ADMIN_ADDRESS: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
   ETHERSCAN_API_KEY: str(),
