@@ -1,6 +1,5 @@
 import { ethers, upgrades } from "hardhat";
 import { Int1, MinterV1 } from "../../../typechain-types";
-import { cleanEnv, str } from "envalid";
 
 async function main() {
   const [admin] = await ethers.getSigners();
@@ -51,18 +50,6 @@ async function main() {
   await minter.initialize(claimVerifier, token, int1, admin);
   // add token's minter role to minter
   await token.grantRole(await token.MINTER_ROLE(), minter);
-
-  // // fund analyzer
-  // const analyzerBalance = await ethers.provider.getBalance(
-  //   env.ANALYZER_ADDRESS
-  // );
-  // if (analyzerBalance === 0n) {
-  //   const signer = (await ethers.getSigners())[0];
-  //   await signer.sendTransaction({
-  //     to: env.ANALYZER_ADDRESS,
-  //     value: ethers.parseEther("0.01"),
-  //   });
-  // }
 }
 main()
   .then(() => process.exit(0))

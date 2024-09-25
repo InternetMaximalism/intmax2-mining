@@ -72,7 +72,7 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         withdrawalVerifier = IPlonkVerifier(withdrawalVerifier_);
         depositTree.initialize();
         depositQueue.initialize();
-
+        depositRoots[depositTree.getRoot()] = block.timestamp;
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
