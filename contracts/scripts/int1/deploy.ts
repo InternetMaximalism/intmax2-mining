@@ -40,6 +40,10 @@ async function main() {
     "ClaimPlonkVerifier"
   );
   const claimVerifier = await claimVerifierFactory.deploy();
+  console.log(
+    `Claim verifier deployed at: ${await claimVerifier.getAddress()}`
+  );
+
   const minterFactory = await ethers.getContractFactory("MinterV1");
   const minter = (await upgrades.deployProxy(minterFactory, [], {
     initializer: false,
