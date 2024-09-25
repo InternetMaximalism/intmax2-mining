@@ -29,8 +29,6 @@ async function main() {
 
   // initialize
   await int1.initialize(await withdrawalVerifier.getAddress(), admin);
-  await int1.grantRole(await int1.WITHDRAWER(), env.WITHDRAWER_ADDRESS);
-  await int1.grantRole(await int1.ANALYZER(), env.ANALYZER_ADDRESS);
 
   // deploy token
   const tokenFactory = await ethers.getContractFactory("DummyToken");
@@ -52,8 +50,15 @@ async function main() {
 
   // initialize minter
   await minter.initialize(claimVerifier, token, int1, admin);
-  // add token's minter role to minter
-  await token.grantRole(await token.MINTER_ROLE(), minter);
+
+  // admin roles
+  await int1
+    .connect(admin)
+    .grantRole(await int1.WITHDRAWER(), env.WITHDRAWER_ADDRESS);
+  await int1
+    .connect(admin)
+    .grantRole(await int1.ANALYZER(), env.ANALYZER_ADDRESS);
+  await token.connect(admin).grantRole(await token.MINTER_ROLE(), minter);
 }
 main()
   .then(() => process.exit(0))
