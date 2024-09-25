@@ -172,6 +172,9 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
                 TX_TRANSFER_GAS +
                 startGas -
                 gasleft()) * tx.gasprice;
+            if (compensation > publicInputs.amount + msg.value) {
+                revert GasTooHigh();
+            }
             payable(publicInputs.recipient).transfer(
                 publicInputs.amount + msg.value - compensation
             );

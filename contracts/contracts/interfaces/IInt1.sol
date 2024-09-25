@@ -33,6 +33,9 @@ interface IInt1 {
     /// @notice Error thrown when the token index is other than 0
     error InvalidTokenIndex();
 
+    /// @notice Error thrown when the deposit is too high to compensate for gas
+    error GasTooHigh();
+
     event DepositCanceled(uint256 indexed depositId);
 
     event Deposited(
