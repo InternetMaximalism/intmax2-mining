@@ -32,7 +32,7 @@ contract DummyToken is ERC20, AccessControl, IINTMAXToken {
      * @param to The address to mint tokens to.
      */
     function mint(address to) external onlyRole(MINTER_ROLE) {
-        _mint(to, 1_000_000 ether);
+        _mint(to, 1_000_000_000 ether);
     }
 
     /**
