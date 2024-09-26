@@ -3,6 +3,7 @@ import { Int1, MinterV1 } from "../../../typechain-types";
 
 async function main() {
   const [admin] = await ethers.getSigners();
+  const treeManager = admin;
   const withdrawer = admin;
   const analyzer = admin;
   console.log(`Deploying contracts with the account: ${admin.address}`);
@@ -48,6 +49,8 @@ async function main() {
 
   // initialize minter
   await minter.initialize(claimVerifier, token, int1, admin);
+
+  await minter.grantRole(await minter.TREE_MANAGER(), treeManager);
   // add token's minter role to minter
   await token.grantRole(await token.MINTER_ROLE(), minter);
 }

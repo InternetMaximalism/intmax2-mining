@@ -25,7 +25,7 @@ const config: HardhatUserConfig = {
     },
     mainnet: {
       url: env.MAINNET_RPC_URL,
-      accounts: [env.DEPLOYER_PRIVATE_KEY],
+      accounts: [env.DEPLOYER_PRIVATE_KEY, env.ADMIN_PRIVATE_KEY],
     },
   },
   etherscan: {

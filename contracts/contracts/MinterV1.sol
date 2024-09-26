@@ -17,6 +17,9 @@ import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/acce
 contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
 
+    // roles that post eligible tree roots
+    bytes32 public constant TREE_MANAGER = keccak256("TREE_MANAGER");
+
     // state
     bytes32 public eligibleTreeRoot;
     mapping(bytes32 => bool) public nullifiers;
@@ -80,14 +83,14 @@ contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
         }
     }
 
-    function mint() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function mint() public onlyRole(TREE_MANAGER) {
         token.mint(address(this));
     }
 
     function setTreeRoots(
         bytes32 eligibleTreeRoot_,
         uint256 targetBalance
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(TREE_MANAGER) {
         eligibleTreeRoot = eligibleTreeRoot_;
         uint256 balance = token.balanceOf(address(this));
         uint256 burnAmount = balance - targetBalance;
