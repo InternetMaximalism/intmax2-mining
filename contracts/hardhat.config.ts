@@ -7,10 +7,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const env = cleanEnv(process.env, {
-  DEPLOYER_PRIVATE_KEY: str(),
-  DEPLOYER_ADDRESS: str(),
-  ADMIN_PRIVATE_KEY: str(),
-  ADMIN_ADDRESS: str(),
+  MAINNET_DEPLOYER_PRIVATE_KEY: str(),
+  MAINNET_ADMIN_PRIVATE_KEY: str(),
+  SEPOLIA_DEPLOYER_PRIVATE_KEY: str(),
+  SEPOLIA_ADMIN_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
   ETHERSCAN_API_KEY: str(),
@@ -21,11 +21,17 @@ const config: HardhatUserConfig = {
   networks: {
     sepolia: {
       url: env.SEPOLIA_RPC_URL,
-      accounts: [env.DEPLOYER_PRIVATE_KEY],
+      accounts: [
+        env.SEPOLIA_DEPLOYER_PRIVATE_KEY,
+        env.SEPOLIA_ADMIN_PRIVATE_KEY,
+      ],
     },
     mainnet: {
       url: env.MAINNET_RPC_URL,
-      accounts: [env.DEPLOYER_PRIVATE_KEY, env.ADMIN_PRIVATE_KEY],
+      accounts: [
+        env.MAINNET_DEPLOYER_PRIVATE_KEY,
+        env.MAINNET_ADMIN_PRIVATE_KEY,
+      ],
     },
   },
   etherscan: {

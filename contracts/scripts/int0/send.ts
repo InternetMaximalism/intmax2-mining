@@ -5,9 +5,9 @@ dotenv.config();
 
 async function main() {
   const env = cleanEnv(process.env, {
-    WITHDRAWER_ADDRESS: str(),
+    MAINNET_WITHDRAWER_ADDRESS: str(),
   });
-  const toAddress = env.WITHDRAWER_ADDRESS;
+  const toAddress = env.MAINNET_WITHDRAWER_ADDRESS;
   const signers = await ethers.getSigners();
   const signer = signers[0];
   await signer.sendTransaction({

@@ -3,9 +3,9 @@ import { Int1, MinterV1 } from "../../typechain-types";
 import { cleanEnv, str } from "envalid";
 
 const env = cleanEnv(process.env, {
-  WITHDRAWER_ADDRESS: str(),
-  ANALYZER_ADDRESS: str(),
-  TREE_MANAGER_ADDRESS: str(),
+  MAINNET_WITHDRAWER_ADDRESS: str(),
+  MAINNET_ANALYZER_ADDRESS: str(),
+  MAINNET_TREE_MANAGER_ADDRESS: str(),
 });
 
 async function main() {
@@ -65,17 +65,17 @@ async function main() {
   // admin roles
   tx = await int1
     .connect(admin)
-    .grantRole(await int1.WITHDRAWER(), env.WITHDRAWER_ADDRESS);
+    .grantRole(await int1.WITHDRAWER(), env.MAINNET_WITHDRAWER_ADDRESS);
   console.log(`Int1 WITHDRAWER role granted at: ${tx.hash}`);
   tx = await int1
     .connect(admin)
-    .grantRole(await int1.ANALYZER(), env.ANALYZER_ADDRESS);
+    .grantRole(await int1.ANALYZER(), env.MAINNET_ANALYZER_ADDRESS);
   console.log(`Int1 ANALYZER role granted at: ${tx.hash}`);
   tx = await token.connect(admin).grantRole(await token.MINTER_ROLE(), minter);
   console.log(`Token MINTER role granted at: ${tx.hash}`);
   tx = await minter
     .connect(admin)
-    .grantRole(await minter.TREE_MANAGER(), env.TREE_MANAGER_ADDRESS);
+    .grantRole(await minter.TREE_MANAGER(), env.MAINNET_TREE_MANAGER_ADDRESS);
   console.log(`Minter TREE_MANAGER role granted at: ${tx.hash}`);
 }
 main()
