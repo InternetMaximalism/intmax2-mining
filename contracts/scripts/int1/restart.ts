@@ -17,13 +17,6 @@ async function main() {
   // sleep 20 secs to confirm the deployment
   await new Promise((resolve) => setTimeout(resolve, 20000));
 
-  const claimVerifierFactory = await ethers.getContractFactory(
-    "ClaimPlonkVerifier"
-  );
-  const claimVerifier = await claimVerifierFactory.deploy();
-  console.log(
-    `Claim verifier deployed at: ${await claimVerifier.getAddress()}`
-  );
   const minterFactory = await ethers.getContractFactory("MinterV1");
   const minter = (await upgrades.deployProxy(minterFactory, [], {
     initializer: false,
@@ -37,6 +30,7 @@ async function main() {
     "Int1",
     "0x7559F5355Ab5595f9398009bF01c85F959d94F40"
   )) as Int1;
+  const claimVerifier = "0x076Ffb05c6dfd8c14559a55938459C56E2411d32";
   const withdrawalVerifier = "0xd4cBc86f64cd9ff9C3a91e9DF42F850D9bA85faa";
   const token = (await ethers.getContractAt(
     "DummyToken",
