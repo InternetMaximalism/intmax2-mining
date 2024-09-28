@@ -1,15 +1,12 @@
 import { ethers, network, upgrades } from "hardhat";
 import { Int1, MinterV1 } from "../../../typechain-types";
 import { cleanEnv, str } from "envalid";
-import assert from "assert";
 
 const env = cleanEnv(process.env, {
   SEPOLIA_WITHDRAWER_ADDRESS: str(),
   SEPOLIA_ANALYZER_ADDRESS: str(),
   SEPOLIA_TREE_MANAGER_ADDRESS: str(),
 });
-
-assert(network.name === "sepolia", "Wrong network");
 
 async function main() {
   console.log(env);
@@ -81,6 +78,7 @@ async function main() {
     .grantRole(await minter.TREE_MANAGER(), env.SEPOLIA_TREE_MANAGER_ADDRESS);
   console.log(`Minter TREE_MANAGER role granted at: ${tx.hash}`);
 }
+
 main()
   .then(() => process.exit(0))
   .catch((error) => {

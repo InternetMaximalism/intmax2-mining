@@ -13,6 +13,7 @@ const env = cleanEnv(process.env, {
   SEPOLIA_ADMIN_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
+  HOLESKY_RPC_URL: url(),
   ETHERSCAN_API_KEY: str(),
 });
 
@@ -21,6 +22,13 @@ const config: HardhatUserConfig = {
   networks: {
     sepolia: {
       url: env.SEPOLIA_RPC_URL,
+      accounts: [
+        env.SEPOLIA_DEPLOYER_PRIVATE_KEY,
+        env.SEPOLIA_ADMIN_PRIVATE_KEY,
+      ],
+    },
+    holesky: {
+      url: env.HOLESKY_RPC_URL,
       accounts: [
         env.SEPOLIA_DEPLOYER_PRIVATE_KEY,
         env.SEPOLIA_ADMIN_PRIVATE_KEY,
