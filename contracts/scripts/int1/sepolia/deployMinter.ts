@@ -9,7 +9,7 @@ const env = cleanEnv(process.env, {
 });
 
 // constant
-const claimVerifier = "0x8fFe60b2d9dF36f40776E8F0bfBE750C370033FF";
+const claimVerifier = "0xF50C18ecd79475138b1f3AD786cA56Dd47122CD2";
 
 async function main() {
   console.log(env);
@@ -23,11 +23,11 @@ async function main() {
   // get the deployed contracts
   const int1 = await ethers.getContractAt(
     "Int1",
-    "0xF50C18ecd79475138b1f3AD786cA56Dd47122CD2"
+    "0x50f8A0956B1c41fA7884637ecf8322aba7e02369"
   );
   const token = await ethers.getContractAt(
     "DummyToken",
-    "0x35C810028a7347C27635A18B57A840AEB44fbe86"
+    "0x78801e4e578860bbcd72A7c79aA363D762d52351"
   );
 
   const minterFactory = await ethers.getContractFactory("MinterV1");
@@ -44,7 +44,6 @@ async function main() {
   // sleep 20 secs to confirm the deployment
   tx = await token.connect(admin).grantRole(await token.MINTER_ROLE(), minter);
   console.log(`Token MINTER role granted at: ${tx.hash}`);
-  // sleep 20 secs to confirm the deployment
   tx = await minter
     .connect(admin)
     .grantRole(await minter.TREE_MANAGER(), env.SEPOLIA_TREE_MANAGER_ADDRESS);
