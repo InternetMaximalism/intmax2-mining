@@ -87,7 +87,7 @@ contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
         token.mint(address(this));
     }
 
-    function setTreeRoots(
+    function setTreeRoot(
         bytes32 eligibleTreeRoot_
     ) external onlyRole(TREE_MANAGER) {
         eligibleTreeRoot = eligibleTreeRoot_;

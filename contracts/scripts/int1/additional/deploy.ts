@@ -8,6 +8,8 @@ const env = cleanEnv(process.env, {
   SEPOLIA_TREE_MANAGER_ADDRESS: str(),
 });
 
+const withdrawalVerifier = ""
+
 async function main() {
   console.log(env);
   const [deployer, admin] = await ethers.getSigners();

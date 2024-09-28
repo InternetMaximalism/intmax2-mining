@@ -44,7 +44,7 @@ interface IMinterV1 {
 
     function mint() external;
 
-    function setTreeRoots(bytes32 eligibleTreeRoot_) external;
+    function setTreeRoot(bytes32 eligibleTreeRoot_) external;
 
     function migrate(address newMinter) external;
 
