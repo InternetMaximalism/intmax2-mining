@@ -88,18 +88,18 @@ contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     }
 
     function setTreeRoots(
-        bytes32 eligibleTreeRoot_,
-        uint256 targetBalance
+        bytes32 eligibleTreeRoot_
     ) external onlyRole(TREE_MANAGER) {
         eligibleTreeRoot = eligibleTreeRoot_;
-        uint256 balance = token.balanceOf(address(this));
-        uint256 burnAmount = balance - targetBalance;
-        token.burn(burnAmount);
     }
 
     function migrate(address newMinter) external onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 balance = token.balanceOf(address(this));
         token.transfer(newMinter, balance);
+    }
+
+    function burn(uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        token.burn(amount);
     }
 
     function _verifyClaimChain(
