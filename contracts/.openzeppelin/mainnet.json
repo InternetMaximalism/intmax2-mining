@@ -10,6 +10,16 @@
       "address": "0x0A628b7c91B39a42830f6Df84F8e5fa70cDDe3F9",
       "txHash": "0x64dfb5817fc8f2a2cc50ff223145ba15374932b6c9ff7a88d028d2ee92dd3f22",
       "kind": "uups"
+    },
+    {
+      "address": "0x0Ac498bCA32B00E2584171844fb9A5943398D9c1",
+      "txHash": "0x83eb3b05b4851a51a9c75eea5472875526d018dc3b2664103ef27d9d7348cbc0",
+      "kind": "uups"
+    },
+    {
+      "address": "0x38DE07d2526Ae929f1903E5F109B70C50e12A8E0",
+      "txHash": "0x2a0817e885f3ad3d220b987a1efd5fb8bda0ee9e0bbed406d3d21c98f48ad4a3",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -411,6 +421,175 @@
             "numberOfBytes": "20"
           },
           "t_contract(IPlonkVerifier)2365": {
+            "label": "contract IPlonkVerifier",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.AccessControl": [
+            {
+              "contract": "AccessControlUpgradeable",
+              "label": "_roles",
+              "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+              "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "518d0f273b039d201feb947845df9f2e169ef7ffad1ae494dbf5611f99a848fb": {
+      "address": "0x2d0B38A5428fad18F0b10d94df038ac8576E7089",
+      "txHash": "0x23e60cf0a78cf5dc8f385ccb90734c904a0760ee06bc0a2f02556310c7f8be1e",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "eligibleTreeRoot",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32",
+            "contract": "MinterV1",
+            "src": "contracts/MinterV1.sol:24"
+          },
+          {
+            "label": "nullifiers",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "MinterV1",
+            "src": "contracts/MinterV1.sol:25"
+          },
+          {
+            "label": "verifier",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(IPlonkVerifier)2359",
+            "contract": "MinterV1",
+            "src": "contracts/MinterV1.sol:28"
+          },
+          {
+            "label": "token",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_contract(IINTMAXToken)2117",
+            "contract": "MinterV1",
+            "src": "contracts/MinterV1.sol:29"
+          },
+          {
+            "label": "int1",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_contract(IInt1)2263",
+            "contract": "MinterV1",
+            "src": "contracts/MinterV1.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)24_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AccessControlStorage)34_storage": {
+            "label": "struct AccessControlUpgradeable.AccessControlStorage",
+            "members": [
+              {
+                "label": "_roles",
+                "type": "t_mapping(t_bytes32,t_struct(RoleData)24_storage)",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitializableStorage)158_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)24_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_contract(IINTMAXToken)2117": {
+            "label": "contract IINTMAXToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IInt1)2263": {
+            "label": "contract IInt1",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IPlonkVerifier)2359": {
             "label": "contract IPlonkVerifier",
             "numberOfBytes": "20"
           },
