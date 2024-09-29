@@ -2,7 +2,7 @@ import { ethers, upgrades } from "hardhat";
 import { Int1, MinterV1 } from "../../../typechain-types";
 
 async function main() {
-  const [admin] = await ethers.getSigners();
+  const [admin, someone] = await ethers.getSigners();
   const treeManager = admin;
   const withdrawer = admin;
   const analyzer = admin;
