@@ -139,11 +139,22 @@ mod tests {
         let wrapper_proof = wrapper_processor.prove(&inner_proof).unwrap();
 
         save_circuit_data(
-            "../gnark-server/data/claim_circuit_data/",
+            "../../gnark-server/data/claim_circuit_data/",
             &wrapper_processor.wrapper_circuit1.data,
         )
         .expect("save failed");
-        save_proof("../gnark-server/data/claim_circuit_data/", &wrapper_proof)
-            .expect("save failed");
+        dbg!(serde_json::to_string(
+            &wrapper_processor
+                .wrapper_circuit1
+                .data
+                .verifier_only
+                .circuit_digest
+        )
+        .unwrap());
+        save_proof(
+            "../../gnark-server/data/claim_circuit_data/",
+            &wrapper_proof,
+        )
+        .expect("save failed");
     }
 }
