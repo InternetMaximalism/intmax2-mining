@@ -14,7 +14,7 @@ import {Byte32Lib} from "./lib/Byte32Lib.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
+contract MinterV1V2 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
 
     // roles that post eligible tree roots
@@ -28,8 +28,6 @@ contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     IPlonkVerifier public verifier;
     IINTMAXToken public token;
     IInt1 public int1;
-
-    function initialize() public reinitializer(2) {}
 
     function claimTokens(
         MintClaim[] memory claims,

@@ -14,7 +14,7 @@ import {DepositQueueLib} from "./lib/DepositQueueLib.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
+contract Int1V2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositTreeLib for DepositTreeLib.DepositTree;
     using DepositQueueLib for DepositQueueLib.DepositQueue;
     using DepositLib for DepositLib.Deposit;
@@ -64,8 +64,6 @@ contract Int1 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         }
         _;
     }
-
-    function initialize() external reinitializer(2) {}
 
     function depositNativeToken(
         bytes32 recipientSaltHash
