@@ -8,7 +8,7 @@ dotenv.config();
 
 const env = cleanEnv(process.env, {
   MAINNET_DEPLOYER_PRIVATE_KEY: str(),
-  MAINNET_ADMIN_PRIVATE_KEY: str(),
+  // MAINNET_ADMIN_PRIVATE_KEY: str(),
   SEPOLIA_DEPLOYER_PRIVATE_KEY: str(),
   SEPOLIA_ADMIN_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
@@ -38,7 +38,7 @@ const config: HardhatUserConfig = {
       url: env.MAINNET_RPC_URL,
       accounts: [
         env.MAINNET_DEPLOYER_PRIVATE_KEY,
-        env.MAINNET_ADMIN_PRIVATE_KEY,
+        // env.MAINNET_ADMIN_PRIVATE_KEY,
       ],
     },
   },
