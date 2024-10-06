@@ -108,8 +108,15 @@ mod tests {
         let processor = SimpleWithdrawalWrapperProcessor::new();
         let proof = processor.prove(&value).expect("prove failed");
 
-        save_circuit_data("./v1_withdrawal/", &processor.wrapper_circuit1.data)
-            .expect("save failed");
-        save_proof("./v1_withdrawal/", &proof).expect("save failed");
+        save_circuit_data(
+            "../../gnark-server/data/v1_withdrawal/",
+            &processor.wrapper_circuit1.data,
+        )
+        .expect("save failed");
+        dbg!(
+            serde_json::to_string(&processor.wrapper_circuit1.data.verifier_only.circuit_digest)
+                .unwrap()
+        );
+        save_proof("../../gnark-server/data/v1_withdrawal/", &proof).expect("save failed");
     }
 }
