@@ -2,19 +2,19 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IInt1} from "../../interfaces/IInt1.sol";
-import {IPlonkVerifier} from "../../interfaces/IPlonkVerifier.sol";
+import {IInt1} from "../../../interfaces/IInt1.sol";
+import {IPlonkVerifier} from "../../../interfaces/IPlonkVerifier.sol";
 
 // libs
-import {DepositLib} from "../../lib/DepositLib.sol";
-import {DepositTreeLib} from "../../lib/DepositTreeLib.sol";
-import {DepositQueueLib} from "../../lib/DepositQueueLib.sol";
+import {DepositLib} from "../../../lib/DepositLib.sol";
+import {DepositTreeLib} from "../../../lib/DepositTreeLib.sol";
+import {DepositQueueLib} from "../../../lib/DepositQueueLib.sol";
 
 // contracts
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract Int1V2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
+contract Int1L is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositTreeLib for DepositTreeLib.DepositTree;
     using DepositQueueLib for DepositQueueLib.DepositQueue;
     using DepositLib for DepositLib.Deposit;
@@ -63,6 +63,17 @@ contract Int1V2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
             }
         }
         _;
+    }
+
+    function initialize(
+        address withdrawalVerifier_,
+        address admin_
+    ) external initializer {
+        withdrawalVerifier = IPlonkVerifier(withdrawalVerifier_);
+        depositTree.initialize();
+        depositQueue.initialize();
+        depositRoots[depositTree.getRoot()] = block.timestamp;
+        _grantRole(DEFAULT_ADMIN_ROLE, admin_);
     }
 
     function depositNativeToken(
@@ -194,12 +205,6 @@ contract Int1V2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         return depositData;
     }
 
-    function setVerifier(
-        address verifier_
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        withdrawalVerifier = IPlonkVerifier(verifier_);
-    }
-
     function getDepositRoot() external view returns (bytes32) {
         return depositTree.getRoot();
     }
@@ -236,6 +241,12 @@ contract Int1V2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
             parts[i] = uint256(uint32(bytes4(input << (i * 32))));
         }
         return parts;
+    }
+
+    function setVerifier(
+        address verifier_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        withdrawalVerifier = IPlonkVerifier(verifier_);
     }
 
     function _authorizeUpgrade(

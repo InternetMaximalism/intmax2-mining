@@ -2,19 +2,19 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IMinterV1} from "../../interfaces/IMinterV1.sol";
-import {IInt1} from "../../interfaces/IInt1.sol";
-import {IPlonkVerifier} from "../../interfaces/IPlonkVerifier.sol";
-import {IINTMAXToken} from "../../interfaces/IINTMAXToken.sol";
+import {IMinterV1} from "../../../interfaces/IMinterV1.sol";
+import {IInt1} from "../../../interfaces/IInt1.sol";
+import {IPlonkVerifier} from "../../../interfaces/IPlonkVerifier.sol";
+import {IINTMAXToken} from "../../../interfaces/IINTMAXToken.sol";
 
 // libs
-import {Byte32Lib} from "../../lib/Byte32Lib.sol";
+import {Byte32Lib} from "../../../lib/Byte32Lib.sol";
 
 // contracts
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
+contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
 
     // roles that post eligible tree roots
@@ -85,6 +85,12 @@ contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
 
     function mint() public onlyRole(TREE_MANAGER) {
         token.mint(address(this));
+    }
+
+    function setVerifier(
+        address verifier_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        verifier = IPlonkVerifier(verifier_);
     }
 
     function setTreeRoot(

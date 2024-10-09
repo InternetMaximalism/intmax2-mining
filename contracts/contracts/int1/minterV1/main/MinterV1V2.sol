@@ -2,13 +2,13 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IMinterV1} from "../../interfaces/IMinterV1.sol";
-import {IInt1} from "../../interfaces/IInt1.sol";
-import {IPlonkVerifier} from "../../interfaces/IPlonkVerifier.sol";
-import {IINTMAXToken} from "../../interfaces/IINTMAXToken.sol";
+import {IMinterV1} from "../../../interfaces/IMinterV1.sol";
+import {IInt1} from "../../../interfaces/IInt1.sol";
+import {IPlonkVerifier} from "../../../interfaces/IPlonkVerifier.sol";
+import {IINTMAXToken} from "../../../interfaces/IINTMAXToken.sol";
 
 // libs
-import {Byte32Lib} from "../../lib/Byte32Lib.sol";
+import {Byte32Lib} from "../../../lib/Byte32Lib.sol";
 
 // contracts
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";

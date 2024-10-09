@@ -2,13 +2,13 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IInt1} from "../../interfaces/IInt1.sol";
-import {IPlonkVerifier} from "../../interfaces/IPlonkVerifier.sol";
+import {IInt1} from "../../../interfaces/IInt1.sol";
+import {IPlonkVerifier} from "../../../interfaces/IPlonkVerifier.sol";
 
 // libs
-import {DepositLib} from "../../lib/DepositLib.sol";
-import {DepositTreeLib} from "../../lib/DepositTreeLib.sol";
-import {DepositQueueLib} from "../../lib/DepositQueueLib.sol";
+import {DepositLib} from "../../../lib/DepositLib.sol";
+import {DepositTreeLib} from "../../../lib/DepositTreeLib.sol";
+import {DepositQueueLib} from "../../../lib/DepositQueueLib.sol";
 
 // contracts
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
