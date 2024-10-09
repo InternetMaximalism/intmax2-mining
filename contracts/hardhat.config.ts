@@ -9,11 +9,12 @@ dotenv.config();
 const env = cleanEnv(process.env, {
   // MAINNET_DEPLOYER_PRIVATE_KEY: str(),
   // MAINNET_ADMIN_PRIVATE_KEY: str(),
-  SEPOLIA_DEPLOYER_PRIVATE_KEY: str(),
-  SEPOLIA_ADMIN_PRIVATE_KEY: str(),
+  TESTNET_DEPLOYER_PRIVATE_KEY: str(),
+  TESTNET_ADMIN_PRIVATE_KEY: str(),
   SEPOLIA_RPC_URL: url(),
   MAINNET_RPC_URL: url(),
   HOLESKY_RPC_URL: url(),
+  BASESEP_RPC_URL: url(),
   ETHERSCAN_API_KEY: str(),
 });
 
@@ -23,15 +24,22 @@ const config: HardhatUserConfig = {
     sepolia: {
       url: env.SEPOLIA_RPC_URL,
       accounts: [
-        env.SEPOLIA_DEPLOYER_PRIVATE_KEY,
-        env.SEPOLIA_ADMIN_PRIVATE_KEY,
+        env.TESTNET_DEPLOYER_PRIVATE_KEY,
+        env.TESTNET_ADMIN_PRIVATE_KEY,
       ],
     },
     holesky: {
       url: env.HOLESKY_RPC_URL,
       accounts: [
-        env.SEPOLIA_DEPLOYER_PRIVATE_KEY,
-        env.SEPOLIA_ADMIN_PRIVATE_KEY,
+        env.TESTNET_DEPLOYER_PRIVATE_KEY,
+        env.TESTNET_ADMIN_PRIVATE_KEY,
+      ],
+    },
+    basesep: {
+      url: env.BASESEP_RPC_URL,
+      accounts: [
+        env.TESTNET_DEPLOYER_PRIVATE_KEY,
+        env.TESTNET_ADMIN_PRIVATE_KEY,
       ],
     },
     mainnet: {

@@ -3,12 +3,10 @@ import { Int1, MinterV1 } from "../../../typechain-types";
 import { cleanEnv, str } from "envalid";
 
 const env = cleanEnv(process.env, {
-  SEPOLIA_WITHDRAWER_ADDRESS: str(),
-  SEPOLIA_ANALYZER_ADDRESS: str(),
-  SEPOLIA_TREE_MANAGER_ADDRESS: str(),
+  TESTNET_WITHDRAWER_ADDRESS: str(),
+  TESTNET_ANALYZER_ADDRESS: str(),
+  TESTNET_TREE_MANAGER_ADDRESS: str(),
 });
-
-const withdrawalVerifier = ""
 
 async function main() {
   console.log(env);
@@ -19,15 +17,29 @@ async function main() {
   // sleep 20 secs to confirm the deployment
   await new Promise((resolve) => setTimeout(resolve, 20000));
 
+  // deploy verifiers
   const withdrawalVerifierFactory = await ethers.getContractFactory(
-    "V1WithdrawalPlonkVerifier"
+    "V1WithdrawalPlonkVerifierV2"
   );
   const withdrawalVerifier = await withdrawalVerifierFactory.deploy();
   console.log(
     `Withdrawal verifier deployed at: ${await withdrawalVerifier.getAddress()}`
   );
+  const claimVerifierFactory = await ethers.getContractFactory(
+    "ClaimPlonkVerifierV2"
+  );
+  const claimVerifier = await claimVerifierFactory.deploy();
+  console.log(
+    `Claim verifier deployed at: ${await claimVerifier.getAddress()}`
+  );
 
-  const int1Factory = await ethers.getContractFactory("Int1");
+  // deploy token
+  const tokenFactory = await ethers.getContractFactory("INTMAXTokenL");
+  const token = await tokenFactory.deploy(admin, ethers.ZeroAddress);
+  await token.waitForDeployment();
+  console.log(`INTMAXToken token deployed at: ${await token.getAddress()}`);
+
+  const int1Factory = await ethers.getContractFactory("Int1L");
   const int1 = (await upgrades.deployProxy(int1Factory, [], {
     initializer: false,
     kind: "uups",
@@ -35,21 +47,7 @@ async function main() {
   await int1.waitForDeployment();
   console.log(`Int1 deployed at: ${await int1.getAddress()}`);
 
-  // deploy token
-  const tokenFactory = await ethers.getContractFactory("DummyToken");
-  const token = await tokenFactory.deploy(admin, ethers.ZeroAddress);
-  await token.waitForDeployment();
-  console.log(`Dummy token deployed at: ${await token.getAddress()}`);
-
-  const claimVerifierFactory = await ethers.getContractFactory(
-    "ClaimPlonkVerifier"
-  );
-  const claimVerifier = await claimVerifierFactory.deploy();
-  console.log(
-    `Claim verifier deployed at: ${await claimVerifier.getAddress()}`
-  );
-
-  const minterFactory = await ethers.getContractFactory("MinterV1");
+  const minterFactory = await ethers.getContractFactory("MinterV1L");
   const minter = (await upgrades.deployProxy(minterFactory, [], {
     initializer: false,
     kind: "uups",
@@ -70,17 +68,17 @@ async function main() {
   // admin roles
   tx = await int1
     .connect(admin)
-    .grantRole(await int1.WITHDRAWER(), env.SEPOLIA_WITHDRAWER_ADDRESS);
+    .grantRole(await int1.WITHDRAWER(), env.TESTNET_WITHDRAWER_ADDRESS);
   console.log(`Int1 WITHDRAWER role granted at: ${tx.hash}`);
   tx = await int1
     .connect(admin)
-    .grantRole(await int1.ANALYZER(), env.SEPOLIA_ANALYZER_ADDRESS);
+    .grantRole(await int1.ANALYZER(), env.TESTNET_ANALYZER_ADDRESS);
   console.log(`Int1 ANALYZER role granted at: ${tx.hash}`);
   tx = await token.connect(admin).grantRole(await token.MINTER_ROLE(), minter);
   console.log(`Token MINTER role granted at: ${tx.hash}`);
   tx = await minter
     .connect(admin)
-    .grantRole(await minter.TREE_MANAGER(), env.SEPOLIA_TREE_MANAGER_ADDRESS);
+    .grantRole(await minter.TREE_MANAGER(), env.TESTNET_TREE_MANAGER_ADDRESS);
   console.log(`Minter TREE_MANAGER role granted at: ${tx.hash}`);
 }
 

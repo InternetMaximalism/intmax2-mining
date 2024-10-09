@@ -9,7 +9,7 @@ import {IINTMAXToken} from "./IINTMAXToken.sol";
 /**
  * @title INTMAXToken
  */
-contract INTMAXToken is ERC20, AccessControl, IINTMAXToken {
+contract INTMAXTokenL is ERC20, AccessControl, IINTMAXToken {
     /**
      * @notice The duration of phase 0 in days.
      */
