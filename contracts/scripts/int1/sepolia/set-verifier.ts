@@ -1,9 +1,11 @@
 import { ethers } from "hardhat";
 
-const withdrawalVerifier = "0x8877749FEF640b3AF16996F82A9afA1B6DB0427d";
-const claimVerifier = "0xA65732c6db2b2AE2f1154CC0002F121713540C76";
-const int1Address = "0x50f8A0956B1c41fA7884637ecf8322aba7e02369";
-const minterAddress = "0xDb3b66830b42dF8bB0316D783Ba4Ff5A9C212D51";
+// sepolia
+const withdrawalVerifier = "0xA6594155075B608986c2ff848362A3958ACF537c";
+const claimVerifier = "0x05F9546eBA37eec84c3148558471c5f58b5866Bc";
+
+const int1Address = "0xF50C18ecd79475138b1f3AD786cA56Dd47122CD2";
+const minterAddress = "0xE1682013abB443D34224C996c611bD981b85F97E";
 
 async function main() {
   const [deployer, admin] = await ethers.getSigners();

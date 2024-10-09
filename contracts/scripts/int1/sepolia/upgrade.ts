@@ -1,9 +1,9 @@
 import { ethers, upgrades } from "hardhat";
 import { Int1V2, MinterV1, MinterV1V2 } from "../../../typechain-types";
 
-// holesky
-const int1Address = "0x50f8A0956B1c41fA7884637ecf8322aba7e02369";
-const minterV1Address = "0xDb3b66830b42dF8bB0316D783Ba4Ff5A9C212D51";
+// sepolia
+const int1Address = "0xF50C18ecd79475138b1f3AD786cA56Dd47122CD2";
+const minterV1Address = "0xE1682013abB443D34224C996c611bD981b85F97E";
 
 async function main() {
   const [deployer, admin] = await ethers.getSigners();
