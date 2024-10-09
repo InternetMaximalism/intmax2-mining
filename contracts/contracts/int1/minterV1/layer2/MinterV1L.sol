@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IMinterV1} from "../../../interfaces/IMinterV1.sol";
+import {IMinterV1L} from "./IMinterV1.sol";
 import {IInt1} from "../../../interfaces/IInt1.sol";
 import {IPlonkVerifier} from "../../../interfaces/IPlonkVerifier.sol";
 import {IINTMAXToken} from "../../../interfaces/IINTMAXToken.sol";
@@ -14,15 +14,18 @@ import {Byte32Lib} from "../../../lib/Byte32Lib.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
+contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1L {
     using Byte32Lib for bytes32;
 
     // roles that post eligible tree roots
     bytes32 public constant TREE_MANAGER = keccak256("TREE_MANAGER");
 
     // state
-    bytes32 public eligibleTreeRoot;
-    mapping(bytes32 => bool) public nullifiers;
+    bytes32 public shortTermEligibleTreeRoot;
+    mapping(bytes32 => bool) public shortTermNullifiers;
+
+    bytes32 public longTermEligibleTreeRoot;
+    mapping(bytes32 => bool) public longTermNullifiers;
 
     // contracts
     IPlonkVerifier public verifier;
@@ -42,16 +45,27 @@ contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     }
 
     function claimTokens(
+        bool isShortTerm,
         MintClaim[] memory claims,
         ClaimPublicInputs memory publicInputs,
         bytes calldata proof
     ) external {
-        if (publicInputs.eligibleTreeRoot != eligibleTreeRoot) {
-            revert EligibleTreeRootMismatch({
-                given: publicInputs.eligibleTreeRoot,
-                expected: eligibleTreeRoot
-            });
+        if (isShortTerm) {
+            if (publicInputs.eligibleTreeRoot != shortTermEligibleTreeRoot) {
+                revert EligibleTreeRootMismatch({
+                    given: publicInputs.eligibleTreeRoot,
+                    expected: shortTermEligibleTreeRoot
+                });
+            }
+        } else {
+            if (publicInputs.eligibleTreeRoot != longTermEligibleTreeRoot) {
+                revert EligibleTreeRootMismatch({
+                    given: publicInputs.eligibleTreeRoot,
+                    expected: longTermEligibleTreeRoot
+                });
+            }
         }
+
         if (int1.depositRoots(publicInputs.depositTreeRoot) == 0) {
             revert InvalidDepositTreeRoot(publicInputs.depositTreeRoot);
         }
@@ -74,10 +88,17 @@ contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
         }
         for (uint256 i = 0; i < claims.length; i++) {
             MintClaim memory claim = claims[i];
-            if (nullifiers[claim.nullifier]) {
-                revert UsedNullifier(claim.nullifier);
+            if (isShortTerm) {
+                if (shortTermNullifiers[claim.nullifier]) {
+                    revert UsedNullifier(claim.nullifier);
+                }
+                shortTermNullifiers[claim.nullifier] = true;
+            } else {
+                if (longTermNullifiers[claim.nullifier]) {
+                    revert UsedNullifier(claim.nullifier);
+                }
+                longTermNullifiers[claim.nullifier] = true;
             }
-            nullifiers[claim.nullifier] = true;
             token.transfer(claim.recipient, claim.amount);
             emit Claimed(claim.recipient, claim.nullifier, claim.amount);
         }
@@ -93,10 +114,16 @@ contract MinterV1L is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
         verifier = IPlonkVerifier(verifier_);
     }
 
-    function setTreeRoot(
+    function setShortTermTreeRoot(
         bytes32 eligibleTreeRoot_
     ) external onlyRole(TREE_MANAGER) {
-        eligibleTreeRoot = eligibleTreeRoot_;
+        shortTermEligibleTreeRoot = eligibleTreeRoot_;
+    }
+
+    function setLongTermTreeRoot(
+        bytes32 eligibleTreeRoot_
+    ) external onlyRole(TREE_MANAGER) {
+        longTermEligibleTreeRoot = eligibleTreeRoot_;
     }
 
     function migrate(address newMinter) external onlyRole(DEFAULT_ADMIN_ROLE) {

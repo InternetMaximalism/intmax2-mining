@@ -18,7 +18,7 @@ const env = cleanEnv(process.env, {
 });
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.24",
+  solidity: "0.8.27",
   networks: {
     sepolia: {
       url: env.SEPOLIA_RPC_URL,
