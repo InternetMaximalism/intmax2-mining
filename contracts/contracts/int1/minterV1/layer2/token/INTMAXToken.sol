@@ -68,6 +68,8 @@ contract INTMAXToken is ERC20, AccessControl, IINTMAXToken {
         transfersAllowed = false;
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
         _grantRole(MINTER_ROLE, minter_);
+        // The previous mintable amount has already been claimed on the other chain.
+        totalClaimedAmount = totalMintableAmount();
     }
 
     function supportsInterface(
