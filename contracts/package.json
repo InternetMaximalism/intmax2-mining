@@ -1,23 +1,5 @@
 {
   "name": "hardhat-project",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.11",
-    "@nomiclabs/hardhat-etherscan": "^3.1.8",
-    "@openzeppelin/contracts": "^5.0.2",
-    "@scroll-tech/contracts": "^0.1.0",
-    "hardhat": "^2.22.5"
-  },
-  "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^5.0.2",
-    "@openzeppelin/hardhat-upgrades": "^3.2.1",
-    "@types/axios": "^0.14.0",
-    "axios": "^1.7.2",
-    "dotenv": "^16.4.5",
-    "envalid": "^8.0.0",
-    "fast-csv": "^5.0.1",
-    "poseidon-goldilocks": "^0.2.3"
-  },
   "scripts": {
     "compile": "hardhat compile",
     "copy-types": "rsync -avh typechain-types/ ../miner/typechain-types/",
@@ -26,5 +8,25 @@
     "deploy": "hardhat ignition deploy ignition/modules/Int0.ts --network localhost",
     "deploy-sepolia": "npx hardhat ignition deploy ignition/modules/Int0.ts --network sepolia",
     "deploy-mainnet": "npx hardhat ignition deploy ignition/modules/Int0.ts --network mainnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/hardhat-upgrades": "^3.4.0",
+    "@scroll-tech/contracts": "^0.1.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/mocha": "^10.0.9",
+    "@types/node": "^22.7.5",
+    "dotenv": "^16.4.5",
+    "envalid": "^8.0.0",
+    "hardhat": "^2.22.13",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "ethers": "^6.13.3"
   }
 }
