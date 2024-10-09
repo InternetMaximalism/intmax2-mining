@@ -2,19 +2,19 @@
 pragma solidity ^0.8.24;
 
 // interfaces
-import {IMinterV1} from "./interfaces/IMinterV1.sol";
-import {IInt1} from "./interfaces/IInt1.sol";
-import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
-import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
+import {IMinterV1} from "../../interfaces/IMinterV1.sol";
+import {IInt1} from "../../interfaces/IInt1.sol";
+import {IPlonkVerifier} from "../../interfaces/IPlonkVerifier.sol";
+import {IINTMAXToken} from "../../interfaces/IINTMAXToken.sol";
 
 // libs
-import {Byte32Lib} from "./lib/Byte32Lib.sol";
+import {Byte32Lib} from "../../lib/Byte32Lib.sol";
 
 // contracts
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract MinterV1V2 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
+contract MinterV1 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     using Byte32Lib for bytes32;
 
     // roles that post eligible tree roots
@@ -28,6 +28,18 @@ contract MinterV1V2 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
     IPlonkVerifier public verifier;
     IINTMAXToken public token;
     IInt1 public int1;
+
+    function initialize(
+        address plonkVerifier_,
+        address token_,
+        address int1_,
+        address admin_
+    ) public initializer {
+        verifier = IPlonkVerifier(plonkVerifier_);
+        token = IINTMAXToken(token_);
+        int1 = IInt1(int1_);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin_);
+    }
 
     function claimTokens(
         MintClaim[] memory claims,
@@ -79,12 +91,6 @@ contract MinterV1V2 is UUPSUpgradeable, AccessControlUpgradeable, IMinterV1 {
         bytes32 eligibleTreeRoot_
     ) external onlyRole(TREE_MANAGER) {
         eligibleTreeRoot = eligibleTreeRoot_;
-    }
-
-    function setVerifier(
-        address verifier_
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        verifier = IPlonkVerifier(verifier_);
     }
 
     function migrate(address newMinter) external onlyRole(DEFAULT_ADMIN_ROLE) {

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Byte32Lib} from "./lib/Byte32Lib.sol";
-import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
-import {IINTMAXToken} from "./interfaces/IINTMAXToken.sol";
-import {IInt0} from "./interfaces/IInt0.sol";
+import {Byte32Lib} from "../lib/Byte32Lib.sol";
+import {IPlonkVerifier} from "../interfaces/IPlonkVerifier.sol";
+import {IINTMAXToken} from "../interfaces/IINTMAXToken.sol";
+import {IInt0} from "../interfaces/IInt0.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract MinterV0 is AccessControl {

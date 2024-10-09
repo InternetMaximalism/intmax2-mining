@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Deposit} from "./Deposit.sol";
-import {IPlonkVerifier} from "./interfaces/IPlonkVerifier.sol";
+import {IPlonkVerifier} from "../interfaces/IPlonkVerifier.sol";
 
 contract Int0 is Deposit {
     struct DepositLeaf {
