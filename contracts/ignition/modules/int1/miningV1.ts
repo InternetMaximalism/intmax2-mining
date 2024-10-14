@@ -1,25 +1,26 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-import { cleanEnv, str } from "envalid";
-import dotenv from "dotenv";
 import { ignition } from "hardhat";
 import VerifiersModule from "./verifiers";
-dotenv.config();
+import Int1Module from "./int1";
+import MinterV1Module from "./minter";
+import TokenModule from "./token";
 
 const MiningV1Module = buildModule("MiningV1", (m) => {
   const { withdrawalVerifier, claimVerifier } = m.useModule(VerifiersModule);
-  const int1_impl = m.contract("Int1L");
-  const int1 = m.contract("ERC1967Proxy", [int1_impl, "0x"], {
-    id: "int1",
-  });
-  const minter_impl = m.contract("MinterV1L");
-  const minter = m.contract("ERC1967Proxy", [minter_impl, "0x"], {
-    id: "minter",
-  });
+  const { token } = m.useModule(TokenModule);
+  const { int1 } = m.useModule(Int1Module);
+  const { minterV1 } = m.useModule(MinterV1Module);
 
   // initialize
   m.call(int1, "initialize", [m.getParameter("admin"), withdrawalVerifier]);
+  m.call(minterV1, "initialize", [
+    claimVerifier,
+    token,
+    int1,
+    m.getParameter("admin"),
+  ]);
 
-  return { int1, minter };
+  return { int1, minterV1, token };
 });
 
 export default MiningV1Module;

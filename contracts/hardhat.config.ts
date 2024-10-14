@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
         env.TESTNET_ADMIN_PRIVATE_KEY,
       ],
     },
-    basesep: {
+    "base-sepolia": {
       url: env.BASESEP_RPC_URL,
       accounts: [
         env.TESTNET_DEPLOYER_PRIVATE_KEY,
