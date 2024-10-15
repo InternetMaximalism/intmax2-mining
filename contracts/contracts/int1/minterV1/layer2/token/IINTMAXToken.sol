@@ -14,6 +14,16 @@ interface IINTMAXToken is IERC20 {
     error TransferNotAllowed();
 
     /**
+     * @dev Emitted when tried to start mining while mining has already started.
+     */
+    error MiningAlreadyStarted();
+
+    /**
+     * @dev Emitted when tried to claim tokens while mining has not started.
+     */
+    error MiningNotStarted();
+
+    /**
      * @notice Returns the total amount of tokens that have been burned.
      * @return The total amount of tokens that have been burned.
      */

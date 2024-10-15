@@ -57,19 +57,39 @@ contract INTMAXTokenL is ERC20, AccessControl, IINTMAXToken {
     bool public transfersAllowed;
 
     /**
+     * @notice Whether mining has started.
+     */
+    bool public isStarted;
+
+    modifier onlyMiningStarted() {
+        if (!isStarted) {
+            revert MiningNotStarted();
+        }
+        _;
+    }
+
+    /**
      * @dev Sets the token name and symbol, and initializes the owner and minter.
      * @param admin_ The address of the initial admin.
-     * @param minter_ The address of the initial minter.
      */
-    constructor(address admin_, address minter_) ERC20("INTMAX", "ITX") {
+    constructor(address admin_) ERC20("INTMAX", "ITX") {
         // The reward per day is 8937500 tokens.
         PHASE0_REWARD_PER_DAY = 8937500 * (10 ** decimals());
         MAX_SUPPLY = PHASE0_REWARD_PER_DAY * PHASE0_PERIOD * NUM_PHASES;
         transfersAllowed = false;
         _grantRole(DEFAULT_ADMIN_ROLE, admin_);
-        _grantRole(MINTER_ROLE, minter_);
-        // The previous mintable amount has already been claimed on the other chain.
+    }
+
+    /**
+     * @dev Start mining.
+     * @dev Only callable by the admin.
+     */
+    function startMining() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (isStarted) {
+            revert MiningAlreadyStarted();
+        }
         totalClaimedAmount = totalMintableAmount();
+        isStarted = true;
     }
 
     function supportsInterface(
@@ -86,7 +106,7 @@ contract INTMAXTokenL is ERC20, AccessControl, IINTMAXToken {
      * @dev Only callable by the minter.
      * @param to The address to mint tokens to.
      */
-    function mint(address to) external onlyRole(MINTER_ROLE) {
+    function mint(address to) external onlyMiningStarted onlyRole(MINTER_ROLE) {
         uint256 mintable = totalMintableAmount();
         _mint(to, mintable - totalClaimedAmount);
         totalClaimedAmount = mintable;
