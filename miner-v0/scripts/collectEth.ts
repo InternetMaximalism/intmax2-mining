@@ -18,6 +18,8 @@ async function main() {
   });
   const withdrawer = getNthWallet(0, args.mnemonic);
   const withdrawerAddress = withdrawer.address;
+  console.log(withdrawer.privateKey)
+  console.log(withdrawerAddress)
 
   const gasPrice = await getGasPrice();
   const topUp = 2n * gasPrice * 21000n;
