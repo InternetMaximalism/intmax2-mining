@@ -12,7 +12,7 @@ const MiningV1Module = buildModule("MiningV1", (m) => {
   const { minterV1 } = m.useModule(MinterV1Module);
 
   // initialize
-  m.call(int1, "initialize", [m.getParameter("admin"), withdrawalVerifier]);
+  m.call(int1, "initialize", [ withdrawalVerifier, m.getParameter("admin")]);
   m.call(minterV1, "initialize", [
     claimVerifier,
     token,
