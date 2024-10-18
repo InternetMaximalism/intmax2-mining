@@ -41,6 +41,9 @@ contract Int1V3 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
         if (alreadyUseRecipientSaltHash[recipientSaltHash]) {
             revert RecipientSaltHashAlreadyUsed();
         }
+        if (block.timestamp > 1729296000) {
+            revert("Deposit has ended");
+        }
         _;
     }
 
@@ -68,7 +71,22 @@ contract Int1V3 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     function depositNativeToken(
         bytes32 recipientSaltHash
     ) external payable canDeposit(recipientSaltHash) {
-        revert("Deposit is disabled");
+        if (msg.value == 0) {
+            revert TriedToDepositZero();
+        }
+        alreadyUseRecipientSaltHash[recipientSaltHash] = true;
+        bytes32 depositHash = DepositLib
+            .Deposit(recipientSaltHash, 0, msg.value)
+            .getHash();
+        uint256 depositId = depositQueue.enqueue(depositHash, _msgSender());
+        emit Deposited(
+            depositId,
+            _msgSender(),
+            recipientSaltHash,
+            0,
+            msg.value,
+            block.timestamp
+        );
     }
 
     function analyzeAndProcessDeposits(
