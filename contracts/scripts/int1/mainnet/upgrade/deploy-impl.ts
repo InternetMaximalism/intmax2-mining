@@ -5,11 +5,7 @@ async function main() {
   console.log(`Deploying contracts with the account: ${deployer.address}`);
   new Promise((resolve) => setTimeout(resolve, 20000));
 
-  const newInt1Factory = await ethers.getContractFactory("Int1V2");
-  const newInt1 = await newInt1Factory.deploy();
-  console.log(`New Int1 deployed at: ${await newInt1.getAddress()}`);
-
-  const newMinterFactory = await ethers.getContractFactory("MinterV1V2");
+  const newMinterFactory = await ethers.getContractFactory("MinterV1V3");
   const newMinter = await newMinterFactory.deploy();
   console.log(`New Minter deployed at: ${await newMinter.getAddress()}`);
 }
