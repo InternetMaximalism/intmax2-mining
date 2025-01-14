@@ -7,12 +7,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const env = cleanEnv(process.env, {
-  MAINNET_DEPLOYER_PRIVATE_KEY: str(),
+  // MAINNET_DEPLOYER_PRIVATE_KEY: str(),
   // MAINNET_ADMIN_PRIVATE_KEY: str(),
   // TESTNET_DEPLOYER_PRIVATE_KEY: str(),
   // TESTNET_ADMIN_PRIVATE_KEY: str(),
   // SEPOLIA_RPC_URL: url(),
-  MAINNET_RPC_URL: url(),
+  // MAINNET_RPC_URL: url(),
   // HOLESKY_RPC_URL: url(),
   // BASESEP_RPC_URL: url(),
   BASE_DEPLOYER_PRIVATE_KEY: str(),
@@ -44,12 +44,12 @@ const config: HardhatUserConfig = {
     //     env.TESTNET_ADMIN_PRIVATE_KEY,
     //   ],
     // },
-    mainnet: {
-      url: env.MAINNET_RPC_URL,
-      accounts: [
-        env.MAINNET_DEPLOYER_PRIVATE_KEY,
-      ],
-    },
+    // mainnet: {
+    //   url: env.MAINNET_RPC_URL,
+    //   accounts: [
+    //     env.MAINNET_DEPLOYER_PRIVATE_KEY,
+    //   ],
+    // },
      base: {
       url: env.BASE_RPC_URL,
       accounts: [
