@@ -14,7 +14,7 @@ import {DepositQueueLibV2} from "../../../lib/DepositQueueLibV2.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract Int1L is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
+contract Int1LV2 is IInt1, UUPSUpgradeable, AccessControlUpgradeable {
     using DepositTreeLib for DepositTreeLib.DepositTree;
     using DepositQueueLibV2 for DepositQueueLibV2.DepositQueue;
     using DepositLib for DepositLib.Deposit;
