@@ -2,7 +2,6 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import MinterV1Module from "./minter";
 import TokenV2Module from "./token.v2";
 
-
 const MiningV1Module = buildModule("MiningV1", (m) => {
   const claimVerifier = "0x4C66837A1b7987A2CEB167EFb4EdA56c31D24485";
   const { token } = m.useModule(TokenV2Module); // also needs redeploy
