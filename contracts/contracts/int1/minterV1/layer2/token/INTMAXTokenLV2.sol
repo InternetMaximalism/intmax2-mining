@@ -34,7 +34,7 @@ contract INTMAXTokenLV2 is ERC20, AccessControl, IINTMAXToken {
     /**
      * @notice The timestamp when the base start mining.
      */
-    uint256 public constant BASE_START_MINING_TIMESTAMP = 1729339229;
+    uint256 public constant BASE_START_MINING_TIMESTAMP = 1729296029;
 
     /**
      * @notice The reward per day during phase 0, in tokens (with 18 decimals).
