@@ -25,6 +25,15 @@ impl Processor {
     pub fn new(gnark_server_base_url: String) -> Self {
         let claim_processor = ClaimProcessor::new();
         let wrapper_processor = ClaimWrapperProcessor::new(&claim_processor.claim_circuit);
+
+        let verifier_only = wrapper_processor
+            .wrapper_circuit1
+            .data
+            .verifier_only
+            .clone();
+        let verifier_only_str =
+            serde_json::to_string(&verifier_only).expect("Failed to serialize verifier_only");
+        println!("Verifier only: {}", verifier_only_str);
         let gnark_server = GnarkServer::new(gnark_server_base_url);
         Self {
             claim_processor,
